@@ -1,30 +1,33 @@
 import React from 'react';
 import './Navbar.css';
 import sms2 from '../assets/sms2.jpg';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';  
+
 
 function Navbar(){
   return(
 
-    <nav class="navbar navbar-expand-lg">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="">Home</a>
+    <nav className="navbar navbar-expand-lg">
+      <div className="container-fluid">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav mx-auto">
+            <li className="nav-item">
+              <a className="nav-link active" aria-current="page" href="">Home</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">E-Services</a>
+            <li className="nav-item">
+              <a className="nav-link" href="">E-Services</a>
             </li>
     
-            <a class="navbar-brand d-none d-lg-block" href="">
+            <a className="navbar-brand d-none d-lg-block" href="">
                 <img src={sms2} alt="SMS Logo" className="img-fluid" style={{ height: "100px", }} />
             </a>
             
-            <li class="nav-item">
-              <a class="nav-link" href="">About</a>
+            <li className="nav-item">
+              <a className="nav-link" href="">About</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">Study</a>
+            <li className="nav-item">
+              <a className="nav-link" href="">Study</a>
             </li>
           </ul>
         </div>
