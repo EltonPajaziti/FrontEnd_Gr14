@@ -1,0 +1,9 @@
+.UP-text-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 5%;
+}
+.Up-text-paragraph{
+    margin-top: 2%;
+}
