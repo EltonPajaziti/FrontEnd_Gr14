@@ -3,6 +3,7 @@ import './Navbar.css';
 import sms2 from '../assets/sms2.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';  
+import { Link } from 'react-router-dom';
 
 
 function Navbar(){
@@ -13,10 +14,10 @@ function Navbar(){
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav mx-auto">
             <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="">Home</a>
+            <Link className="nav-link" to="../">Home</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="">E-Services</a>
+            <Link className="nav-link" to="../eServices">eServices</Link>
             </li>
     
             <a className="navbar-brand d-none d-lg-block" href="">
@@ -24,10 +25,10 @@ function Navbar(){
             </a>
             
             <li className="nav-item">
-              <a className="nav-link" href="">About</a>
+            <Link className="nav-link" to="../About">About</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="">Study</a>
+            <Link className="nav-link" to="../Study">Study</Link>
             </li>
           </ul>
         </div>

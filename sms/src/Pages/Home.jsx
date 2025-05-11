@@ -5,13 +5,12 @@ import unii2 from '../assets/unii2.png';
 import unii3 from '../assets/unii3.png';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
-import './Home.css';
+import '../CSS/Home.css';
 
 function Home(){
     return(
         <>
-    <Navbar />
-    <div class="home">
+    <div className="home">
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -46,7 +45,6 @@ function Home(){
         <p>The University of Prishtina is located in the capital of Kosovo and stands as the oldest and largest higher education institution in the country. With thousands of dedicated students and academic staff, it forms a dynamic scientific and educational community. In the region, the University is recognized for its ongoing contribution to society, education, and scientific research. Since its establishment on February 13, 1970, the University of Prishtina has played a vital role in shaping a brighter future for new generations.</p>
         </div>
     </div>
-    <Footer />
 
         </>
 

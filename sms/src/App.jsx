@@ -1,19 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './Pages/Login';
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './Components/Navbar';
 import Home from './Pages/Home';
-import Dashboard from './Pages/Dashboard';
-
-
+ import About from './Pages/About';
+import EServices from './Pages/EServices';
+import Study from './Pages/Study';
+import Footer from './Components/Footer';
 
 function App() {
   return (
-    <Router>
+    <>
+        <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/About" element={<About />} />
+        <Route path="/EServices" element={<EServices />} />
+        <Route path="/Study" element={<Study />} />
       </Routes>
-    </Router>
+      <Footer/>
+    </>
   );
 }
 
