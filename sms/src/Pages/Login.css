@@ -1,51 +1,83 @@
+/* Vendos backgroundin në të gjithë ekranin */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(to bottom right, #7928CA, #4D0DAA);
+  font-family: Arial, sans-serif;
+}
 
-body{
-    font-family: Arial, sans-serif;
-    background-color: white;
-    margin: 0;
-    padding: 0;
-    color: black;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-top: 50px;
-    color: #333;
-  }
+/* Qendra perfekte për formën */
 .login-container {
-    max-width: 400px;
-    margin: 80px auto;
-    padding: 30px;
-    background-color: #f2f2f2;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-  
-  .login-container h2 {
-    margin-bottom: 20px;
-  }
-  
-  .login-container form input {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 12px;
-    font-size: 16px;
-  }
-  
-  .login-container form button {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .login-container form button:hover {
-    background-color: #0056b3;
-  }
-  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+/* Stili i formës */
+.login-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.login-form .icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: purple;
+}
+
+.login-form h2 {
+  margin-bottom: 0.5rem;
+}
+
+.login-form p {
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.login-form label {
+  display: block;
+  text-align: left;
+  margin: 0.5rem 0 0.2rem;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-form .forgot-password {
+  display: block;
+  text-align: right;
+  margin-bottom: 1rem;
+  color: purple;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.login-form button {
+  background-color: #6f42c1;
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  width: 100%;
+  border-radius: 0.4rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-form .demo {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #666;
+}
