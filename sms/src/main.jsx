@@ -7,7 +7,7 @@ import Login from './Pages/Login.jsx';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Login />
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );
