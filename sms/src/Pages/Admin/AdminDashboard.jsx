@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import '../CSS/AdminDashboard.css';
-import Sidebar from "../Components/Sidebar";
-import LatestRequests from "../Components/LatestRequests";
-import StatsCard from "../Components/StatsCard";
+import '../../CSS/Admin/AdminDashboard.css';
+import Sidebar from "../../Components/Admin/Sidebar";
+import LatestRequests from "../../Components/Admin/LatestRequests";
+import StatsCard from "../../Components/Admin/StatsCard";
+import { Link } from "react-router-dom";
 
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
@@ -30,7 +31,9 @@ function AdminDashboard() {
               <h2>Mirëmbrema, Admin User</h2>
               <p>Menaxhoni fakultetin, studentët dhe profesorët</p>
             </div>
-            <button className="add-user-btn">Shto Përdorues</button>
+            <Link to="/admin-add-user">
+              <button className="add-user-btn">Shto Përdorues</button>
+            </Link>          
           </div>
 
           <div className="stats-grid">
