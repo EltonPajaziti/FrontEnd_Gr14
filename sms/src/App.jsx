@@ -7,8 +7,8 @@ import Study from './Pages/Study';
 import Footer from './Components/Footer';
 import Login from './Pages/Login';
 import StudentDashboard from './Pages/Student/StudentDashboard';
-
-import AdminDashboard from './Pages/AdminDashboard';
+import AdminDashboard from './Pages/Admin/AdminDashboard';
+import AddUser from './Pages/Admin/AddUser';
 
 function App() {
   return (
@@ -21,8 +21,8 @@ function App() {
         <Route path="/EServices" element={<EServices />} />
         <Route path="/Study" element={<Study />} />
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
-        
         <Route path="/Dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-add-user" element={<AddUser />} />
 
 
       </Routes>
