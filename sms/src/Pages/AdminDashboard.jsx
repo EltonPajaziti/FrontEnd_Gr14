@@ -24,8 +24,8 @@ function AdminDashboard() {
     <>
       <div className="app-container">
         <Sidebar />
-        <div className="dashboard">
-          <div className="dashboard-header">
+        <div className="admin-dashboard">
+          <div className="admin-dashboard-header">
             <div>
               <h2>Mirëmbrema, Admin User</h2>
               <p>Menaxhoni fakultetin, studentët dhe profesorët</p>

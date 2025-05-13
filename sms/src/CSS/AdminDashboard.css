@@ -3,13 +3,13 @@
   font-family: Arial, sans-serif;
 }
 
-.sidebar {
+.admin-sidebar {
   width: 18%;
   background: linear-gradient(to bottom, #2e0c75, #6d3bd1);
   color: white;
 }
 
-.sidebar-header {
+.admin-sidebar-header {
   font-weight: bold;
   font-size: 1.5rem;
   padding-left: 10%;
@@ -17,7 +17,7 @@
 
 }
 
-.sidebar-menu {
+.admin-sidebar-menu {
   list-style: none;
   padding: 0;
   overflow-y: scroll;
@@ -26,12 +26,12 @@
 
 }
 
-.sidebar-menu li {
+.admin-sidebar-menu li {
   margin: 2.5rem 0;
   cursor: pointer;
 }
 
-.sidebar-user{
+.admin-sidebar-user{
     background-color: #00008B;
     width: 100%;
     margin-top: -6%;
@@ -44,13 +44,13 @@
 
 
 
-.dashboard {
+.admin-dashboard {
   flex: 1;
   padding: 3%;
   background: #f7f8fa;
 }
 
-.dashboard-header {
+.admin-dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
