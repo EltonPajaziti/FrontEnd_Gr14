@@ -24,7 +24,10 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token); // ruaj tokenin
-        navigate('/Home'); // ridrejto
+  localStorage.setItem('tenantId', data.tenantId); // ruaj tenantId
+
+        //   Ridrejto te dashboardi i adminit
+        navigate('/admin-dashboard');
       } else {
         const text = await response.text();
         setError(text || 'Login failed');
