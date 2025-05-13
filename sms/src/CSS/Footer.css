@@ -1,0 +1,43 @@
+.footeri{
+    background-color: rgb(3, 63, 95);
+    color:rgb(255, 252, 252);
+    height:500px;
+  
+}
+.sms1{
+    text-align: center;
+}
+.sms1 h1{
+  font-weight: 400;
+  font-style: normal;
+}
+.c1{
+   text-align: center;
+}
+.fab {
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+  } 
+
+  .social a{
+    
+    color:rgb(250, 245, 245);
+    font-size:35px;
+    margin: 0 10px;
+  }
+  .social :hover{
+    color:rgb(20, 20, 20);
+  }
+  .contact{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+  }
+ 
+  .copyr{
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }

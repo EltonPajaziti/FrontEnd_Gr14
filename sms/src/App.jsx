@@ -6,6 +6,7 @@ import EServices from './Pages/EServices';
 import Study from './Pages/Study';
 import Footer from './Components/Footer';
 import Login from './Pages/Login';
+import AdminDashboard from './Pages/AdminDashboard';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
         <Route path="/About" element={<About />} />
         <Route path="/EServices" element={<EServices />} />
         <Route path="/Study" element={<Study />} />
+        <Route path="/Dashboard" element={<AdminDashboard />} />
+
       </Routes>
     </>
   );
