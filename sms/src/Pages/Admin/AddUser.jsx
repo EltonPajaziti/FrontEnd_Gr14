@@ -55,7 +55,7 @@ function AddUser() {
     <Link to="/admin-dashboard" className="back-button"><FaLongArrowAltLeft /> Kthehu prapa</Link>
     <form className="enrollment-form" onSubmit={handleSubmit}>
         <div className="enrollment-form-header">
-            <h2>Regjistro Përdorues</h2>
+            <h2>Shto Përdorues</h2>
             <div className="logo-container">
             <img src={smsLogo} alt="SMS Logo" className="logo" />
             </div>
