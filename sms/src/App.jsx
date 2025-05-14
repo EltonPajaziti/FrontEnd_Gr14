@@ -10,7 +10,8 @@ import StudentDashboard from './Pages/Student/StudentDashboard';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import AddUser from './Pages/Admin/AddUser';
 import Faculty from './Pages/Admin/Faculty';
-import Departments from './Pages/Admin/Departments'; // Add this import for the Departments page
+import Departments from './Pages/Admin/Departments';
+import Programs from './Pages/Admin/Programs'; // Add this import for the Programs page
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
         <Route path="/admin-faculties" element={<Faculty />} />
-        <Route path="/admin-departments" element={<Departments />} /> {/* Add this route */}
+        <Route path="/admin-departments" element={<Departments />} />
+        <Route path="/admin-programs" element={<Programs />} /> {/* Add this route */}
       </Routes>
     </>
   );
