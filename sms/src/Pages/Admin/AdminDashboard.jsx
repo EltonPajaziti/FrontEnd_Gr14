@@ -5,21 +5,36 @@ import LatestRequests from "../../Components/Admin/LatestRequests";
 import StatsCard from "../../Components/Admin/StatsCard";
 import { Link } from "react-router-dom";
 
+
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
 
-  useEffect(() => {
-    const tenantId = localStorage.getItem("tenantId");
+  // useEffect(() => {
+  //   const tenantId = localStorage.getItem("tenantId");
 
-    if (tenantId) {
-      fetch(`http://localhost:8080/api/students/by-tenant/${tenantId}`)
-        .then((res) => res.json())
-        .then((data) => setStudentCount(data.length))
-        .catch((err) =>
-          console.error("Gabim gjatë marrjes së studentëve:", err)
-        );
-    }
-  }, []);
+  //   if (tenantId) {
+  //     fetch(`http://localhost:8080/api/students/by-tenant/${tenantId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => setStudentCount(data.length))
+  //       .catch((err) =>
+  //         console.error("Gabim gjatë marrjes së studentëve:", err)
+  //       );
+  //   }
+  // }, []);
+
+
+  useEffect(() => {
+  const tenantId = localStorage.getItem("tenantId");
+
+  if (tenantId) {
+    fetch(`/api/students/count/by-tenant/${tenantId}`) // proxy aktiv këtu
+      .then((res) => res.json())
+      .then((data) => setStudentCount(data))
+      .catch((err) =>
+        console.error("Gabim gjatë marrjes së numrit të studentëve:", err)
+      );
+  }
+}, []);
 
   return (
     <>
