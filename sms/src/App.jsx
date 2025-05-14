@@ -7,6 +7,9 @@ import Study from './Pages/Study';
 import Footer from './Components/Footer';
 import Login from './Pages/Login';
 import StudentDashboard from './Pages/Student/StudentDashboard';
+import Kurset from './Pages/Student/Kurset';
+import ParaqitProvimet from './Pages/Student/ParaqitProvimet';
+
 
 import AdminDashboard from './Pages/AdminDashboard';
 
@@ -21,8 +24,11 @@ function App() {
         <Route path="/EServices" element={<EServices />} />
         <Route path="/Study" element={<Study />} />
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
-        
         <Route path="/Dashboard" element={<AdminDashboard />} />
+        <Route path="/Kurset" element={<Kurset />} />
+        <Route path="/ParaqitProvimet" element={<ParaqitProvimet />} />
+
+
 
 
       </Routes>
