@@ -3,49 +3,80 @@ import axios from 'axios';
 import { FaSearch, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import Sidebar from '../../Components/Admin/Sidebar';
 
-const Faculty = () => {
+const Programs = () => {
+  const [programs, setPrograms] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    address: ''
+    level: '',
+    departmentId: '',
+    tenantId: ''
   });
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [adminName, setAdminName] = useState('Admin'); // Default name until fetched
+  const [adminName, setAdminName] = useState('Admin');
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const API_URL = 'http://localhost:8080/api/faculties';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user'; // Hypothetical endpoint for admin info
+  const API_URL = 'http://localhost:8080/api/programs';
+  const DEPARTMENTS_API_URL = 'http://localhost:8080/api/departments';
+  const FACULTIES_API_URL = 'http://localhost:8080/api/faculties';
+  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+
+  const fetchPrograms = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setPrograms(response.data);
+    } catch (error) {
+      console.error('Error fetching programs:', error);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(DEPARTMENTS_API_URL);
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+    }
+  };
 
   const fetchFaculties = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(FACULTIES_API_URL);
       setFaculties(response.data);
     } catch (error) {
       console.error('Error fetching faculties:', error);
     }
   };
 
-  // Fetch admin name
   const fetchAdminName = async () => {
     try {
       const response = await axios.get(AUTH_API_URL);
-      setAdminName(response.data.name || 'Admin'); // Adjust based on your API response structure
+      setAdminName(response.data.name || 'Admin');
     } catch (error) {
       console.error('Error fetching admin name:', error);
-      setAdminName('Admin'); // Fallback in case of error
+      setAdminName('Admin');
     }
   };
 
   useEffect(() => {
+    fetchPrograms();
+    fetchDepartments();
     fetchFaculties();
     fetchAdminName();
+
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+    return () => clearInterval(interval);
   }, []);
 
-  // Function to determine greeting based on time
   const getGreeting = () => {
-    const currentHour = new Date().getHours();
+    const currentHour = parseInt(
+      currentTime.toLocaleString('en-US', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false })
+    );
     if (currentHour < 12) {
       return 'Good Morning';
     } else if (currentHour < 18) {
@@ -65,113 +96,120 @@ const Faculty = () => {
     try {
       const payload = {
         name: formData.name,
-        email: formData.email,
-        address: formData.address
+        level: formData.level,
+        department: { id: formData.departmentId },
+        tenantID: formData.tenantId ? { id: formData.tenantId } : null // Faculty is optional
       };
 
       if (editingId) {
-        // For updates, exclude email since the backend doesn't update it
-        delete payload.email;
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
-        // For creation, include email
         await axios.post(API_URL, payload);
       }
       resetForm();
-      fetchFaculties();
+      fetchPrograms();
     } catch (error) {
-      console.error('Error saving faculty:', error);
+      console.error('Error saving program:', error);
     }
   };
 
-  const handleEdit = (faculty) => {
+  const handleEdit = (program) => {
     setFormData({
-      name: faculty.name,
-      email: faculty.email, // Set email for display, but it will be disabled
-      address: faculty.address || ''
+      name: program.name,
+      level: program.level,
+      departmentId: program.department?.id || '',
+      tenantId: program.tenantID?.id || ''
     });
-    setEditingId(faculty.id);
+    setEditingId(program.id);
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
-      fetchFaculties();
+      fetchPrograms();
     } catch (error) {
-      console.error('Error deleting faculty:', error);
+      console.error('Error deleting program:', error);
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: '', email: '', address: '' });
+    setFormData({ name: '', level: '', departmentId: '', tenantId: '' });
     setEditingId(null);
     setShowForm(false);
   };
 
-  const filteredFaculties = faculties.filter(faculty =>
-    faculty.name.toLowerCase().includes(search.toLowerCase())
+  const filteredPrograms = programs.filter(program =>
+    program.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const getDepartmentName = (departmentId) => {
+    const department = departments.find(d => d.id === departmentId);
+    return department ? department.name : '-';
+  };
+
+  const getFacultyName = (tenantId) => {
+    const faculty = faculties.find(f => f.id === tenantId);
+    return faculty ? faculty.name : '-';
+  };
 
   return (
     <div className="page-container">
       <Sidebar />
-      
       <div className="content-container">
-        <div className="faculty-container">
+        <div className="program-container">
           <div className="header-section">
             <h1>SMS 2025/26</h1>
-            <h2>{getGreeting()}, {adminName}</h2> {/* Dynamic greeting and admin name */}
+            <h2>{getGreeting()}, {adminName}</h2>
           </div>
-
-          <div className="faculty-header">
+          <div className="program-header">
             <div>
-              <h3>Faculties</h3>
-              <p>Manage academic faculties in the institution</p>
+              <h3>Programs</h3>
+              <p>Manage academic programs in the institution</p>
             </div>
             <button className="add-button" onClick={() => setShowForm(true)}>
-              <FaPlus /> Add Faculty
+              <FaPlus /> Add Program
             </button>
           </div>
-
           <div className="search-section">
             <div className="search-box">
               <FaSearch className="search-icon" />
               <input
                 type="text"
-                placeholder="Search faculties..."
+                placeholder="Search programs..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
-
-          <div className="faculty-table-container">
-            <table className="faculty-table">
+          <div className="program-table-container">
+            <table className="program-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Address</th>
+                  <th>Level</th>
+                  <th>Department</th>
+                  <th>Faculty</th>
                   <th>Created At</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredFaculties.length > 0 ? (
-                  filteredFaculties.map((faculty) => (
-                    <tr key={faculty.id}>
-                      <td>{faculty.id}</td>
-                      <td>{faculty.name}</td>
-                      <td>{faculty.email}</td>
-                      <td>{faculty.address || '-'}</td>
-                      <td>{faculty.createdAt ? new Date(faculty.createdAt).toLocaleString() : '-'}</td>
+                {filteredPrograms.length > 0 ? (
+                  filteredPrograms.map((program) => (
+                    <tr key={program.id}>
+                      <td>{program.id}</td>
+                      <td>{program.name}</td>
+                      <td>{program.level}</td>
+                      <td>{getDepartmentName(program.department?.id)}</td>
+                      <td>{getFacultyName(program.tenantID?.id)}</td>
+                      <td>{program.createdAt ? new Date(program.createdAt).toLocaleString() : '-'}</td>
                       <td className="actions-cell">
-                        <button className="edit-btn" onClick={() => handleEdit(faculty)}>
+                        <button className="edit-btn" onClick={() => handleEdit(program)}>
                           <FaEdit />
                         </button>
-                        <button className="delete-btn" onClick={() => handleDelete(faculty.id)}>
+                        <button className="delete-btn" onClick={() => handleDelete(program.id)}>
                           <FaTrash />
                         </button>
                       </td>
@@ -179,10 +217,10 @@ const Faculty = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="no-data">
+                    <td colSpan="7" className="no-data">
                       <div className="empty-state">
-                        <p>No faculties found</p>
-                        <p className="hint">Try a different search term or add a new faculty</p>
+                        <p>No programs found</p>
+                        <p className="hint">Try a different search term or add a new program</p>
                       </div>
                     </td>
                   </tr>
@@ -190,14 +228,13 @@ const Faculty = () => {
               </tbody>
             </table>
           </div>
-
           {showForm && (
             <div className="modal-overlay">
               <div className="modal-content">
-                <h3>{editingId ? 'Edit Faculty' : 'Add New Faculty'}</h3>
+                <h3>{editingId ? 'Edit Program' : 'Add New Program'}</h3>
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <label>Faculty Name*</label>
+                    <label>Program Name*</label>
                     <input
                       type="text"
                       name="name"
@@ -207,31 +244,56 @@ const Faculty = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Email*</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                    <label>Level*</label>
+                    <select
+                      name="level"
+                      value={formData.level}
                       onChange={handleInputChange}
                       required
-                      disabled={!!editingId} // Disable email field when editing
-                    />
+                    >
+                      <option value="">Select a level</option>
+                      <option value="Bachelor">Bachelor</option>
+                      <option value="Master">Master</option>
+                      <option value="PhD">PhD</option>
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label>Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
+                    <label>Department*</label>
+                    <select
+                      name="departmentId"
+                      value={formData.departmentId}
                       onChange={handleInputChange}
-                    />
+                      required
+                    >
+                      <option value="">Select a department</option>
+                      {departments.map(department => (
+                        <option key={department.id} value={department.id}>
+                          {department.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Faculty</label>
+                    <select
+                      name="tenantId"
+                      value={formData.tenantId}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select a faculty (optional)</option>
+                      {faculties.map(faculty => (
+                        <option key={faculty.id} value={faculty.id}>
+                          {faculty.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-actions">
                     <button type="button" className="cancel-btn" onClick={resetForm}>
                       Cancel
                     </button>
                     <button type="submit" className="submit-btn">
-                      {editingId ? 'Update Faculty' : 'Add Faculty'}
+                      {editingId ? 'Update Program' : 'Add Program'}
                     </button>
                   </div>
                 </form>
@@ -240,55 +302,46 @@ const Faculty = () => {
           )}
         </div>
       </div>
-
       <style jsx>{`
         .page-container {
           display: flex;
           min-height: 100vh;
           background-color: #f5f7fa;
         }
-        
         .content-container {
           flex: 1;
           padding: 2rem;
           margin-top: 50px;
           margin-left: 30px;
         }
-        
         .header-section {
           margin-bottom: 2rem;
         }
-        
         .header-section h1 {
           font-size: 1.8rem;
           color: #2c3e50;
           margin-bottom: 0.5rem;
         }
-        
         .header-section h2 {
           font-size: 1.2rem;
           color: #7f8c8d;
           font-weight: normal;
         }
-        
-        .faculty-header {
+        .program-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 1.5rem;
         }
-        
-        .faculty-header h3 {
+        .program-header h3 {
           font-size: 1.5rem;
           color: #2c3e50;
           margin-bottom: 0.25rem;
         }
-        
-        .faculty-header p {
+        .program-header p {
           color: #7f8c8d;
           margin: 0;
         }
-        
         .add-button {
           background-color: #3498db;
           color: white;
@@ -302,21 +355,17 @@ const Faculty = () => {
           font-weight: 600;
           transition: background-color 0.2s;
         }
-        
         .add-button:hover {
           background-color: #2980b9;
         }
-        
         .search-section {
           margin-bottom: 1.5rem;
         }
-        
         .search-box {
           position: relative;
           width: 100%;
           max-width: 400px;
         }
-        
         .search-box input {
           width: 100%;
           padding: 0.75rem 1rem 0.75rem 2.5rem;
@@ -324,7 +373,6 @@ const Faculty = () => {
           border-radius: 6px;
           font-size: 1rem;
         }
-        
         .search-icon {
           position: absolute;
           left: 1rem;
@@ -332,20 +380,17 @@ const Faculty = () => {
           transform: translateY(-50%);
           color: #95a5a6;
         }
-        
-        .faculty-table-container {
+        .program-table-container {
           background: white;
           border-radius: 8px;
           box-shadow: 0 2px 10px rgba(0,0,0,0.05);
           overflow: hidden;
         }
-        
-        .faculty-table {
+        .program-table {
           width: 100%;
           border-collapse: collapse;
         }
-        
-        .faculty-table th {
+        .program-table th {
           background-color: #f8f9fa;
           padding: 1rem;
           text-align: left;
@@ -353,18 +398,15 @@ const Faculty = () => {
           color: #2c3e50;
           border-bottom: 1px solid #eee;
         }
-        
-        .faculty-table td {
+        .program-table td {
           padding: 1rem;
           border-bottom: 1px solid #eee;
           color: #34495e;
         }
-        
         .actions-cell {
           display: flex;
           gap: 0.5rem;
         }
-        
         .edit-btn, .delete-btn {
           background: none;
           border: none;
@@ -375,44 +417,35 @@ const Faculty = () => {
           align-items: center;
           justify-content: center;
         }
-        
         .edit-btn {
           color: #3498db;
         }
-        
         .edit-btn:hover {
           background-color: rgba(52,152,219,0.1);
         }
-        
         .delete-btn {
           color: #e74c3c;
         }
-        
         .delete-btn:hover {
           background-color: rgba(231,76,60,0.1);
         }
-        
         .no-data {
           text-align: center;
           padding: 2rem;
         }
-        
         .empty-state {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
-        
         .empty-state p {
           margin: 0;
           color: #7f8c8d;
         }
-        
         .hint {
           font-size: 0.9rem;
           margin-top: 0.5rem;
         }
-        
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -425,7 +458,6 @@ const Faculty = () => {
           align-items: center;
           z-index: 1000;
         }
-        
         .modal-content {
           background-color: white;
           padding: 2rem;
@@ -434,26 +466,21 @@ const Faculty = () => {
           max-width: 600px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-        
         .modal-content h3 {
           margin-top: 0;
           margin-bottom: 1.5rem;
           color: #2c3e50;
         }
-        
         .form-group {
           margin-bottom: 1.25rem;
         }
-        
         .form-group label {
           display: block;
           margin-bottom: 0.5rem;
           font-weight: 600;
           color: #34495e;
         }
-        
         .form-group input,
-        .form-group textarea,
         .form-group select {
           width: 100%;
           padding: 0.75rem;
@@ -461,33 +488,17 @@ const Faculty = () => {
           border-radius: 6px;
           font-size: 1rem;
         }
-        
-        .form-group input:disabled {
-          background-color: #f0f0f0;
-          cursor: not-allowed;
+        .form-group select {
+          appearance: none;
+          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.75rem center;
+          background-size: 12px;
         }
-        
-        .form-group textarea {
-          min-height: 100px;
-          resize: vertical;
-        }
-        
-        .form-row {
-          display: flex;
-          gap: 1rem;
-        }
-        
-        .form-row .form-group {
-          flex: 1;
-        }
-        
         .form-actions {
           display: flex;
           justify-content: flex-end;
           gap: 1rem;
           margin-top: 1.5rem;
         }
-        
         .cancel-btn {
           background-color: #f8f9fa;
           color: #34495e;
@@ -498,11 +509,9 @@ const Faculty = () => {
           font-weight: 600;
           transition: all 0.2s;
         }
-        
         .cancel-btn:hover {
           background-color: #e9ecef;
         }
-        
         .submit-btn {
           background-color: #2ecc71;
           color: white;
@@ -513,7 +522,6 @@ const Faculty = () => {
           font-weight: 600;
           transition: background-color 0.2s;
         }
-        
         .submit-btn:hover {
           background-color: #27ae60;
         }
@@ -522,4 +530,4 @@ const Faculty = () => {
   );
 };
 
-export default Faculty;
+export default Programs;
