@@ -9,7 +9,8 @@ import Login from './Pages/Login';
 import StudentDashboard from './Pages/Student/StudentDashboard';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import AddUser from './Pages/Admin/AddUser';
-import Faculty from './Pages/Admin/Faculty'; // SIGUROHU që kjo është rruga e saktë
+import Faculty from './Pages/Admin/Faculty';
+import Departments from './Pages/Admin/Departments'; // Add this import for the Departments page
 
 function App() {
   return (
@@ -24,7 +25,8 @@ function App() {
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
-        <Route path="/admin-faculties" element={<Faculty />} /> {/* ✅ kjo është shtesa */}
+        <Route path="/admin-faculties" element={<Faculty />} />
+        <Route path="/admin-departments" element={<Departments />} /> {/* Add this route */}
       </Routes>
     </>
   );

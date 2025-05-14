@@ -3,24 +3,36 @@ import axios from 'axios';
 import { FaSearch, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import Sidebar from '../../Components/Admin/Sidebar';
 
-const Faculty = () => {
+const Departments = () => {
+  const [departments, setDepartments] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    address: ''
+    tenantId: ''
   });
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [adminName, setAdminName] = useState('Admin'); // Default name until fetched
 
-  const API_URL = 'http://localhost:8080/api/faculties';
+  const API_URL = 'http://localhost:8080/api/departments';
+  const FACULTIES_API_URL = 'http://localhost:8080/api/faculties';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user'; // Hypothetical endpoint for admin info
 
-  const fetchFaculties = async () => {
+  // Fetch departments
+  const fetchDepartments = async () => {
     try {
       const response = await axios.get(API_URL);
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+    }
+  };
+
+  // Fetch faculties for the dropdown
+  const fetchFaculties = async () => {
+    try {
+      const response = await axios.get(FACULTIES_API_URL);
       setFaculties(response.data);
     } catch (error) {
       console.error('Error fetching faculties:', error);
@@ -39,6 +51,7 @@ const Faculty = () => {
   };
 
   useEffect(() => {
+    fetchDepartments();
     fetchFaculties();
     fetchAdminName();
   }, []);
@@ -65,72 +78,72 @@ const Faculty = () => {
     try {
       const payload = {
         name: formData.name,
-        email: formData.email,
-        address: formData.address
+        tenantID: { id: formData.tenantId }
       };
 
       if (editingId) {
-        // For updates, exclude email since the backend doesn't update it
-        delete payload.email;
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
-        // For creation, include email
         await axios.post(API_URL, payload);
       }
       resetForm();
-      fetchFaculties();
+      fetchDepartments();
     } catch (error) {
-      console.error('Error saving faculty:', error);
+      console.error('Error saving department:', error);
     }
   };
 
-  const handleEdit = (faculty) => {
+  const handleEdit = (department) => {
     setFormData({
-      name: faculty.name,
-      email: faculty.email, // Set email for display, but it will be disabled
-      address: faculty.address || ''
+      name: department.name,
+      tenantId: department.tenantID?.id || ''
     });
-    setEditingId(faculty.id);
+    setEditingId(department.id);
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
-      fetchFaculties();
+      fetchDepartments();
     } catch (error) {
-      console.error('Error deleting faculty:', error);
+      console.error('Error deleting department:', error);
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: '', email: '', address: '' });
+    setFormData({ name: '', tenantId: '' });
     setEditingId(null);
     setShowForm(false);
   };
 
-  const filteredFaculties = faculties.filter(faculty =>
-    faculty.name.toLowerCase().includes(search.toLowerCase())
+  const filteredDepartments = departments.filter(department =>
+    department.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const getFacultyName = (tenantId) => {
+    const faculty = faculties.find(f => f.id === tenantId);
+    return faculty ? faculty.name : '-';
+  };
 
   return (
     <div className="page-container">
       <Sidebar />
       
       <div className="content-container">
-        <div className="faculty-container">
+        <div className="department-container">
           <div className="header-section">
             <h1>SMS 2025/26</h1>
             <h2>{getGreeting()}, {adminName}</h2> {/* Dynamic greeting and admin name */}
           </div>
 
-          <div className="faculty-header">
+          <div className="department-header">
             <div>
-              <h3>Faculties</h3>
-              <p>Manage academic faculties in the institution</p>
+              <h3>Departments</h3>
+              <p>Manage academic departments in the institution</p>
             </div>
             <button className="add-button" onClick={() => setShowForm(true)}>
-              <FaPlus /> Add Faculty
+              <FaPlus /> Add Department
             </button>
           </div>
 
@@ -139,39 +152,37 @@ const Faculty = () => {
               <FaSearch className="search-icon" />
               <input
                 type="text"
-                placeholder="Search faculties..."
+                placeholder="Search departments..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="faculty-table-container">
-            <table className="faculty-table">
+          <div className="department-table-container">
+            <table className="department-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Address</th>
+                  <th>Faculty</th>
                   <th>Created At</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredFaculties.length > 0 ? (
-                  filteredFaculties.map((faculty) => (
-                    <tr key={faculty.id}>
-                      <td>{faculty.id}</td>
-                      <td>{faculty.name}</td>
-                      <td>{faculty.email}</td>
-                      <td>{faculty.address || '-'}</td>
-                      <td>{faculty.createdAt ? new Date(faculty.createdAt).toLocaleString() : '-'}</td>
+                {filteredDepartments.length > 0 ? (
+                  filteredDepartments.map((department) => (
+                    <tr key={department.id}>
+                      <td>{department.id}</td>
+                      <td>{department.name}</td>
+                      <td>{getFacultyName(department.tenantID?.id)}</td>
+                      <td>{department.createdAt ? new Date(department.createdAt).toLocaleString() : '-'}</td>
                       <td className="actions-cell">
-                        <button className="edit-btn" onClick={() => handleEdit(faculty)}>
+                        <button className="edit-btn" onClick={() => handleEdit(department)}>
                           <FaEdit />
                         </button>
-                        <button className="delete-btn" onClick={() => handleDelete(faculty.id)}>
+                        <button className="delete-btn" onClick={() => handleDelete(department.id)}>
                           <FaTrash />
                         </button>
                       </td>
@@ -179,10 +190,10 @@ const Faculty = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="no-data">
+                    <td colSpan="5" className="no-data">
                       <div className="empty-state">
-                        <p>No faculties found</p>
-                        <p className="hint">Try a different search term or add a new faculty</p>
+                        <p>No departments found</p>
+                        <p className="hint">Try a different search term or add a new department</p>
                       </div>
                     </td>
                   </tr>
@@ -194,10 +205,10 @@ const Faculty = () => {
           {showForm && (
             <div className="modal-overlay">
               <div className="modal-content">
-                <h3>{editingId ? 'Edit Faculty' : 'Add New Faculty'}</h3>
+                <h3>{editingId ? 'Edit Department' : 'Add New Department'}</h3>
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <label>Faculty Name*</label>
+                    <label>Department Name*</label>
                     <input
                       type="text"
                       name="name"
@@ -207,31 +218,27 @@ const Faculty = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Email*</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                    <label>Faculty*</label>
+                    <select
+                      name="tenantId"
+                      value={formData.tenantId}
                       onChange={handleInputChange}
                       required
-                      disabled={!!editingId} // Disable email field when editing
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
+                    >
+                      <option value="">Select a faculty</option>
+                      {faculties.map(faculty => (
+                        <option key={faculty.id} value={faculty.id}>
+                          {faculty.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-actions">
                     <button type="button" className="cancel-btn" onClick={resetForm}>
                       Cancel
                     </button>
                     <button type="submit" className="submit-btn">
-                      {editingId ? 'Update Faculty' : 'Add Faculty'}
+                      {editingId ? 'Update Department' : 'Add Department'}
                     </button>
                   </div>
                 </form>
@@ -271,20 +278,20 @@ const Faculty = () => {
           font-weight: normal;
         }
         
-        .faculty-header {
+        .department-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 1.5rem;
         }
         
-        .faculty-header h3 {
+        .department-header h3 {
           font-size: 1.5rem;
           color: #2c3e50;
           margin-bottom: 0.25rem;
         }
         
-        .faculty-header p {
+        .department-header p {
           color: #7f8c8d;
           margin: 0;
         }
@@ -333,19 +340,19 @@ const Faculty = () => {
           color: #95a5a6;
         }
         
-        .faculty-table-container {
+        .department-table-container {
           background: white;
           border-radius: 8px;
           box-shadow: 0 2px 10px rgba(0,0,0,0.05);
           overflow: hidden;
         }
         
-        .faculty-table {
+        .department-table {
           width: 100%;
           border-collapse: collapse;
         }
         
-        .faculty-table th {
+        .department-table th {
           background-color: #f8f9fa;
           padding: 1rem;
           text-align: left;
@@ -354,7 +361,7 @@ const Faculty = () => {
           border-bottom: 1px solid #eee;
         }
         
-        .faculty-table td {
+        .department-table td {
           padding: 1rem;
           border-bottom: 1px solid #eee;
           color: #34495e;
@@ -453,7 +460,6 @@ const Faculty = () => {
         }
         
         .form-group input,
-        .form-group textarea,
         .form-group select {
           width: 100%;
           padding: 0.75rem;
@@ -462,23 +468,10 @@ const Faculty = () => {
           font-size: 1rem;
         }
         
-        .form-group input:disabled {
-          background-color: #f0f0f0;
-          cursor: not-allowed;
-        }
-        
-        .form-group textarea {
-          min-height: 100px;
-          resize: vertical;
-        }
-        
-        .form-row {
-          display: flex;
-          gap: 1rem;
-        }
-        
-        .form-row .form-group {
-          flex: 1;
+        .form-group select {
+          appearance: none;
+          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.75rem center;
+          background-size: 12px;
         }
         
         .form-actions {
@@ -522,4 +515,4 @@ const Faculty = () => {
   );
 };
 
-export default Faculty;
+export default Departments;
