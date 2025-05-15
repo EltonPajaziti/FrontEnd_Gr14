@@ -78,13 +78,13 @@ const Departments = () => {
     try {
       const payload = {
         name: formData.name,
-        tenantID: { id: formData.tenantId }
+        tenantID: formData.tenantId
       };
 
       if (editingId) {
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
-        await axios.post(API_URL, payload);
+        await axios.post(`${API_URL}/create`, payload);
       }
       resetForm();
       fetchDepartments();

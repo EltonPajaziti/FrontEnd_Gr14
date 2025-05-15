@@ -6,6 +6,7 @@ import Sidebar from '../../Components/Admin/Sidebar';
 const Faculty = () => {
   const [faculties, setFaculties] = useState([]);
   const [formData, setFormData] = useState({
+    facultyId: '',
     name: '',
     email: '',
     address: ''
@@ -64,6 +65,7 @@ const Faculty = () => {
     e.preventDefault();
     try {
       const payload = {
+        facultyId: Number(formData.facultyId),
         name: formData.name,
         email: formData.email,
         address: formData.address
@@ -75,7 +77,7 @@ const Faculty = () => {
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
         // For creation, include email
-        await axios.post(API_URL, payload);
+        await axios.post(`${API_URL}/create`, payload);
       }
       resetForm();
       fetchFaculties();
@@ -86,6 +88,7 @@ const Faculty = () => {
 
   const handleEdit = (faculty) => {
     setFormData({
+      facultyId: faculty.id,
       name: faculty.name,
       email: faculty.email, // Set email for display, but it will be disabled
       address: faculty.address || ''
@@ -129,8 +132,9 @@ const Faculty = () => {
               <h3>Faculties</h3>
               <p>Manage academic faculties in the institution</p>
             </div>
-            <button className="add-button" onClick={() => setShowForm(true)}>
-              <FaPlus /> Add Faculty
+            <button className="add-button" onClick={() => {
+              setShowForm(true);
+            }}>
             </button>
           </div>
 
@@ -196,6 +200,16 @@ const Faculty = () => {
               <div className="modal-content">
                 <h3>{editingId ? 'Edit Faculty' : 'Add New Faculty'}</h3>
                 <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label>Faculty ID*</label>
+                    <input
+                      type="number"
+                      name="facultyId"
+                      value={formData.facultyId}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
                   <div className="form-group">
                     <label>Faculty Name*</label>
                     <input
