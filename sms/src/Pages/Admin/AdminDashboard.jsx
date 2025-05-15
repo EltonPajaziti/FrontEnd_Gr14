@@ -8,54 +8,33 @@ import Header from "../../Components/Admin/Header";
 
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
-  const [adminName, setAdminName] = useState('Admin User');
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const getGreeting = () => {
-    const currentHour = currentTime.getHours();
-    if (currentHour < 12) return 'Good Morning';
-    if (currentHour < 18) return 'Good Afternoon';
-    return 'Good Evening';
-  };
+  // useEffect(() => {
+  //   const tenantId = localStorage.getItem("tenantId");
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  //   if (tenantId) {
+  //     fetch(`http://localhost:8080/api/students/by-tenant/${tenantId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => setStudentCount(data.length))
+  //       .catch((err) =>
+  //         console.error("Gabim gjatë marrjes së studentëve:", err)
+  //       );
+  //   }
+  // }, []);
+
 
   useEffect(() => {
-    const tenantId = localStorage.getItem("tenantId");
+  const tenantId = localStorage.getItem("tenantId");
 
-    if (tenantId) {
-      fetch(`/api/students/count/by-tenant/${tenantId}`)
-        .then((res) => res.json())
-        .then((data) => setStudentCount(data))
-        .catch((err) =>
-          console.error("Error fetching student count:", err)
-        );
-    }
-
-    const fetchAdminName = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await fetch('http://localhost:8080/api/auth/user', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await response.json();
-          setAdminName(data.firstName || data.name || 'Admin User');
-        } catch (error) {
-          console.error("Error fetching admin name:", error);
-          setAdminName('Admin User');
-        }
-      }
-    };
-
-    fetchAdminName();
-
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(interval);
-  }, []);
+  if (tenantId) {
+    fetch(`/api/students/count/by-tenant/${tenantId}`) // proxy aktiv këtu
+      .then((res) => res.json())
+      .then((data) => setStudentCount(data))
+      .catch((err) =>
+        console.error("Gabim gjatë marrjes së numrit të studentëve:", err)
+      );
+  }
+}, []);
 
   return (
     <div className="app-container">
@@ -76,16 +55,16 @@ function AdminDashboard() {
               </Link>
             </div>
 
-            <div className="stats-grid">
-              <StatsCard
-                title="Total Students"
-                value={studentCount}
-                info="+12% from the previous quarter"
-              />
-              <StatsCard title="Professors" value="87" info="+4% from last year" />
-              <StatsCard title="Active Courses" value="156" info="0% change" />
-              <StatsCard title="Departments" value="12" info="↑ 1 new department" />
-            </div>
+          <div className="stats-grid">
+            <StatsCard
+              title="Studentë Total"
+              value={studentCount}
+              info="+12% nga tremujori i kaluar"
+            />
+            <StatsCard title="Profesorë" value="87" info="+4% nga viti i kaluar" />
+            <StatsCard title="Kurse Aktive" value="156" info="0% ndryshim" />
+            <StatsCard title="Departamente" value="12" info="↑ 1 departament i ri" />
+          </div>
 
             <div className="content-grid">
               <div className="regjistrimi">

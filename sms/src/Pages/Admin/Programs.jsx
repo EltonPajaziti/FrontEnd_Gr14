@@ -60,11 +60,16 @@ const Programs = () => {
     try {
       const payload = {
         name: formData.name,
+        level: formData.level,
         department: { id: formData.departmentId },
-        credits: parseInt(formData.credits),
+        tenantID: formData.tenantId ? { id: formData.tenantId } : null // Faculty is optional
       };
-      if (editingId) await axios.put(`${API_URL}/${editingId}`, payload);
-      else await axios.post(API_URL, payload);
+
+      if (editingId) {
+        await axios.put(`${API_URL}/${editingId}`, payload);
+      } else {
+        await axios.post(API_URL, payload);
+      }
       resetForm();
       fetchData();
     } catch (error) {

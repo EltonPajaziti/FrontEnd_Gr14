@@ -10,9 +10,9 @@ import Sidebar from "../../Components/Admin/Sidebar";
 const Faculty = () => {
   const [faculties, setFaculties] = useState([]);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    address: "",
+    name: '',
+    email: '',
+    address: ''
   });
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -42,6 +42,7 @@ const Faculty = () => {
     e.preventDefault();
     try {
       const payload = {
+        facultyId: Number(formData.facultyId),
         name: formData.name,
         email: formData.email,
         address: formData.address,
@@ -51,6 +52,7 @@ const Faculty = () => {
         delete payload.email;
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
+        // For creation, include email
         await axios.post(API_URL, payload);
       }
       resetForm();
@@ -62,6 +64,7 @@ const Faculty = () => {
 
   const handleEdit = (faculty) => {
     setFormData({
+      facultyId: faculty.id,
       name: faculty.name,
       email: faculty.email,
       address: faculty.address || "",
@@ -90,16 +93,25 @@ const Faculty = () => {
   );
 
   return (
-    <div className="faculty-container">
-      <div className="faculty-header">
-        <div>
-          <h3>Faculties</h3>
-          <p>Manage academic faculties in the institution</p>
-        </div>
-        <button className="add-button" onClick={() => setShowForm(true)}>
-          <FaPlus /> Add Faculty
-        </button>
-      </div>
+    <div className="page-container">
+      <Sidebar />
+      
+      <div className="content-container">
+        <div className="faculty-container">
+          <div className="header-section">
+            <h1>SMS 2025/26</h1>
+            <h2>{getGreeting()}, {adminName}</h2> {/* Dynamic greeting and admin name */}
+          </div>
+
+          <div className="faculty-header">
+            <div>
+              <h3>Faculties</h3>
+              <p>Manage academic faculties in the institution</p>
+            </div>
+            <button className="add-button" onClick={() => setShowForm(true)}>
+              <FaPlus /> Add Faculty
+            </button>
+          </div>
 
       <div className="search-section">
         <div className="search-box">
@@ -167,57 +179,55 @@ const Faculty = () => {
         </table>
       </div>
 
-      {showForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{editingId ? "Edit Faculty" : "Add New Faculty"}</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Faculty Name*</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
+          {showForm && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h3>{editingId ? 'Edit Faculty' : 'Add New Faculty'}</h3>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label>Faculty Name*</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email*</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      disabled={!!editingId} // Disable email field when editing
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Address</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button type="button" className="cancel-btn" onClick={resetForm}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="submit-btn">
+                      {editingId ? 'Update Faculty' : 'Add Faculty'}
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="form-group">
-                <label>Email*</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  disabled={!!editingId}
-                />
-              </div>
-              <div className="form-group">
-                <label>Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={resetForm}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn">
-                  {editingId ? "Update Faculty" : "Add Faculty"}
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <style jsx>{`
         .faculty-container {

@@ -64,11 +64,15 @@ const Departments = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { name: formData.name, tenantID: { id: formData.tenantId } };
+      const payload = {
+        name: formData.name,
+        tenantID: { id: formData.tenantId }
+      };
+
       if (editingId) {
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
-        await axios.post(API_URL, payload);
+        await axios.post(`${API_URL}/create`, payload);
       }
       resetForm();
       fetchDepartments();
