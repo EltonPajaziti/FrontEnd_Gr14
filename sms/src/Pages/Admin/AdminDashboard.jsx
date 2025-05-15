@@ -1,79 +1,104 @@
 import React, { useEffect, useState } from "react";
 import '../../CSS/Admin/AdminDashboard.css';
 import Sidebar from "../../Components/Admin/Sidebar";
-import LatestRequests from "../../Components/Admin/LatestRequests";
 import StatsCard from "../../Components/Admin/StatsCard";
 import { Link } from "react-router-dom";
+import Header from "../../Components/Admin/Header";
 
 
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
+  const [adminName, setAdminName] = useState('Admin User');
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // useEffect(() => {
-  //   const tenantId = localStorage.getItem("tenantId");
+  const getGreeting = () => {
+    const currentHour = currentTime.getHours();
+    if (currentHour < 12) return 'Good Morning';
+    if (currentHour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
-  //   if (tenantId) {
-  //     fetch(`http://localhost:8080/api/students/by-tenant/${tenantId}`)
-  //       .then((res) => res.json())
-  //       .then((data) => setStudentCount(data.length))
-  //       .catch((err) =>
-  //         console.error("Gabim gjatë marrjes së studentëve:", err)
-  //       );
-  //   }
-  // }, []);
-
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   useEffect(() => {
-  const tenantId = localStorage.getItem("tenantId");
+    const tenantId = localStorage.getItem("tenantId");
 
-  if (tenantId) {
-    fetch(`/api/students/count/by-tenant/${tenantId}`) // proxy aktiv këtu
-      .then((res) => res.json())
-      .then((data) => setStudentCount(data))
-      .catch((err) =>
-        console.error("Gabim gjatë marrjes së numrit të studentëve:", err)
-      );
-  }
-}, []);
+    if (tenantId) {
+      fetch(`/api/students/count/by-tenant/${tenantId}`)
+        .then((res) => res.json())
+        .then((data) => setStudentCount(data))
+        .catch((err) =>
+          console.error("Error fetching student count:", err)
+        );
+    }
+
+    const fetchAdminName = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch('http://localhost:8080/api/auth/user', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await response.json();
+          setAdminName(data.firstName || data.name || 'Admin User');
+        } catch (error) {
+          console.error("Error fetching admin name:", error);
+          setAdminName('Admin User');
+        }
+      }
+    };
+
+    fetchAdminName();
+
+    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <>
-      <div className="app-container">
-        <Sidebar />
-        <div className="admin-dashboard">
-          <div className="admin-dashboard-header">
-            <div>
-              <h2>Mirëmbrema, Admin User</h2>
-              <p>Menaxhoni fakultetin, studentët dhe profesorët</p>
+    <div className="app-container">
+      <div className="main-content">
+        <div className={`sidebar-wrapper ${isSidebarOpen ? 'open' : 'closed'}`}>
+          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+        </div>
+        <div className={`content-wrapper ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <div className="admin-dashboard">
+            <div className="admin-dashboard-header">
+              <div>
+                <h2>{getGreeting()}, {adminName}</h2>
+                <p>Manage faculty, students, and professors</p>
+              </div>
+              <Link to="/admin-add-user">
+                <button className="add-user-btn">+Add User</button>
+              </Link>
             </div>
-            <Link to="/admin-add-user">
-              <button className="add-user-btn">Shto Përdorues</button>
-            </Link>          
-          </div>
 
-          <div className="stats-grid">
-            <StatsCard
-              title="Studentë Total"
-              value={studentCount}
-              info="+12% nga tremujori i kaluar"
-            />
-            <StatsCard title="Profesorë" value="87" info="+4% nga viti i kaluar" />
-            <StatsCard title="Kurse Aktive" value="156" info="0% ndryshim" />
-            <StatsCard title="Departamente" value="12" info="↑ 1 departament i ri" />
-          </div>
+            <div className="stats-grid">
+              <StatsCard
+                title="Total Students"
+                value={studentCount}
+                info="+12% from the previous quarter"
+              />
+              <StatsCard title="Professors" value="87" info="+4% from last year" />
+              <StatsCard title="Active Courses" value="156" info="0% change" />
+              <StatsCard title="Departments" value="12" info="↑ 1 new department" />
+            </div>
 
-          <div className="content-grid">
-            <div className="regjistrimi">
-              <h3>Statistikat e Regjistrimit</h3>
-              <div className="placeholder-graph">
-                Grafikët dhe statistikat e detajuara do të shfaqen këtu
+            <div className="content-grid">
+              <div className="regjistrimi">
+                <h3>Registration Statistics</h3>
+                <div className="placeholder-graph">
+                  Graphs and detailed statistics will be displayed here
+                </div>
               </div>
             </div>
-            <LatestRequests />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

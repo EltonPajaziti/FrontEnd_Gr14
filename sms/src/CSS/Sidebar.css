@@ -1,22 +1,119 @@
-.sidebar {
-  width: 220px;
+.admin-sidebar {
   background: linear-gradient(to bottom, #2e0c75, #6d3bd1);
   color: white;
   padding: 20px;
+  height: 100vh;
+  transition: width 0.3s ease;
+  width: 70px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar-header {
+.admin-sidebar.open {
+  width: 220px;
+}
+
+.admin-sidebar-header {
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 20px;
+  white-space: nowrap;
+  flex-shrink: 0; /* Parandalon tkurrjen e header-it */
 }
 
-.sidebar-menu {
+.admin-sidebar-menu {
   list-style: none;
   padding: 0;
+  margin: 0;
+  flex-grow: 1; /* Menuja rritet për të mbushur hapësirën e mbetur */
+  overflow-y: auto; /* Scrollbar vetëm për menu */
 }
 
-.sidebar-menu li {
+.menu-item {
+  display: flex;
+  align-items: center;
   margin: 15px 0;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.menu-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.admin-sidebar-menu li span {
+  display: none;
+}
+
+.admin-sidebar.open .admin-sidebar-menu li span {
+  display: inline;
+}
+
+.admin-sidebar-user {
+  padding-top: 20px;
+  flex-shrink: 0; /* Parandalon tkurrjen e seksionit të përdoruesit */
+}
+
+.sidebar-user-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-user-logo {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  color: #2e0c75;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.admin-sidebar-user-text {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.sidebar-user-dropdown {
+  position: absolute;
+  bottom: 60px;
+  background: #fff;
+  color: #2e0c75;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-user-dropdown ul {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}
+
+.sidebar-user-dropdown li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+  background: #2e0c75;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: #6d3bd1;
+  border-radius: 4px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #5a2fc0;
 }

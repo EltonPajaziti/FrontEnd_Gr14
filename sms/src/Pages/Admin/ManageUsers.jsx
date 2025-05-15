@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaEye, FaEdit } from 'react-icons/fa';
 import Sidebar from '../../Components/Admin/Sidebar';
+import AdminLayout from '../../Components/Admin/AdminLayout';
 
 const ManageUsers = () => {
   const [students, setStudents] = useState([]);
