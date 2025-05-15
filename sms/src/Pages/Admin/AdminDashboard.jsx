@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
+  const [professorCount, setProfessorCount] = useState(0);
+  const [courseCount, setCourseCount] = useState(0);
+  const [departmentCount, setDepartmentCount] = useState(0);
 
   // useEffect(() => {
   //   const tenantId = localStorage.getItem("tenantId");
@@ -23,18 +26,34 @@ function AdminDashboard() {
   // }, []);
 
 
-  useEffect(() => {
+useEffect(() => {
   const tenantId = localStorage.getItem("tenantId");
+  if (!tenantId) return;
 
-  if (tenantId) {
-    fetch(`/api/students/count/by-tenant/${tenantId}`) // proxy aktiv këtu
-      .then((res) => res.json())
-      .then((data) => setStudentCount(data))
-      .catch((err) =>
-        console.error("Gabim gjatë marrjes së numrit të studentëve:", err)
-      );
-  }
+  fetch(`/api/students/count/by-tenant/${tenantId}`)
+    .then(res => res.json())
+    .then(data => setStudentCount(data))
+    .catch(err => console.error(err));
+
+  fetch(`/api/professors/count/by-tenant/${tenantId}`)
+    .then(res => res.json())
+    .then(data => setProfessorCount(data))
+    .catch(err => console.error(err));
+
+  fetch(`/api/courses/count/by-tenant/${tenantId}`)
+    .then(res => res.json())
+    .then(data => setCourseCount(data))
+    .catch(err => console.error(err));
+
+  fetch(`/api/departments/count/by-tenant/${tenantId}`)
+    .then(res => res.json())
+    .then(data => setDepartmentCount(data))
+    .catch(err => console.error(err));    
 }, []);
+
+
+
+
 
   return (
     <>
@@ -52,14 +71,10 @@ function AdminDashboard() {
           </div>
 
           <div className="stats-grid">
-            <StatsCard
-              title="Studentë Total"
-              value={studentCount}
-              info="+12% nga tremujori i kaluar"
-            />
-            <StatsCard title="Profesorë" value="87" info="+4% nga viti i kaluar" />
-            <StatsCard title="Kurse Aktive" value="156" info="0% ndryshim" />
-            <StatsCard title="Departamente" value="12" info="↑ 1 departament i ri" />
+            <StatsCard title="Studentë Total" value={studentCount} info="↑ 1 student i ri"/>
+            <StatsCard title="Profesorë" value={professorCount} info="↑ 1 profesor i ri" />
+            <StatsCard title="Kurse Aktive" value={courseCount} info="0% ndryshim" />
+            <StatsCard title="Departamente" value={departmentCount} info="↑ 1 departament i ri" />
           </div>
 
           <div className="content-grid">
