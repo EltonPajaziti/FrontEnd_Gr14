@@ -1,15 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaEye, FaEdit } from 'react-icons/fa';
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState([
+    // Kurs shembull i shtuar këtu për testim
+    {
+      id: 1,
+      name: "Introduction to Programming",
+      code: "CS101",
+      credits: 3,
+      semester: 1,
+      year_study: 1,
+      program_id: 1,
+      tenant_id: 1,
+      description: "This course covers the basics of programming using Python.",
+      created_at: "2024-01-10T10:00:00Z",
+    },
+  ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('Admin');
-  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:29:00+02:00')); // Koha aktuale CEST
+  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:42:00+02:00')); // Koha aktuale CEST
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [courseCount, setCourseCount] = useState(0);
+  const [courseCount, setCourseCount] = useState(1); // Përditësuar për kursin shembull
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [newCourse, setNewCourse] = useState({
+    name: '',
+    code: '',
+    credits: '',
+    semester: '',
+    year_study: '',
+    program_id: '',
+    tenant_id: '',
+    description: '',
+  });
 
   const COURSES_API_URL = 'http://localhost:8080/api/courses';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -41,6 +69,64 @@ const Courses = () => {
       return false;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const addCourse = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Authentication token is missing. Please log in.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(COURSES_API_URL, newCourse, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCourses([...courses, response.data]);
+      setCourseCount(courses.length + 1);
+      setShowAddModal(false);
+      setNewCourse({
+        name: '',
+        code: '',
+        credits: '',
+        semester: '',
+        year_study: '',
+        program_id: '',
+        tenant_id: '',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Error adding course:', error);
+      setError('Failed to add course');
+    }
+  };
+
+  const updateCourse = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Authentication token is missing. Please log in.');
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${COURSES_API_URL}/${selectedCourse.id}`,
+        selectedCourse,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCourses(
+        courses.map((course) =>
+          course.id === selectedCourse.id ? response.data : course
+        )
+      );
+      setShowEditModal(false);
+      setSelectedCourse(null);
+    } catch (error) {
+      console.error('Error updating course:', error);
+      setError('Failed to update course');
     }
   };
 
@@ -150,6 +236,9 @@ const Courses = () => {
               <h3>Courses</h3>
               <p>Manage and view all course records</p>
             </div>
+            <button className="add-btn" onClick={() => setShowAddModal(true)}>
+              Add Course
+            </button>
           </div>
 
           {error && <div className="error-message">{error}</div>}
@@ -192,6 +281,7 @@ const Courses = () => {
                     <th>Tenant ID</th>
                     <th>Description</th>
                     <th>Created At</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -208,11 +298,31 @@ const Courses = () => {
                         <td>{course.tenant_id || '-'}</td>
                         <td>{course.description || '-'}</td>
                         <td>{course.created_at || '-'}</td>
+                        <td>
+                          <button
+                            className="action-btn view-btn"
+                            onClick={() => {
+                              setSelectedCourse(course);
+                              setShowViewModal(true);
+                            }}
+                          >
+                            <FaEye /> View
+                          </button>
+                          <button
+                            className="action-btn edit-btn"
+                            onClick={() => {
+                              setSelectedCourse(course);
+                              setShowEditModal(true);
+                            }}
+                          >
+                            <FaEdit /> Edit
+                          </button>
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="10" className="no-data">
+                      <td colSpan="11" className="no-data">
                         <div className="empty-state">
                           <p>No courses found</p>
                           <p className="hint">Try a different search term</p>
@@ -222,6 +332,205 @@ const Courses = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Add Course Modal */}
+          {showAddModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h2>Add New Course</h2>
+                <div className="modal-form">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    value={newCourse.name}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, name: e.target.value })
+                    }
+                  />
+                  <label>Code:</label>
+                  <input
+                    type="text"
+                    value={newCourse.code}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, code: e.target.value })
+                    }
+                  />
+                  <label>Credits:</label>
+                  <input
+                    type="number"
+                    value={newCourse.credits}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, credits: e.target.value })
+                    }
+                  />
+                  <label>Semester:</label>
+                  <input
+                    type="number"
+                    value={newCourse.semester}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, semester: e.target.value })
+                    }
+                  />
+                  <label>Year Study:</label>
+                  <input
+                    type="number"
+                    value={newCourse.year_study}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, year_study: e.target.value })
+                    }
+                  />
+                  <label>Program ID:</label>
+                  <input
+                    type="number"
+                    value={newCourse.program_id}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, program_id: e.target.value })
+                    }
+                  />
+                  <label>Tenant ID:</label>
+                  <input
+                    type="number"
+                    value={newCourse.tenant_id}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, tenant_id: e.target.value })
+                    }
+                  />
+                  <label>Description:</label>
+                  <textarea
+                    value={newCourse.description}
+                    onChange={(e) =>
+                      setNewCourse({ ...newCourse, description: e.target.value })
+                    }
+                  />
+                  <div className="modal-actions">
+                    <button className="modal-btn save-btn" onClick={addCourse}>
+                      Save
+                    </button>
+                    <button
+                      className="modal-btn cancel-btn"
+                      onClick={() => setShowAddModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* View Course Modal */}
+          {showViewModal && selectedCourse && (
+            <div className="modal">
+              <div className="modal-content">
+                <h2>Course Details</h2>
+                <div className="modal-details">
+                  <p><strong>ID:</strong> {selectedCourse.id}</p>
+                  <p><strong>Name:</strong> {selectedCourse.name}</p>
+                  <p><strong>Code:</strong> {selectedCourse.code}</p>
+                  <p><strong>Credits:</strong> {selectedCourse.credits || '-'}</p>
+                  <p><strong>Semester:</strong> {selectedCourse.semester || '-'}</p>
+                  <p><strong>Year Study:</strong> {selectedCourse.year_study || '-'}</p>
+                  <p><strong>Program ID:</strong> {selectedCourse.program_id || '-'}</p>
+                  <p><strong>Tenant ID:</strong> {selectedCourse.tenant_id || '-'}</p>
+                  <p><strong>Description:</strong> {selectedCourse.description || '-'}</p>
+                  <p><strong>Created At:</strong> {selectedCourse.created_at || '-'}</p>
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="modal-btn close-btn"
+                    onClick={() => setShowViewModal(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Edit Course Modal */}
+          {showEditModal && selectedCourse && (
+            <div className="modal">
+              <div className="modal-content">
+                <h2>Edit Course</h2>
+                <div className="modal-form">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    value={selectedCourse.name}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, name: e.target.value })
+                    }
+                  />
+                  <label>Code:</label>
+                  <input
+                    type="text"
+                    value={selectedCourse.code}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, code: e.target.value })
+                    }
+                  />
+                  <label>Credits:</label>
+                  <input
+                    type="number"
+                    value={selectedCourse.credits}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, credits: e.target.value })
+                    }
+                  />
+                  <label>Semester:</label>
+                  <input
+                    type="number"
+                    value={selectedCourse.semester}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, semester: e.target.value })
+                    }
+                  />
+                  <label>Year Study:</label>
+                  <input
+                    type="number"
+                    value={selectedCourse.year_study}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, year_study: e.target.value })
+                    }
+                  />
+                  <label>Program ID:</label>
+                  <input
+                    type="number"
+                    value={selectedCourse.program_id}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
+                    }
+                  />
+                  <label>Tenant ID:</label>
+                  <input
+                    type="number"
+                    value={selectedCourse.tenant_id}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, tenant_id: e.target.value })
+                    }
+                  />
+                  <label>Description:</label>
+                  <textarea
+                    value={selectedCourse.description}
+                    onChange={(e) =>
+                      setSelectedCourse({ ...selectedCourse, description: e.target.value })
+                    }
+                  />
+                  <div className="modal-actions">
+                    <button className="modal-btn save-btn" onClick={updateCourse}>
+                      Save
+                    </button>
+                    <button
+                      className="modal-btn cancel-btn"
+                      onClick={() => setShowEditModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -237,7 +546,7 @@ const Courses = () => {
         .content-container {
           flex: 1;
           padding: 20px;
-          max-height: 90vh;
+          max-height: 100vh;
           overflow-y: hidden;
           transition: margin-left 0.3s;
         }
@@ -311,6 +620,19 @@ const Courses = () => {
           color: #7f8c8d;
           margin: 0;
           font-size: 0.9rem;
+        }
+        .add-btn {
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          background: #28a745;
+          color: #fff;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+        }
+        .add-btn:hover {
+          background: #218838;
         }
         .stats-section {
           display: flex;
@@ -436,6 +758,32 @@ const Courses = () => {
           background-color: #f8f9fa;
           transition: background-color 0.3s ease;
         }
+        .action-btn {
+          padding: 6px 12px;
+          margin-right: 8px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .view-btn {
+          background: #17a2b8;
+          color: #fff;
+        }
+        .view-btn:hover {
+          background: #138496;
+        }
+        .edit-btn {
+          background: #ffc107;
+          color: #fff;
+        }
+        .edit-btn:hover {
+          background: #e0a800;
+        }
         .no-data {
           text-align: center;
           padding: 2.5rem;
@@ -463,6 +811,86 @@ const Courses = () => {
           border-radius: 6px;
           background: #ffe6e6;
           font-weight: 500;
+        }
+        .modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+        .modal-content {
+          background: #fff;
+          padding: 2rem;
+          border-radius: 8px;
+          width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content h2 {
+          font-size: 1.5rem;
+          color: #2c3e50;
+          margin-bottom: 1rem;
+        }
+        .modal-form label {
+          display: block;
+          font-size: 0.9rem;
+          color: #2c3e50;
+          margin-bottom: 0.4rem;
+        }
+        .modal-form input,
+        .modal-form textarea {
+          width: 100%;
+          padding: 0.8rem;
+          margin-bottom: 1rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 0.9rem;
+        }
+        .modal-form textarea {
+          height: 100px;
+          resize: vertical;
+        }
+        .modal-details p {
+          font-size: 0.9rem;
+          color: #34495e;
+          margin-bottom: 0.5rem;
+        }
+        .modal-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+        .modal-btn {
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+        }
+        .save-btn {
+          background: #28a745;
+          color: #fff;
+        }
+        .save-btn:hover {
+          background: #218838;
+        }
+        .cancel-btn,
+        .close-btn {
+          background: #dc3545;
+          color: #fff;
+        }
+        .cancel-btn:hover,
+        .close-btn:hover {
+          background: #c82333;
         }
       `}</style>
     </div>
