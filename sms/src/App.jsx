@@ -17,7 +17,8 @@ import ManageUsers from './Pages/Admin/ManageUsers';
 import Professors from './Pages/Admin/Professors'; // Add this import for the Professors page
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
-import CourseMaterials from './Pages/Admin/CourseMaterials';
+import Materials from './Pages/Admin/Materials';
+import Enrollments from './Pages/Admin/Registrations';
 function App() {
   return (
     <>
@@ -39,7 +40,8 @@ function App() {
         <Route path="/admin-professors" element={<Professors />} /> {/* Add this route */}
         <Route path="/admin-students" element={<Students />} /> {/* Add this route */}
         <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
-        <Route path="/admin-coursesmaterials" element={<CourseMaterials />} /> {/* Add this route */}
+        <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
+        <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
       </Routes>
     </>
   );
