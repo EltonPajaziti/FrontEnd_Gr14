@@ -16,7 +16,7 @@ import Users from './Pages/Admin/Users'; // Add this import for the Users page
 import ManageUsers from './Pages/Admin/ManageUsers';
 import Professors from './Pages/Admin/Professors'; // Add this import for the Professors page
 import Students from './Pages/Admin/Students';
-
+import Courses from './Pages/Admin/Courses';
 function App() {
   return (
     <>
@@ -37,6 +37,7 @@ function App() {
         <Route path="/admin-manage-users" element={<ManageUsers />} />
         <Route path="/admin-professors" element={<Professors />} /> {/* Add this route */}
         <Route path="/admin-students" element={<Students />} /> {/* Add this route */}
+        <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
       </Routes>
     </>
   );
