@@ -20,6 +20,12 @@ import Courses from './Pages/Admin/Courses';
 import Materials from './Pages/Admin/Materials';
 import Enrollments from './Pages/Admin/Registrations';
 import Schedule from './Pages/Admin/Schedule';
+import Exams from './Pages/Admin/Exams';
+import Grades from "./Pages/Admin/Grades";
+import Transcripts from './Pages/Admin/Transcripts';
+import Bursat from './Pages/Admin/Bursat';
+import FAQ from './Pages/Admin/FAQ';
+import Cilesimet from './Pages/Admin/Cilesimet';
 function App() {
   return (
     <>
@@ -44,6 +50,13 @@ function App() {
         <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
         <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
         <Route path="/admin-schedule" element={<Schedule />} /> {/* Add this route */}
+        <Route path="/admin-exams" element={<Exams />} />
+        <Route path="/admin-grades" element={<Grades />} />
+        <Route path="/admin-transcripts" element={<Transcripts />} />
+        <Route path="/admin-scholarships" element={<Bursat />} />
+        <Route path="/admin-faq" element={<FAQ />} />
+        <Route path="/admin-settings" element={<Cilesimet />} />
+
       </Routes>
     </>
   );

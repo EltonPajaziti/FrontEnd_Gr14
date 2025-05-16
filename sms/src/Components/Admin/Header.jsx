@@ -10,11 +10,16 @@ const Header = ({ adminName, toggleSidebar }) => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleProfile = () => {
+    setIsDropdownOpen(false);
+    navigate('/admin-settings'); // Updated to navigate to /admin-settings
+  };
+
   const handleLogout = () => {
     setIsDropdownOpen(false);
     localStorage.removeItem('token');
     localStorage.removeItem('tenantId');
-    navigate('/');
+    navigate('/'); // Navigates to /
   };
 
   return (
@@ -39,9 +44,20 @@ const Header = ({ adminName, toggleSidebar }) => {
             {adminName} ADMIN
           </span>
           {isDropdownOpen && (
-            <div className="user-dropdown">
-              <ul>
-                <li onClick={handleLogout}>Logout</li>
+            <div className="user-dropdown bg-white border rounded-lg shadow-lg w-48 absolute right-0 mt-2">
+              <ul className="py-2">
+                <li
+                  onClick={handleProfile}
+                  className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+                >
+                  Profili
+                </li>
+                <li
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+                >
+                  Dil
+                </li>
               </ul>
             </div>
           )}

@@ -9,16 +9,16 @@
 .main-content {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow: visible; /* Lejo scroll-in në nivelin e poshtëm */
 }
 
 .sidebar-wrapper {
-  position: fixed; /* Fix the sidebar in place */
+  position: fixed;
   top: 0;
   left: 0;
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
   transition: width 0.3s ease;
-  z-index: 1000; /* Ensure it stays above other content */
+  z-index: 1000;
 }
 
 .sidebar-wrapper.open {
@@ -33,12 +33,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible; /* Lejo scroll-in në nivelin e poshtëm */
   width: 100%;
   background-color: #f7f8fa;
 }
 
-/* Adjust margin to account for fixed sidebar width */
 .content-wrapper.sidebar-open {
   margin-left: 18%;
 }
@@ -56,6 +55,7 @@
   padding: 10px 20px;
   border-bottom: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Siguro që header-i të mos tkurret */
 }
 
 .header-left {
@@ -193,8 +193,8 @@
   color: white;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Match viewport height */
-  overflow: hidden; /* No internal scrolling */
+  height: 100vh;
+  overflow: hidden;
 }
 
 .admin-sidebar-header {
@@ -208,13 +208,32 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .admin-sidebar-menu {
   list-style: none;
   padding: 0 5%;
   flex-grow: 1;
-  overflow: visible; /* Ensure all items are visible */
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-track {
+  background: #2e0c75;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb {
+  background: #6d3bd1;
+  border-radius: 4px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: #5a2fc0;
 }
 
 .admin-sidebar-menu li {
@@ -249,6 +268,7 @@
   align-items: center;
   padding: 0 10px;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .sidebar-user-logo {
@@ -276,9 +296,9 @@
   flex: 1;
   padding: 3%;
   background: #f7f8fa;
-  overflow-y: auto; /* Dashboard scrolls */
+  overflow-y: auto;
   width: 100%;
-  min-height: 100vh; /* Ensure it extends to allow scrolling */
+  min-height: 100vh;
 }
 
 .admin-dashboard-header {
