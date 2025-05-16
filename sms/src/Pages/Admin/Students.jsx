@@ -1,37 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
 
-const Professors = () => {
-  const [professors, setProfessors] = useState([]);
-  const [departments, setDepartments] = useState([]);
+const Students = () => {
+  const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('Admin');
   const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:12:00+02:00')); // Koha aktuale CEST
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [professorCount, setProfessorCount] = useState(0);
-  const [departmentCount, setDepartmentCount] = useState(0);
 
-  const PROFESSORS_API_URL = 'http://localhost:8080/api/professors';
-  const DEPARTMENTS_API_URL = 'http://localhost:8080/api/departments';
+  const STUDENTS_API_URL = 'http://localhost:8080/api/students';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
-
-  const animateCount = (target, setCount) => {
-    let start = 0;
-    const duration = 2000;
-    const increment = target / (duration / 60);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 1000 / 60);
-  };
 
   const fetchData = async (url, setData, errorMessage, transform = (d) => d) => {
     const token = localStorage.getItem('token');
@@ -48,13 +28,6 @@ const Professors = () => {
       });
       const transformedData = transform(response.data);
       setData(transformedData);
-
-      if (url === PROFESSORS_API_URL) {
-        animateCount(transformedData.length, setProfessorCount);
-      } else if (url === DEPARTMENTS_API_URL) {
-        animateCount(transformedData.length, setDepartmentCount);
-      }
-
       return true;
     } catch (error) {
       console.error(`Error fetching data from ${url}:`, error);
@@ -79,23 +52,22 @@ const Professors = () => {
       }
 
       await fetchData(
-        PROFESSORS_API_URL,
-        setProfessors,
-        'Failed to load professors',
+        STUDENTS_API_URL,
+        setStudents,
+        'Failed to load students',
         (data) =>
           Array.isArray(data)
-            ? data.map((p) => ({
-                id: p.id || 0,
-                user_id: p.user_id || null,
-                department_id: p.department_id || null,
-                academic_title: p.academic_title || '',
-                hired_date: p.hired_date || '',
-                tenant_id: p.tenant_id || null,
-                created_at: p.created_at || '',
+            ? data.map((s) => ({
+                id: s.id || '',
+                user_id: s.user_id || null,
+                program_id: s.program_id || null,
+                tenant_id: s.tenant_id || null,
+                enrollment_date: s.enrollment_date || '',
+                created_at: s.created_at || '',
+                updated_at: s.updated_at || '',
               }))
             : []
       );
-      await fetchData(DEPARTMENTS_API_URL, setDepartments, 'Failed to load departments');
     };
 
     loadData();
@@ -109,24 +81,20 @@ const Professors = () => {
     return currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
   };
 
-  const getDepartmentName = (departmentId) =>
-    departments.find((d) => d.id === departmentId)?.name || '-';
-
-  const filteredProfessors = professors.filter((professor) => {
-    const academicTitle = (professor.academic_title || '').toLowerCase();
-    return academicTitle.includes(searchTerm.toLowerCase());
+  const filteredStudents = students.filter((student) => {
+    return true; // Nuk ka fusha për të filtruar drejtpërdrejt, mund të shtohet logjikë shtesë nëse API-ja kthen emra
   });
 
   const exportToCSV = () => {
-    const headers = ['ID,User ID,Department ID,Academic Title,Hired Date,Tenant ID,Created At'];
-    const rows = filteredProfessors.map((professor) => [
-      professor.id,
-      professor.user_id,
-      professor.department_id,
-      professor.academic_title,
-      professor.hired_date,
-      professor.tenant_id,
-      professor.created_at,
+    const headers = ['ID,User ID,Program ID,Tenant ID,Enrollment Date,Created At,Updated At'];
+    const rows = filteredStudents.map((student) => [
+      student.id,
+      student.user_id,
+      student.program_id,
+      student.tenant_id,
+      student.enrollment_date,
+      student.created_at,
+      student.updated_at,
     ]
       .map((value) => `"${value || ''}"`)
       .join(','));
@@ -136,7 +104,7 @@ const Professors = () => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `professors_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `students_export_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -145,7 +113,7 @@ const Professors = () => {
   return (
     <div className="page-container">
       <div className="content-container">
-        <div className="professors-container">
+        <div className="students-container">
           <div className="header-section">
             <div className="header-text">
               <h1>SMS 2025/26</h1>
@@ -158,34 +126,28 @@ const Professors = () => {
 
           <div className="section-header">
             <div>
-              <h3>Profesorët</h3>
-              <p>Menaxhoni të dhënat e profesorëve dhe departamentet e tyre</p>
+              <h3>Students</h3>
+              <p>Manage and view all student records</p>
             </div>
           </div>
 
           {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
 
           <div className="stats-section">
             <div className="stat-card">
               <h3>Statistikat</h3>
-              <p>Total Profesorë</p>
-              <p className="count">{loading ? 'Loading...' : professorCount}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Departamentet</h3>
-              <p>Total Departamente</p>
-              <p className="count">{loading ? 'Loading...' : departmentCount}</p>
+              <p>Total Students</p>
+              <p className="count">{loading ? 'Loading...' : filteredStudents.length}</p>
             </div>
           </div>
 
           <div className="filter-section">
-            <h3>Lista e Profesorëve</h3>
+            <h3>Student Records</h3>
             <div className="search-box">
               <FaSearch className="search-icon" />
               <input
                 type="text"
-                placeholder="Kërko sipas titullit akademik..."
+                placeholder="Search students..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -196,37 +158,37 @@ const Professors = () => {
             <div className="loading">Loading...</div>
           ) : (
             <div className="table-container">
-              <table className="professors-table">
+              <table className="students-table">
                 <thead>
                   <tr>
                     <th>ID</th>
                     <th>User ID</th>
-                    <th>Department ID</th>
-                    <th>Academic Title</th>
-                    <th>Hired Date</th>
+                    <th>Program ID</th>
                     <th>Tenant ID</th>
+                    <th>Enrollment Date</th>
                     <th>Created At</th>
+                    <th>Updated At</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProfessors.length > 0 ? (
-                    filteredProfessors.map((professor) => (
-                      <tr key={professor.id}>
-                        <td>{professor.id}</td>
-                        <td>{professor.user_id || '-'}</td>
-                        <td>{professor.department_id || '-'}</td>
-                        <td>{professor.academic_title || '-'}</td>
-                        <td>{professor.hired_date || '-'}</td>
-                        <td>{professor.tenant_id || '-'}</td>
-                        <td>{professor.created_at || '-'}</td>
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.id}</td>
+                        <td>{student.user_id || '-'}</td>
+                        <td>{student.program_id || '-'}</td>
+                        <td>{student.tenant_id || '-'}</td>
+                        <td>{student.enrollment_date || '-'}</td>
+                        <td>{student.created_at || '-'}</td>
+                        <td>{student.updated_at || '-'}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td colSpan="7" className="no-data">
                         <div className="empty-state">
-                          <p>Nuk është gjetur asnjë profesor</p>
-                          <p className="hint">Provoni një term tjetër kërkimi</p>
+                          <p>No students found</p>
+                          <p className="hint">Try a different search term</p>
                         </div>
                       </td>
                     </tr>
@@ -252,7 +214,7 @@ const Professors = () => {
           overflow-y: hidden;
           transition: margin-left 0.3s;
         }
-        .professors-container {
+        .students-container {
           padding: 1.5rem;
           background: #ffffff;
           border-radius: 12px;
@@ -260,7 +222,7 @@ const Professors = () => {
           transition: transform 0.3s ease;
           position: relative;
         }
-        .professors-container:hover {
+        .students-container:hover {
           transform: translateY(-5px);
         }
         .header-section {
@@ -409,6 +371,7 @@ const Professors = () => {
           border-radius: 10px;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
           overflow: hidden;
+          margin-bottom: 1.5rem;
         }
         .loading {
           text-align: center;
@@ -423,11 +386,11 @@ const Professors = () => {
           50% { opacity: 0.5; }
           100% { opacity: 1; }
         }
-        .professors-table {
+        .students-table {
           width: 100%;
           border-collapse: collapse;
         }
-        .professors-table th {
+        .students-table th {
           background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
           padding: 1rem;
           text-align: left;
@@ -436,13 +399,13 @@ const Professors = () => {
           border-bottom: 1px solid #ddd;
           font-size: 1rem;
         }
-        .professors-table td {
+        .students-table td {
           padding: 1rem;
           border-bottom: 1px solid #eee;
           color: #34495e;
           font-size: 0.9rem;
         }
-        .professors-table tr:hover {
+        .students-table tr:hover {
           background-color: #f8f9fa;
           transition: background-color 0.3s ease;
         }
@@ -474,18 +437,9 @@ const Professors = () => {
           background: #ffe6e6;
           font-weight: 500;
         }
-        .success-message {
-          color: #2ecc71;
-          margin-bottom: 1rem;
-          text-align: center;
-          padding: 0.4rem;
-          border-radius: 6px;
-          background: #e6ffed;
-          font-weight: 500;
-        }
       `}</style>
     </div>
   );
 };
 
-export default Professors;
+export default Students;
