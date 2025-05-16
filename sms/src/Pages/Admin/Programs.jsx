@@ -24,14 +24,24 @@ const Programs = () => {
   const FACULTIES_API_URL = 'http://localhost:8080/api/faculties';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
-  const fetchPrograms = async () => {
-    try {
-      const response = await axios.get(API_URL);
-      setPrograms(response.data);
-    } catch (error) {
-      console.error('Error fetching programs:', error);
+const fetchPrograms = async () => {
+  try {
+    const response = await axios.get(API_URL);
+    const data = response.data;
+
+
+    if (Array.isArray(data)) {
+      setPrograms(data);
+    } else {
+      console.warn("Expected array but got:", data);
+      setPrograms([]);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching programs:', error);
+    setPrograms([]);
+  }
+};
+
 
   const fetchDepartments = async () => {
     try {
