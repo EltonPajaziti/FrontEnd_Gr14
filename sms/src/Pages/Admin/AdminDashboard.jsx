@@ -8,6 +8,10 @@ import Header from "../../Components/Admin/Header";
 
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
+  const [professorCount, setProfessorCount] = useState(0);
+  const [courseCount, setCourseCount] = useState(0);
+  const [departmentCount, setDepartmentCount] = useState(0);
+  
   const [adminName, setAdminName] = useState('Admin User');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -25,15 +29,26 @@ function AdminDashboard() {
 
   useEffect(() => {
     const tenantId = localStorage.getItem("tenantId");
-
-    if (tenantId) {
+    if (!tenantId) return;
       fetch(`/api/students/count/by-tenant/${tenantId}`)
-        .then((res) => res.json())
-        .then((data) => setStudentCount(data))
-        .catch((err) =>
-          console.error("Error fetching student count:", err)
-        );
-    }
+          .then(res => res.json())
+          .then(data => setStudentCount(data))
+          .catch(err => console.error(err));
+
+        fetch(`/api/professors/count/by-tenant/${tenantId}`)
+          .then(res => res.json())
+          .then(data => setProfessorCount(data))
+          .catch(err => console.error(err));
+
+        fetch(`/api/courses/count/by-tenant/${tenantId}`)
+          .then(res => res.json())
+          .then(data => setCourseCount(data))
+          .catch(err => console.error(err));
+
+        fetch(`/api/departments/count/by-tenant/${tenantId}`)
+          .then(res => res.json())
+          .then(data => setDepartmentCount(data))
+          .catch(err => console.error(err));  
 
     const fetchAdminName = async () => {
       const token = localStorage.getItem('token');
@@ -82,9 +97,9 @@ function AdminDashboard() {
                 value={studentCount}
                 info="+12% from the previous quarter"
               />
-              <StatsCard title="Professors" value="87" info="+4% from last year" />
-              <StatsCard title="Active Courses" value="156" info="0% change" />
-              <StatsCard title="Departments" value="12" info="↑ 1 new department" />
+              <StatsCard title="Professors" value={professorCount} info="+4% from last year" />
+              <StatsCard title="Active Courses" value={courseCount} info="0% change" />
+              <StatsCard title="Departments" value={departmentCount} info="↑ 1 new department" />
             </div>
 
             <div className="content-grid">

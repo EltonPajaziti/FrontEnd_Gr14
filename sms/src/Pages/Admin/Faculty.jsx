@@ -5,6 +5,7 @@ import { FaSearch, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 const Faculty = () => {
   const [faculties, setFaculties] = useState([]);
   const [formData, setFormData] = useState({
+    facultyId: '',
     name: '',
     email: '',
     address: ''
@@ -79,6 +80,7 @@ const Faculty = () => {
     try {
       const token = localStorage.getItem("token");
       const payload = {
+        facultyId: Number(formData.facultyId),
         name: formData.name,
         email: formData.email,
         address: formData.address || null,
@@ -92,7 +94,7 @@ const Faculty = () => {
         });
         setSuccessMessage("Faculty updated successfully!");
       } else {
-        await axios.post(API_URL, payload, {
+        await axios.post(`${API_URL}/create`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSuccessMessage("Faculty added successfully!");
@@ -107,6 +109,7 @@ const Faculty = () => {
 
   const handleEdit = (faculty) => {
     setFormData({
+      facultyId: faculty.id,
       name: faculty.name,
       email: faculty.email,
       address: faculty.address || "",
@@ -254,6 +257,16 @@ const Faculty = () => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h3>{editingId ? "Edit Faculty" : "Add New Faculty"}</h3>
                 <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label>Faculty ID*</label>
+                    <input
+                      type="number"
+                      name="facultyId"
+                      value={formData.facultyId}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>                  
                   <div className="form-group">
                     <label>Faculty Name*</label>
                     <input

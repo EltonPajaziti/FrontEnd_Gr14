@@ -66,7 +66,7 @@ const Departments = () => {
     try {
       const payload = {
         name: formData.name,
-        tenantID: { id: formData.tenantId }
+        tenantID: formData.tenantId
       };
 
       if (editingId) {

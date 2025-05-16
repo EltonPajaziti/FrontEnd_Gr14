@@ -61,14 +61,14 @@ const Programs = () => {
       const payload = {
         name: formData.name,
         level: formData.level,
-        department: { id: formData.departmentId },
-        tenantID: formData.tenantId ? { id: formData.tenantId } : null // Faculty is optional
+        departmentId: formData.departmentId,
+        tenantId: formData.tenantId   
       };
 
       if (editingId) {
         await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
-        await axios.post(API_URL, payload);
+        await axios.post(`${API_URL}/create`, payload);
       }
       resetForm();
       fetchData();
