@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaEye, FaEdit } from 'react-icons/fa';
+import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import Sidebar from "../../Components/Admin/Sidebar";
+import Header from "../../Components/Admin/Header";
 
 const Courses = () => {
   const [courses, setCourses] = useState([
@@ -20,7 +23,7 @@ const Courses = () => {
   ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('Admin');
-  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:42:00+02:00')); // Koha aktuale CEST
+  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T17:02:00+02:00')); // Updated to match current time (05:02 PM CEST)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [courseCount, setCourseCount] = useState(1); // Përditësuar për kursin shembull
@@ -38,6 +41,7 @@ const Courses = () => {
     tenant_id: '',
     description: '',
   });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
 
   const COURSES_API_URL = 'http://localhost:8080/api/courses';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -217,322 +221,336 @@ const Courses = () => {
     document.body.removeChild(link);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="page-container">
-      <div className="content-container">
-        <div className="courses-container">
-          <div className="header-section">
-            <div className="header-text">
-              <h1>SMS 2025/26</h1>
-              <h2>{getGreeting()}, {adminName}</h2>
-            </div>
-            <button className="export-btn" onClick={exportToCSV}>
-              Export
-            </button>
-          </div>
-
-          <div className="section-header">
-            <div>
-              <h3>Courses</h3>
-              <p>Manage and view all course records</p>
-            </div>
-            <button className="add-btn" onClick={() => setShowAddModal(true)}>
-              Add Course
-            </button>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="stats-section">
-            <div className="stat-card">
-              <h3>Statistikat</h3>
-              <p>Total Courses</p>
-              <p className="count">{loading ? 'Loading...' : courseCount}</p>
-            </div>
-          </div>
-
-          <div className="filter-section">
-            <h3>Course Records</h3>
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search courses by name, code, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="loading">Loading...</div>
-          ) : (
-            <div className="table-container">
-              <table className="courses-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Code</th>
-                    <th>Credits</th>
-                    <th>Semester</th>
-                    <th>Year Study</th>
-                    <th>Program ID</th>
-                    <th>Tenant ID</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCourses.length > 0 ? (
-                    filteredCourses.map((course) => (
-                      <tr key={course.id}>
-                        <td>{course.id}</td>
-                        <td>{course.name}</td>
-                        <td>{course.code}</td>
-                        <td>{course.credits || '-'}</td>
-                        <td>{course.semester || '-'}</td>
-                        <td>{course.year_study || '-'}</td>
-                        <td>{course.program_id || '-'}</td>
-                        <td>{course.tenant_id || '-'}</td>
-                        <td>{course.description || '-'}</td>
-                        <td>{course.created_at || '-'}</td>
-                        <td>
-                          <button
-                            className="action-btn view-btn"
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowViewModal(true);
-                            }}
-                          >
-                            <FaEye /> View
-                          </button>
-                          <button
-                            className="action-btn edit-btn"
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowEditModal(true);
-                            }}
-                          >
-                            <FaEdit /> Edit
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="11" className="no-data">
-                        <div className="empty-state">
-                          <p>No courses found</p>
-                          <p className="hint">Try a different search term</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Add Course Modal */}
-          {showAddModal && (
-            <div className="modal">
-              <div className="modal-content">
-                <h2>Add New Course</h2>
-                <div className="modal-form">
-                  <label>Name:</label>
-                  <input
-                    type="text"
-                    value={newCourse.name}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, name: e.target.value })
-                    }
-                  />
-                  <label>Code:</label>
-                  <input
-                    type="text"
-                    value={newCourse.code}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, code: e.target.value })
-                    }
-                  />
-                  <label>Credits:</label>
-                  <input
-                    type="number"
-                    value={newCourse.credits}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, credits: e.target.value })
-                    }
-                  />
-                  <label>Semester:</label>
-                  <input
-                    type="number"
-                    value={newCourse.semester}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, semester: e.target.value })
-                    }
-                  />
-                  <label>Year Study:</label>
-                  <input
-                    type="number"
-                    value={newCourse.year_study}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, year_study: e.target.value })
-                    }
-                  />
-                  <label>Program ID:</label>
-                  <input
-                    type="number"
-                    value={newCourse.program_id}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, program_id: e.target.value })
-                    }
-                  />
-                  <label>Tenant ID:</label>
-                  <input
-                    type="number"
-                    value={newCourse.tenant_id}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, tenant_id: e.target.value })
-                    }
-                  />
-                  <label>Description:</label>
-                  <textarea
-                    value={newCourse.description}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, description: e.target.value })
-                    }
-                  />
-                  <div className="modal-actions">
-                    <button className="modal-btn save-btn" onClick={addCourse}>
-                      Save
-                    </button>
-                    <button
-                      className="modal-btn cancel-btn"
-                      onClick={() => setShowAddModal(false)}
-                    >
-                      Cancel
-                    </button>
+    <div className="app-container">
+      <div className="main-content">
+        <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
+          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+        </div>
+        <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <div className="page-container">
+            <div className="content-container">
+              <div className="courses-container">
+                <div className="header-section">
+                  <div className="header-text">
+                    <h1>SMS 2025/26</h1>
+                    <h2>{getGreeting()}, {adminName}</h2>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* View Course Modal */}
-          {showViewModal && selectedCourse && (
-            <div className="modal">
-              <div className="modal-content">
-                <h2>Course Details</h2>
-                <div className="modal-details">
-                  <p><strong>ID:</strong> {selectedCourse.id}</p>
-                  <p><strong>Name:</strong> {selectedCourse.name}</p>
-                  <p><strong>Code:</strong> {selectedCourse.code}</p>
-                  <p><strong>Credits:</strong> {selectedCourse.credits || '-'}</p>
-                  <p><strong>Semester:</strong> {selectedCourse.semester || '-'}</p>
-                  <p><strong>Year Study:</strong> {selectedCourse.year_study || '-'}</p>
-                  <p><strong>Program ID:</strong> {selectedCourse.program_id || '-'}</p>
-                  <p><strong>Tenant ID:</strong> {selectedCourse.tenant_id || '-'}</p>
-                  <p><strong>Description:</strong> {selectedCourse.description || '-'}</p>
-                  <p><strong>Created At:</strong> {selectedCourse.created_at || '-'}</p>
-                </div>
-                <div className="modal-actions">
-                  <button
-                    className="modal-btn close-btn"
-                    onClick={() => setShowViewModal(false)}
-                  >
-                    Close
+                  <button className="export-btn" onClick={exportToCSV}>
+                    Export
                   </button>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* Edit Course Modal */}
-          {showEditModal && selectedCourse && (
-            <div className="modal">
-              <div className="modal-content">
-                <h2>Edit Course</h2>
-                <div className="modal-form">
-                  <label>Name:</label>
-                  <input
-                    type="text"
-                    value={selectedCourse.name}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, name: e.target.value })
-                    }
-                  />
-                  <label>Code:</label>
-                  <input
-                    type="text"
-                    value={selectedCourse.code}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, code: e.target.value })
-                    }
-                  />
-                  <label>Credits:</label>
-                  <input
-                    type="number"
-                    value={selectedCourse.credits}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, credits: e.target.value })
-                    }
-                  />
-                  <label>Semester:</label>
-                  <input
-                    type="number"
-                    value={selectedCourse.semester}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, semester: e.target.value })
-                    }
-                  />
-                  <label>Year Study:</label>
-                  <input
-                    type="number"
-                    value={selectedCourse.year_study}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, year_study: e.target.value })
-                    }
-                  />
-                  <label>Program ID:</label>
-                  <input
-                    type="number"
-                    value={selectedCourse.program_id}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
-                    }
-                  />
-                  <label>Tenant ID:</label>
-                  <input
-                    type="number"
-                    value={selectedCourse.tenant_id}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, tenant_id: e.target.value })
-                    }
-                  />
-                  <label>Description:</label>
-                  <textarea
-                    value={selectedCourse.description}
-                    onChange={(e) =>
-                      setSelectedCourse({ ...selectedCourse, description: e.target.value })
-                    }
-                  />
-                  <div className="modal-actions">
-                    <button className="modal-btn save-btn" onClick={updateCourse}>
-                      Save
-                    </button>
-                    <button
-                      className="modal-btn cancel-btn"
-                      onClick={() => setShowEditModal(false)}
-                    >
-                      Cancel
-                    </button>
+                <div className="section-header">
+                  <div>
+                    <h3>Courses</h3>
+                    <p>Manage and view all course records</p>
+                  </div>
+                  <button className="add-btn" onClick={() => setShowAddModal(true)}>
+                    Add Course
+                  </button>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+
+                <div className="stats-section">
+                  <div className="stat-card">
+                    <h3>Statistikat</h3>
+                    <p>Total Courses</p>
+                    <p className="count">{loading ? 'Loading...' : courseCount}</p>
                   </div>
                 </div>
+
+                <div className="filter-section">
+                  <h3>Course Records</h3>
+                  <div className="search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search courses by name, code, or description..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading...</div>
+                ) : (
+                  <div className="table-container">
+                    <table className="courses-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Code</th>
+                          <th>Credits</th>
+                          <th>Semester</th>
+                          <th>Year Study</th>
+                          <th>Program ID</th>
+                          <th>Tenant ID</th>
+                          <th>Description</th>
+                          <th>Created At</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredCourses.length > 0 ? (
+                          filteredCourses.map((course) => (
+                            <tr key={course.id}>
+                              <td>{course.id}</td>
+                              <td>{course.name}</td>
+                              <td>{course.code}</td>
+                              <td>{course.credits || '-'}</td>
+                              <td>{course.semester || '-'}</td>
+                              <td>{course.year_study || '-'}</td>
+                              <td>{course.program_id || '-'}</td>
+                              <td>{course.tenant_id || '-'}</td>
+                              <td>{course.description || '-'}</td>
+                              <td>{course.created_at || '-'}</td>
+                              <td>
+                                <button
+                                  className="action-btn view-btn"
+                                  onClick={() => {
+                                    setSelectedCourse(course);
+                                    setShowViewModal(true);
+                                  }}
+                                >
+                                  <FaEye /> View
+                                </button>
+                                <button
+                                  className="action-btn edit-btn"
+                                  onClick={() => {
+                                    setSelectedCourse(course);
+                                    setShowEditModal(true);
+                                  }}
+                                >
+                                  <FaEdit /> Edit
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="11" className="no-data">
+                              <div className="empty-state">
+                                <p>No courses found</p>
+                                <p className="hint">Try a different search term</p>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Add Course Modal */}
+                {showAddModal && (
+                  <div className="modal">
+                    <div className="modal-content">
+                      <h2>Add New Course</h2>
+                      <div className="modal-form">
+                        <label>Name:</label>
+                        <input
+                          type="text"
+                          value={newCourse.name}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, name: e.target.value })
+                          }
+                        />
+                        <label>Code:</label>
+                        <input
+                          type="text"
+                          value={newCourse.code}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, code: e.target.value })
+                          }
+                        />
+                        <label>Credits:</label>
+                        <input
+                          type="number"
+                          value={newCourse.credits}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, credits: e.target.value })
+                          }
+                        />
+                        <label>Semester:</label>
+                        <input
+                          type="number"
+                          value={newCourse.semester}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, semester: e.target.value })
+                          }
+                        />
+                        <label>Year Study:</label>
+                        <input
+                          type="number"
+                          value={newCourse.year_study}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, year_study: e.target.value })
+                          }
+                        />
+                        <label>Program ID:</label>
+                        <input
+                          type="number"
+                          value={newCourse.program_id}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, program_id: e.target.value })
+                          }
+                        />
+                        <label>Tenant ID:</label>
+                        <input
+                          type="number"
+                          value={newCourse.tenant_id}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, tenant_id: e.target.value })
+                          }
+                        />
+                        <label>Description:</label>
+                        <textarea
+                          value={newCourse.description}
+                          onChange={(e) =>
+                            setNewCourse({ ...newCourse, description: e.target.value })
+                          }
+                        />
+                        <div className="modal-actions">
+                          <button className="modal-btn save-btn" onClick={addCourse}>
+                            Save
+                          </button>
+                          <button
+                            className="modal-btn cancel-btn"
+                            onClick={() => setShowAddModal(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* View Course Modal */}
+                {showViewModal && selectedCourse && (
+                  <div className="modal">
+                    <div className="modal-content">
+                      <h2>Course Details</h2>
+                      <div className="modal-details">
+                        <p><strong>ID:</strong> {selectedCourse.id}</p>
+                        <p><strong>Name:</strong> {selectedCourse.name}</p>
+                        <p><strong>Code:</strong> {selectedCourse.code}</p>
+                        <p><strong>Credits:</strong> {selectedCourse.credits || '-'}</p>
+                        <p><strong>Semester:</strong> {selectedCourse.semester || '-'}</p>
+                        <p><strong>Year Study:</strong> {selectedCourse.year_study || '-'}</p>
+                        <p><strong>Program ID:</strong> {selectedCourse.program_id || '-'}</p>
+                        <p><strong>Tenant ID:</strong> {selectedCourse.tenant_id || '-'}</p>
+                        <p><strong>Description:</strong> {selectedCourse.description || '-'}</p>
+                        <p><strong>Created At:</strong> {selectedCourse.created_at || '-'}</p>
+                      </div>
+                      <div className="modal-actions">
+                        <button
+                          className="modal-btn close-btn"
+                          onClick={() => setShowViewModal(false)}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Edit Course Modal */}
+                {showEditModal && selectedCourse && (
+                  <div className="modal">
+                    <div className="modal-content">
+                      <h2>Edit Course</h2>
+                      <div className="modal-form">
+                        <label>Name:</label>
+                        <input
+                          type="text"
+                          value={selectedCourse.name}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, name: e.target.value })
+                          }
+                        />
+                        <label>Code:</label>
+                        <input
+                          type="text"
+                          value={selectedCourse.code}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, code: e.target.value })
+                          }
+                        />
+                        <label>Credits:</label>
+                        <input
+                          type="number"
+                          value={selectedCourse.credits}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, credits: e.target.value })
+                          }
+                        />
+                        <label>Semester:</label>
+                        <input
+                          type="number"
+                          value={selectedCourse.semester}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, semester: e.target.value })
+                          }
+                        />
+                        <label>Year Study:</label>
+                        <input
+                          type="number"
+                          value={selectedCourse.year_study}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, year_study: e.target.value })
+                          }
+                        />
+                        <label>Program ID:</label>
+                        <input
+                          type="number"
+                          value={selectedCourse.program_id}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
+                          }
+                        />
+                        <label>Tenant ID:</label>
+                        <input
+                          type="number"
+                          value={selectedCourse.tenant_id}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, tenant_id: e.target.value })
+                          }
+                        />
+                        <label>Description:</label>
+                        <textarea
+                          value={selectedCourse.description}
+                          onChange={(e) =>
+                            setSelectedCourse({ ...selectedCourse, description: e.target.value })
+                          }
+                        />
+                        <div className="modal-actions">
+                          <button className="modal-btn save-btn" onClick={updateCourse}>
+                            Save
+                          </button>
+                          <button
+                            className="modal-btn cancel-btn"
+                            onClick={() => setShowEditModal(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -614,7 +632,7 @@ const Courses = () => {
           font-size: 1.6rem;
           color: #2c3e50;
           margin-bottom: 0.2rem;
-          font-weight: 600;
+          font-weight:  ENSURE THIS IS COMPLETE600;
         }
         .section-header p {
           color: #7f8c8d;
@@ -647,7 +665,7 @@ const Courses = () => {
           width: 200px;
           text-align: center;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: transform 0.3 WTCH OUT FOR THISs ease, box-shadow 0.3s ease;
           cursor: pointer;
         }
         .stat-card:hover {

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaPlus, FaTrash, FaEdit, FaEye, FaDownload } from 'react-icons/fa';
+import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import Sidebar from "../../Components/Admin/Sidebar";
+import Header from "../../Components/Admin/Header";
 
 // Sample initial data to ensure table is populated
 const initialEnrollments = [
@@ -11,7 +14,7 @@ const initialEnrollments = [
     enrollment_date: '2025-05-15',
     academic_year: 2025,
     tenant_id: 4,
-    created_at: '2025-05-16T04:46:00Z',
+    created_at: '2025-05-16T17:27:00+02:00', // Updated to current time (05:27 PM CEST)
   },
 ];
 
@@ -26,6 +29,7 @@ const Enrollments = () => {
   const [adminName, setAdminName] = useState('Admin');
   const [sortField, setSortField] = useState('enrollment_date');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar
 
   const API_URL = 'http://localhost:8080/api/enrollments';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -72,7 +76,7 @@ const Enrollments = () => {
   };
 
   const getGreeting = () => {
-    const currentHour = new Date().getHours();
+    const currentHour = new Date('2025-05-16T17:27:00+02:00').getHours();
     return currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
   };
 
@@ -179,192 +183,238 @@ const Enrollments = () => {
 
   const getFacultyName = (tenantId) => tenantToFaculty[tenantId] || 'Unknown Faculty';
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="enrollments-container">
-      <div className="header-section">
-        <h1>SMS 2025/26</h1>
-        <h2>{getGreeting()}, {adminName}</h2>
-      </div>
-      <div className="enrollments-header">
-        <div>
-          <h3>Enrollments</h3>
-          <p>Manage student enrollments for all courses</p>
+    <div className="app-container">
+      <div className="main-content">
+        <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
+          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
         </div>
-        <div className="header-buttons">
-          <button className="add-button" onClick={() => setShowForm(true)}>
-            <FaPlus /> Add Enrollment
-          </button>
-          <button className="export-button" onClick={handleExport}>
-            <FaDownload /> Export
-          </button>
-        </div>
-      </div>
-      <div className="search-section">
-        <div className="search-box">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search enrollments..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="enrollments-table-container">
-        <table className="enrollments-table">
-          <thead>
-            <tr>
-              <th onClick={() => handleSort('student_id')}>
-                Student ID {sortField === 'student_id' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th onClick={() => handleSort('course_id')}>
-                Course ID {sortField === 'course_id' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th onClick={() => handleSort('enrollment_date')}>
-                Enrollment Date {sortField === 'enrollment_date' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th onClick={() => handleSort('academic_year')}>
-                Academic Year {sortField === 'academic_year' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th>Faculty</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEnrollments.length > 0 ? (
-              filteredEnrollments.map((enrollment, index) => (
-                <tr key={enrollment.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                  <td>{enrollment.student_id}</td>
-                  <td>{enrollment.course_id}</td>
-                  <td>{enrollment.enrollment_date}</td>
-                  <td>{enrollment.academic_year}</td>
-                  <td>{getFacultyName(enrollment.tenant_id)}</td>
-                  <td className="actions-cell">
-                    <button className="view-btn" onClick={() => handleView(enrollment)}>
-                      <FaEye /> View
-                    </button>
-                    <button className="edit-btn" onClick={() => handleEdit(enrollment)}>
-                      <FaEdit /> Edit
-                    </button>
-                    <button className="delete-btn" onClick={() => handleDelete(enrollment.id)}>
-                      <FaTrash /> Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="no-data">
-                  <div className="empty-state">
-                    <p>No enrollments found</p>
-                    <p className="hint">Try a different search term or add a new enrollment</p>
+        <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <div className="page-container">
+            <div className="content-container">
+              <div className="enrollments-container" style={{ position: 'relative' }}>
+                <div className="header-section">
+                  <h1>SMS 2025/26</h1>
+                  <h2>{getGreeting()}, {adminName}</h2>
+                </div>
+                <div className="enrollments-header">
+                  <div>
+                    <h3>Enrollments</h3>
+                    <p>Manage student enrollments for all courses</p>
                   </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  <div className="header-buttons">
+                    <button className="add-button" onClick={() => setShowForm(true)}>
+                      <FaPlus /> Add Enrollment
+                    </button>
+                    <button className="export-button" onClick={handleExport}>
+                      <FaDownload /> Export
+                    </button>
+                  </div>
+                </div>
+                <div className="search-section">
+                  <div className="search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search enrollments..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="enrollments-table-container">
+                  <table className="enrollments-table">
+                    <thead>
+                      <tr>
+                        <th onClick={() => handleSort('student_id')}>
+                          Student ID {sortField === 'student_id' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('course_id')}>
+                          Course ID {sortField === 'course_id' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('enrollment_date')}>
+                          Enrollment Date {sortField === 'enrollment_date' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('academic_year')}>
+                          Academic Year {sortField === 'academic_year' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th>Faculty</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredEnrollments.length > 0 ? (
+                        filteredEnrollments.map((enrollment, index) => (
+                          <tr key={enrollment.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                            <td>{enrollment.student_id}</td>
+                            <td>{enrollment.course_id}</td>
+                            <td>{enrollment.enrollment_date}</td>
+                            <td>{enrollment.academic_year}</td>
+                            <td>{getFacultyName(enrollment.tenant_id)}</td>
+                            <td className="actions-cell">
+                              <button className="view-btn" onClick={() => handleView(enrollment)}>
+                                <FaEye /> View
+                              </button>
+                              <button className="edit-btn" onClick={() => handleEdit(enrollment)}>
+                                <FaEdit /> Edit
+                              </button>
+                              <button className="delete-btn" onClick={() => handleDelete(enrollment.id)}>
+                                <FaTrash /> Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="6" className="no-data">
+                            <div className="empty-state">
+                              <p>No enrollments found</p>
+                              <p className="hint">Try a different search term or add a new enrollment</p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {showForm && (
+                  <div className="modal-overlay">
+                    <div className="modal-content">
+                      <h3>{editingId ? 'Edit Enrollment' : 'Add New Enrollment'}</h3>
+                      <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                          <label>Student ID*</label>
+                          <input
+                            type="number"
+                            name="student_id"
+                            value={formData.student_id}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Course ID*</label>
+                          <input
+                            type="number"
+                            name="course_id"
+                            value={formData.course_id}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Enrollment Date*</label>
+                          <input
+                            type="date"
+                            name="enrollment_date"
+                            value={formData.enrollment_date}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Academic Year*</label>
+                          <input
+                            type="number"
+                            name="academic_year"
+                            value={formData.academic_year}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Faculty*</label>
+                          <select
+                            name="tenant_id"
+                            value={formData.tenant_id}
+                            onChange={handleInputChange}
+                            required
+                          >
+                            {Object.entries(tenantToFaculty).map(([id, name]) => (
+                              <option key={id} value={id}>
+                                {name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-actions">
+                          <button type="button" className="cancel-btn" onClick={resetForm}>
+                            Cancel
+                          </button>
+                          <button type="submit" className="submit-btn">
+                            {editingId ? 'Update' : 'Add'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {showViewModal && viewEnrollment && (
+                  <div className="modal-overlay">
+                    <div className="modal-content">
+                      <h3>View Enrollment</h3>
+                      <div className="view-details">
+                        <p><strong>Student ID:</strong> {viewEnrollment.student_id}</p>
+                        <p><strong>Course ID:</strong> {viewEnrollment.course_id}</p>
+                        <p><strong>Enrollment Date:</strong> {viewEnrollment.enrollment_date}</p>
+                        <p><strong>Academic Year:</strong> {viewEnrollment.academic_year}</p>
+                        <p><strong>Faculty:</strong> {getFacultyName(viewEnrollment.tenant_id)}</p>
+                        <p><strong>Created At:</strong> {new Date(viewEnrollment.created_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                      </div>
+                      <div className="form-actions">
+                        <button className="cancel-btn" onClick={() => setShowViewModal(false)}>
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {showForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{editingId ? 'Edit Enrollment' : 'Add New Enrollment'}</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Student ID*</label>
-                <input
-                  type="number"
-                  name="student_id"
-                  value={formData.student_id}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Course ID*</label>
-                <input
-                  type="number"
-                  name="course_id"
-                  value={formData.course_id}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Enrollment Date*</label>
-                <input
-                  type="date"
-                  name="enrollment_date"
-                  value={formData.enrollment_date}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Academic Year*</label>
-                <input
-                  type="number"
-                  name="academic_year"
-                  value={formData.academic_year}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Faculty*</label>
-                <select
-                  name="tenant_id"
-                  value={formData.tenant_id}
-                  onChange={handleInputChange}
-                  required
-                >
-                  {Object.entries(tenantToFaculty).map(([id, name]) => (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-actions">
-                <button type="button" className="cancel-btn" onClick={resetForm}>
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn">
-                  {editingId ? 'Update' : 'Add'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showViewModal && viewEnrollment && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>View Enrollment</h3>
-            <div className="view-details">
-              <p><strong>Student ID:</strong> {viewEnrollment.student_id}</p>
-              <p><strong>Course ID:</strong> {viewEnrollment.course_id}</p>
-              <p><strong>Enrollment Date:</strong> {viewEnrollment.enrollment_date}</p>
-              <p><strong>Academic Year:</strong> {viewEnrollment.academic_year}</p>
-              <p><strong>Faculty:</strong> {getFacultyName(viewEnrollment.tenant_id)}</p>
-              <p><strong>Created At:</strong> {new Date(viewEnrollment.created_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
-            </div>
-            <div className="form-actions">
-              <button className="cancel-btn" onClick={() => setShowViewModal(false)}>
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <style jsx>{`
-        .enrollments-container { padding: 1rem; }
-        .header-section { margin-bottom: 1.5rem; }
+        .page-container {
+          display: flex;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          font-family: 'Poppins', sans-serif;
+        }
+        .content-container {
+          flex: 1;
+          padding: 20px;
+          min-height: 100vh; /* Ensure it stretches to the bottom */
+          overflow-y: auto; /* Allow scrolling if content overflows */
+          transition: margin-left 0.3s;
+        }
+        .enrollments-container { 
+          position: relative; /* Provide positioning context for modal */
+          padding: 1rem; 
+          background: #ffffff; 
+          border-radius: 12px; 
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+          transition: transform 0.3s ease; 
+          min-height: calc(100% - 40px); /* Stretch to bottom, accounting for padding */
+          display: flex;
+          flex-direction: column;
+        }
+        .enrollments-container:hover { transform: translateY(-5px); }
+        .header-section { margin-bottom: 1.5rem; text-align: center; }
         .header-section h1 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 0.5rem; }
-        .header-section h2 { font-size: 1.2rem; color: #7f8c8d; font-weight: normal; }
+        .header-section h2 { font-size: 1.2rem; color: #7f8c8d; font-weight: normal; animation: fadeIn 1s ease-in; }
+        @keyframes fadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
         .enrollments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .enrollments-header h3 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 0.25rem; }
         .enrollments-header p { color: #7f8c8d; margin: 0; }
@@ -375,9 +425,10 @@ const Enrollments = () => {
         .export-button:hover { background: #27ae60; }
         .search-section { margin-bottom: 1.5rem; }
         .search-box { position: relative; max-width: 400px; }
-        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        .search-box input:focus { border-color: #3498db; box-shadow: 0 2px 12px rgba(52,152,219,0.2); outline: none; }
         .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #95a5a6; }
-        .enrollments-table-container { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+        .enrollments-table-container { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 1.5rem; flex-grow: 1; }
         .enrollments-table { width: 100%; border-collapse: collapse; }
         .enrollments-table th { 
           background: #e6f0fa; 
@@ -421,8 +472,33 @@ const Enrollments = () => {
         .empty-state { display: flex; flex-direction: column; align-items: center; }
         .empty-state p { margin: 0; color: #7f8c8d; }
         .hint { font-size: 0.9rem; margin-top: 0.5rem; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 2rem; border-radius: 8px; max-width: 600px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .modal-overlay { 
+          position: fixed; 
+          top: 0; 
+          left: 0; 
+          right: 0; 
+          bottom: 0; 
+          background: rgba(0,0,0,0.5); 
+          display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          z-index: 1000; 
+          overflow-y: auto; 
+        }
+        .modal-content { 
+          background: white; 
+          padding: 2rem; 
+          border-radius: 8px; 
+          max-width: 600px; 
+          max-height: 70vh; 
+          overflow-y: auto; 
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
+          position: absolute; 
+          top: 50%; 
+          left: 50%; 
+          transform: translate(-50%, -50%); 
+          margin: 0; 
+        }
         .modal-content h3 { margin: 0 0 1.5rem; color: #2c3e50; }
         .form-group { margin-bottom: 1.25rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #34495e; }
@@ -439,6 +515,7 @@ const Enrollments = () => {
           .add-button, .export-button { width: 100%; }
           .enrollments-table th, .enrollments-table td { padding: 0.5rem; font-size: 0.9rem; }
           .actions-cell { flex-direction: column; gap: 0.25rem; }
+          .modal-content { width: 90%; }
         }
       `}</style>
     </div>

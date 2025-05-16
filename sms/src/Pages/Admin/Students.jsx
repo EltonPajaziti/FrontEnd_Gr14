@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
+import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import Sidebar from "../../Components/Admin/Sidebar";
+import Header from "../../Components/Admin/Header";
 
 const Students = () => {
   const [students, setStudents] = useState([]);
@@ -9,6 +12,7 @@ const Students = () => {
   const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:12:00+02:00')); // Koha aktuale CEST
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
 
   const STUDENTS_API_URL = 'http://localhost:8080/api/students';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -110,93 +114,107 @@ const Students = () => {
     document.body.removeChild(link);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="page-container">
-      <div className="content-container">
-        <div className="students-container">
-          <div className="header-section">
-            <div className="header-text">
-              <h1>SMS 2025/26</h1>
-              <h2>{getGreeting()}, {adminName}</h2>
+    <div className="app-container">
+      <div className="main-content">
+        <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
+          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+        </div>
+        <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <div className="page-container">
+            <div className="content-container">
+              <div className="students-container">
+                <div className="header-section">
+                  <div className="header-text">
+                    <h1>SMS 2025/26</h1>
+                    <h2>{getGreeting()}, {adminName}</h2>
+                  </div>
+                  <button className="export-btn" onClick={exportToCSV}>
+                    Export
+                  </button>
+                </div>
+
+                <div className="section-header">
+                  <div>
+                    <h3>Students</h3>
+                    <p>Manage and view all student records</p>
+                  </div>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+
+                <div className="stats-section">
+                  <div className="stat-card">
+                    <h3>Statistikat</h3>
+                    <p>Total Students</p>
+                    <p className="count">{loading ? 'Loading...' : filteredStudents.length}</p>
+                  </div>
+                </div>
+
+                <div className="filter-section">
+                  <h3>Student Records</h3>
+                  <div className="search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search students..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading...</div>
+                ) : (
+                  <div className="table-container">
+                    <table className="students-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>User ID</th>
+                          <th>Program ID</th>
+                          <th>Tenant ID</th>
+                          <th>Enrollment Date</th>
+                          <th>Created At</th>
+                          <th>Updated At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredStudents.length > 0 ? (
+                          filteredStudents.map((student) => (
+                            <tr key={student.id}>
+                              <td>{student.id}</td>
+                              <td>{student.user_id || '-'}</td>
+                              <td>{student.program_id || '-'}</td>
+                              <td>{student.tenant_id || '-'}</td>
+                              <td>{student.enrollment_date || '-'}</td>
+                              <td>{student.created_at || '-'}</td>
+                              <td>{student.updated_at || '-'}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="7" className="no-data">
+                              <div className="empty-state">
+                                <p>No students found</p>
+                                <p className="hint">Try a different search term</p>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
-            <button className="export-btn" onClick={exportToCSV}>
-              Export
-            </button>
           </div>
-
-          <div className="section-header">
-            <div>
-              <h3>Students</h3>
-              <p>Manage and view all student records</p>
-            </div>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="stats-section">
-            <div className="stat-card">
-              <h3>Statistikat</h3>
-              <p>Total Students</p>
-              <p className="count">{loading ? 'Loading...' : filteredStudents.length}</p>
-            </div>
-          </div>
-
-          <div className="filter-section">
-            <h3>Student Records</h3>
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search students..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="loading">Loading...</div>
-          ) : (
-            <div className="table-container">
-              <table className="students-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Program ID</th>
-                    <th>Tenant ID</th>
-                    <th>Enrollment Date</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStudents.length > 0 ? (
-                    filteredStudents.map((student) => (
-                      <tr key={student.id}>
-                        <td>{student.id}</td>
-                        <td>{student.user_id || '-'}</td>
-                        <td>{student.program_id || '-'}</td>
-                        <td>{student.tenant_id || '-'}</td>
-                        <td>{student.enrollment_date || '-'}</td>
-                        <td>{student.created_at || '-'}</td>
-                        <td>{student.updated_at || '-'}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="no-data">
-                        <div className="empty-state">
-                          <p>No students found</p>
-                          <p className="hint">Try a different search term</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       </div>
 

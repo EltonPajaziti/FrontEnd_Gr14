@@ -1,18 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
+import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import Sidebar from "../../Components/Admin/Sidebar";
+import Header from "../../Components/Admin/Header";
 
 const Professors = () => {
   const [professors, setProfessors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('Admin');
-  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:12:00+02:00')); // Koha aktuale CEST
+  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T17:38:00+02:00')); // Updated to 05:38 PM CEST
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [professorCount, setProfessorCount] = useState(0);
-  const [departmentCount, setDepartmentCount] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
 
   const PROFESSORS_API_URL = 'http://localhost:8080/api/professors';
   const DEPARTMENTS_API_URL = 'http://localhost:8080/api/departments';
@@ -51,8 +54,6 @@ const Professors = () => {
 
       if (url === PROFESSORS_API_URL) {
         animateCount(transformedData.length, setProfessorCount);
-      } else if (url === DEPARTMENTS_API_URL) {
-        animateCount(transformedData.length, setDepartmentCount);
       }
 
       return true;
@@ -142,99 +143,108 @@ const Professors = () => {
     document.body.removeChild(link);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="page-container">
-      <div className="content-container">
-        <div className="professors-container">
-          <div className="header-section">
-            <div className="header-text">
-              <h1>SMS 2025/26</h1>
-              <h2>{getGreeting()}, {adminName}</h2>
+    <div className="app-container">
+      <div className="main-content">
+        <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
+          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+        </div>
+        <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <div className="page-container">
+            <div className="content-container">
+              <div className="professors-container">
+                <div className="header-section">
+                  <div className="header-text">
+                    <h1>SMS 2025/26</h1>
+                    <h2>{getGreeting()}, {adminName}</h2>
+                  </div>
+                  <button className="export-btn" onClick={exportToCSV}>
+                    Export
+                  </button>
+                </div>
+
+                <div className="section-header">
+                  <div>
+                    <h3>Profesorët</h3>
+                    <p>Menaxhoni të dhënat e profesorëve dhe departamentet e tyre</p>
+                  </div>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+                {successMessage && <div className="success-message">{successMessage}</div>}
+
+                <div className="stats-section">
+                  <div className="stat-card">
+                    <h3>Statistikat</h3>
+                    <p>Total Profesorë</p>
+                    <p className="count">{loading ? 'Loading...' : professorCount}</p>
+                  </div>
+                </div>
+
+                <div className="filter-section">
+                  <h3>Lista e Profesorëve</h3>
+                  <div className="search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Kërko sipas titullit akademik..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading...</div>
+                ) : (
+                  <div className="table-container">
+                    <table className="professors-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>User ID</th>
+                          <th>Department ID</th>
+                          <th>Academic Title</th>
+                          <th>Hired Date</th>
+                          <th>Tenant ID</th>
+                          <th>Created At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredProfessors.length > 0 ? (
+                          filteredProfessors.map((professor) => (
+                            <tr key={professor.id}>
+                              <td>{professor.id}</td>
+                              <td>{professor.user_id || '-'}</td>
+                              <td>{professor.department_id || '-'}</td>
+                              <td>{professor.academic_title || '-'}</td>
+                              <td>{professor.hired_date || '-'}</td>
+                              <td>{professor.tenant_id || '-'}</td>
+                              <td>{professor.created_at || '-'}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="7" className="no-data">
+                              <div className="empty-state">
+                                <p>Nuk është gjetur asnjë profesor</p>
+                                <p className="hint">Provoni një term tjetër kërkimi</p>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
-            <button className="export-btn" onClick={exportToCSV}>
-              Export
-            </button>
           </div>
-
-          <div className="section-header">
-            <div>
-              <h3>Profesorët</h3>
-              <p>Menaxhoni të dhënat e profesorëve dhe departamentet e tyre</p>
-            </div>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
-
-          <div className="stats-section">
-            <div className="stat-card">
-              <h3>Statistikat</h3>
-              <p>Total Profesorë</p>
-              <p className="count">{loading ? 'Loading...' : professorCount}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Departamentet</h3>
-              <p>Total Departamente</p>
-              <p className="count">{loading ? 'Loading...' : departmentCount}</p>
-            </div>
-          </div>
-
-          <div className="filter-section">
-            <h3>Lista e Profesorëve</h3>
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Kërko sipas titullit akademik..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="loading">Loading...</div>
-          ) : (
-            <div className="table-container">
-              <table className="professors-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Department ID</th>
-                    <th>Academic Title</th>
-                    <th>Hired Date</th>
-                    <th>Tenant ID</th>
-                    <th>Created At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProfessors.length > 0 ? (
-                    filteredProfessors.map((professor) => (
-                      <tr key={professor.id}>
-                        <td>{professor.id}</td>
-                        <td>{professor.user_id || '-'}</td>
-                        <td>{professor.department_id || '-'}</td>
-                        <td>{professor.academic_title || '-'}</td>
-                        <td>{professor.hired_date || '-'}</td>
-                        <td>{professor.tenant_id || '-'}</td>
-                        <td>{professor.created_at || '-'}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="no-data">
-                        <div className="empty-state">
-                          <p>Nuk është gjetur asnjë profesor</p>
-                          <p className="hint">Provoni një term tjetër kërkimi</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       </div>
 

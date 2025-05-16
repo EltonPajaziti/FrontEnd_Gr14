@@ -16,36 +16,69 @@
 }
 
 .admin-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Forcon rreshtimin në të majtë kur është e hapur */
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 20px;
   white-space: nowrap;
-  flex-shrink: 0; /* Parandalon tkurrjen e header-it */
+  flex-shrink: 0;
+  padding-left: 0; /* Fshij padding të panevojshëm nga e majta */
+}
+
+.admin-sidebar-header .icon {
+  font-size: 90px; /* Madhësi e rritur e ikonës */
+  margin-right: 10px; /* Hapësirë mes ikonës dhe tekstit */
+  line-height: 1; /* Rregullon rreshtimin vertikal */
+  display: inline-flex; /* Siguron që ikona të mbahet brenda rreshtit */
+  align-items: center; /* Rreshton vertikalisht */
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header {
+  justify-content: center; /* Qendron kur është e mbyllur */
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header .icon {
+  margin-right: 5px; /* Hapësirë e vogël kur është e mbyllur */
+  font-size: 30px; /* Pak më e vogël kur është e mbyllur */
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header span {
+  font-size: 14px; /* Tekst më i vogël kur është e mbyllur */
 }
 
 .admin-sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
-  flex-grow: 1; /* Menuja rritet për të mbushur hapësirën e mbetur */
-  overflow-y: auto; /* Scrollbar vetëm për menu */
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  margin: 15px 0;
+  margin: 20px 0;
   cursor: pointer;
   white-space: nowrap;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .menu-icon {
-  font-size: 20px;
-  margin-right: 10px;
+  font-size: 24px;
+  margin-right: 15px;
 }
 
 .admin-sidebar-menu li span {
   display: none;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .admin-sidebar.open .admin-sidebar-menu li span {
@@ -54,7 +87,7 @@
 
 .admin-sidebar-user {
   padding-top: 20px;
-  flex-shrink: 0; /* Parandalon tkurrjen e seksionit të përdoruesit */
+  flex-shrink: 0;
 }
 
 .sidebar-user-container {

@@ -25,7 +25,8 @@ const Sidebar = ({ isSidebarOpen }) => {
   return (
     <div className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="admin-sidebar-header">
-        {isSidebarOpen ? "SMS 2025/26" : "SMS"}
+        <div className="icon">🎓</div>
+        <span>{isSidebarOpen ? "SMS 2025/26" : "SMS"}</span>
       </div>
       <ul className="admin-sidebar-menu">
         <li onClick={() => handleItemClick("/admin-dashboard")} className="menu-item">

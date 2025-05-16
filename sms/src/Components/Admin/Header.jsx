@@ -10,16 +10,11 @@ const Header = ({ adminName, toggleSidebar }) => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleProfileNavigation = () => {
-    setIsDropdownOpen(false);
-    navigate('/admin-profile');
-  };
-
   const handleLogout = () => {
     setIsDropdownOpen(false);
     localStorage.removeItem('token');
     localStorage.removeItem('tenantId');
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -46,7 +41,6 @@ const Header = ({ adminName, toggleSidebar }) => {
           {isDropdownOpen && (
             <div className="user-dropdown">
               <ul>
-                <li onClick={handleProfileNavigation}>Profili</li>
                 <li onClick={handleLogout}>Logout</li>
               </ul>
             </div>
