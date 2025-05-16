@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
-// Sample initial data for the lecture schedule
 const initialSchedule = [
   {
     id: 1,
@@ -39,7 +38,8 @@ const initialSchedule = [
   },
 ];
 
-const WeeklySchedule = () => {
+const Schedule = () => {
+  console.log('Schedule component rendered');
   const [schedule, setSchedule] = useState(initialSchedule);
   const [formData, setFormData] = useState({
     day_of_week: '',
@@ -54,6 +54,8 @@ const WeeklySchedule = () => {
   const [editingId, setEditingId] = useState(null);
   const [adminName, setAdminName] = useState('Adrian Mehaj');
   const [adminRole] = useState('ADMIN');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const API_URL = 'http://localhost:8080/api/lecture-schedule';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -61,7 +63,6 @@ const WeeklySchedule = () => {
   const timeSlots = ['08:00:00', '09:00:00', '10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00'];
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  // Placeholder mappings for foreign keys (replace with actual API calls)
   const tenantToFaculty = {
     1: 'Computer Science Faculty',
     2: 'Mathematics Faculty',
@@ -82,16 +83,24 @@ const WeeklySchedule = () => {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const [scheduleResponse, authResponse] = await Promise.all([
         axios.get(API_URL),
         axios.get(AUTH_API_URL),
       ]);
-      setSchedule(scheduleResponse.data.length > 0 ? scheduleResponse.data : initialSchedule);
+      const fetchedSchedule = scheduleResponse.data.length > 0 ? scheduleResponse.data : initialSchedule;
+      setSchedule(fetchedSchedule);
       setAdminName(authResponse.data.name || 'Adrian Mehaj');
+      console.log('Fetched schedule:', fetchedSchedule);
     } catch (error) {
       console.error('Error fetching data:', error);
+      setError('Failed to fetch schedule data. Using default data.');
       setSchedule(initialSchedule);
+      console.log('Fallback to initialSchedule:', initialSchedule);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,6 +130,7 @@ const WeeklySchedule = () => {
       fetchData();
     } catch (error) {
       console.error('Error saving schedule:', error);
+      setError('Failed to save schedule.');
     }
   };
 
@@ -145,6 +155,7 @@ const WeeklySchedule = () => {
         fetchData();
       } catch (error) {
         console.error('Error deleting schedule:', error);
+        setError('Failed to delete schedule.');
       }
     }
   };
@@ -164,7 +175,10 @@ const WeeklySchedule = () => {
   };
 
   const getScheduleItem = (day, time) => {
-    return schedule.find(item => item.day_of_week === day && item.start_time === time);
+    console.log(`Searching for day: ${day}, time: ${time}`);
+    const item = schedule.find((item) => item.day_of_week === day && item.start_time === time);
+    console.log(`Found item:`, item);
+    return item;
   };
 
   const formatTime = (time) => {
@@ -175,8 +189,30 @@ const WeeklySchedule = () => {
     return `${adjustedHour}:${minute} ${period}`;
   };
 
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '20px' }}>Loading schedule...</div>;
+  }
+
   return (
     <div className="schedule-container">
+      {error && (
+        <div style={{ textAlign: 'center', padding: '10px', color: 'red' }}>
+          <p>{error}</p>
+          <button
+            onClick={fetchData}
+            style={{
+              padding: '5px 10px',
+              background: '#3498db',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
       <main className="schedule-main">
         <div className="header-section">
           <h2>Weekly Schedule</h2>
@@ -206,7 +242,7 @@ const WeeklySchedule = () => {
                     const scheduleItem = getScheduleItem(day, time);
                     return (
                       <td key={`${day}-${time}`} className={scheduleItem ? 'scheduled' : ''}>
-                        {scheduleItem && (
+                        {scheduleItem ? (
                           <div>
                             <p>{courseProfessorToDetails[scheduleItem.course_professor_id]?.course || 'Unknown Course'}</p>
                             <p>Room: {scheduleItem.room}</p>
@@ -221,6 +257,8 @@ const WeeklySchedule = () => {
                               </div>
                             )}
                           </div>
+                        ) : (
+                          <span>No class scheduled</span>
                         )}
                       </td>
                     );
@@ -317,47 +355,272 @@ const WeeklySchedule = () => {
         </div>
       )}
 
-      <style jsx>{`
-        .schedule-container { display: flex; height: 100vh; }
-        .schedule-main { flex: 1; padding: 0.5rem; background: #ecf0f1; position: relative; }
-        .header-section { margin-bottom: 1rem; position: relative; }
-        .header-section h2 { font-size: 1.2rem; color: #2c3e50; margin-bottom: 0.1rem; }
-        .header-section p { color: #7f8c8d; margin: 0; font-size: 0.8rem; }
-        .add-button { background: #3498db; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 0.2rem; font-size: 0.8rem; }
-        .add-button:hover { background: #2980b9; }
-        .schedule-content { background: white; padding: 0.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .schedule-content h3 { font-size: 1rem; color: #2c3e50; margin-bottom: 0.5rem; }
-        .schedule-table { width: 100%; border-collapse: collapse; }
-        .schedule-table th { background: #e6f0fa; padding: 0.5rem; text-align: left; font-weight: 600; color: #1a3c5e; border-bottom: 2px solid #bbdefb; font-size: 0.8rem; }
-        .schedule-table td { padding: 0.5rem; border-bottom: 1px solid #e0e0e0; color: #34495e; font-size: 0.8rem; }
-        .scheduled { background: #e6f0fa; }
-        .schedule-table td p { margin: 0; font-size: 0.8rem; }
-        .schedule-actions { margin-top: 0.3rem; display: flex; gap: 0.3rem; }
-        .edit-btn { background: none; border: none; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; display: flex; align-items: center; gap: 0.2rem; font-size: 0.7rem; color: #3498db; }
-        .edit-btn:hover { background: rgba(52,152,219,0.1); }
-        .delete-btn { background: none; border: none; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; display: flex; align-items: center; gap: 0.2rem; font-size: 0.7rem; color: #e74c3c; }
-        .delete-btn:hover { background: rgba(231,76,60,0.1); }
-        .admin-info { margin-top: 0.5rem; text-align: right; color: #2c3e50; }
-        .admin-info span { display: block; font-size: 0.8rem; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 1rem; border-radius: 8px; max-width: 350px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        .modal-content h3 { margin: 0 0 0.5rem; color: #2c3e50; font-size: 1rem; }
-        .form-group { margin-bottom: 0.5rem; }
-        .form-group label { display: block; margin-bottom: 0.2rem; font-weight: 600; color: #34495e; font-size: 0.8rem; }
-        .form-group input, .form-group select { width: 100%; padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; }
-        .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
-        .cancel-btn { background: #f8f9fa; color: #34495e; border: 1px solid #ddd; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-        .cancel-btn:hover { background: #e9ecef; }
-        .save-btn { background: #2ecc71; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-        .save-btn:hover { background: #27ae60; }
-        @media (max-width: 768px) {
-          .schedule-table th, .schedule-table td { padding: 0.3rem; font-size: 0.7rem; }
-          .modal-content { max-width: 300px; padding: 0.5rem; }
-          .form-group input, .form-group select { padding: 0.3rem; font-size: 0.7rem; }
-          .form-actions { flex-direction: column; }
-          .save-btn, .cancel-btn { width: 100%; padding: 0.3rem; font-size: 0.7rem; }
-        }
-      `}</style>
+      <style>
+        {`
+          .schedule-container {
+            display: flex;
+            height: 100vh;
+            min-height: 400px;
+            flex-direction: column;
+          }
+
+          .schedule-main {
+            flex: 1;
+            padding: 0.5rem;
+            background: #ecf0f1;
+            position: relative;
+            overflow-y: auto;
+          }
+
+          .header-section {
+            margin-bottom: 1rem;
+            position: relative;
+          }
+
+          .header-section h2 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.1rem;
+          }
+
+          .header-section p {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 0.8rem;
+          }
+
+          .add-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.8rem;
+          }
+
+          .add-button:hover {
+            background: #2980b9;
+          }
+
+          .schedule-content {
+            background: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            min-height: 300px;
+            overflow-x: auto;
+          }
+
+          .schedule-content h3 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+          }
+
+          .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+          }
+
+          .schedule-table th {
+            background: #e6f0fa;
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1a3c5e;
+            border-bottom: 2px solid #bbdefb;
+            font-size: 0.8rem;
+            position: sticky;
+            top: 0;
+          }
+
+          .schedule-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            color: #34495e;
+            font-size: 0.8rem;
+            vertical-align: top;
+            min-height: 50px;
+          }
+
+          .scheduled {
+            background: #e6f0fa;
+          }
+
+          .schedule-table td p {
+            margin: 0;
+            font-size: 0.8rem;
+          }
+
+          .schedule-actions {
+            margin-top: 0.3rem;
+            display: flex;
+            gap: 0.3rem;
+          }
+
+          .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.7rem;
+            color: #3498db;
+          }
+
+          .edit-btn:hover {
+            background: rgba(52, 152, 219, 0.1);
+          }
+
+          .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.7rem;
+            color: #e74c3c;
+          }
+
+          .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.1);
+          }
+
+          .admin-info {
+            margin-top: 0.5rem;
+            text-align: right;
+            color: #2c3e50;
+          }
+
+          .admin-info span {
+            display: block;
+            font-size: 0.8rem;
+          }
+
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+          }
+
+          .modal-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 350px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          }
+
+          .modal-content h3 {
+            margin: 0 0 0.5rem;
+            color: #2c3e50;
+            font-size: 1rem;
+          }
+
+          .form-group {
+            margin-bottom: 0.5rem;
+          }
+
+          .form-group label {
+            display: block;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.8rem;
+          }
+
+          .form-group input,
+          .form-group select {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+          }
+
+          .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+          }
+
+          .cancel-btn {
+            background: #f8f9fa;
+            color: #34495e;
+            border: 1px solid #ddd;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+          }
+
+          .cancel-btn:hover {
+            background: #e9ecef;
+          }
+
+          .save-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+          }
+
+          .save-btn:hover {
+            background: #27ae60;
+          }
+
+          @media (max-width: 768px) {
+            .schedule-table th,
+            .schedule-table td {
+              padding: 0.3rem;
+              font-size: 0.7rem;
+            }
+            .modal-content {
+              max-width: 300px;
+              padding: 0.5rem;
+            }
+            .form-group input,
+            .form-group select {
+              padding: 0.3rem;
+              font-size: 0.7rem;
+            }
+            .form-actions {
+              flex-direction: column;
+            }
+            .save-btn,
+            .cancel-btn {
+              width: 100%;
+              padding: 0.3rem;
+              font-size: 0.7rem;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
