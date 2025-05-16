@@ -13,13 +13,18 @@ import Faculty from './Pages/Admin/Faculty';
 import Departments from './Pages/Admin/Departments';
 import Programs from './Pages/Admin/Programs';
 import Users from './Pages/Admin/Users'; // Add this import for the Users page
-import ManageUsers from './Pages/Admin/ManageUsers';
 import Professors from './Pages/Admin/Professors'; // Add this import for the Professors page
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Materials from './Pages/Admin/Materials';
 import Enrollments from './Pages/Admin/Registrations';
 import Schedule from './Pages/Admin/Schedule';
+import ManageUsers from './Pages/Admin/ManageUsers'; 
+import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
+
+
+
+
 function App() {
   return (
     <>
@@ -44,6 +49,8 @@ function App() {
         <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
         <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
         <Route path="/admin-schedule" element={<Schedule />} /> {/* Add this route */}
+        <Route path="/ProfessorDashboard" element={<ProfessorDashboard />} />
+
       </Routes>
     </>
   );
