@@ -19,6 +19,7 @@ import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Materials from './Pages/Admin/Materials';
 import Enrollments from './Pages/Admin/Registrations';
+import Schedule from './Pages/Admin/Schedule';
 function App() {
   return (
     <>
@@ -42,6 +43,7 @@ function App() {
         <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
         <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
         <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
+        <Route path="/admin-schedule" element={<Schedule />} /> {/* Add this route */}
       </Routes>
     </>
   );
