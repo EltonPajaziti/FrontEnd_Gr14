@@ -1,36 +1,93 @@
-import React from 'react';
-import '../../CSS/Student/StudentSidebar.css';
-import { FaBook, FaFileAlt, FaClock, FaCalendarCheck, FaClipboard, FaGraduationCap, FaQuestionCircle, FaCog } from 'react-icons/fa';
+import React, { useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  FaBook, FaFileAlt, FaClock, FaCalendarCheck, FaClipboard,
+  FaGraduationCap, FaQuestionCircle, FaCog, FaSignOutAlt
+} from "react-icons/fa";
 
-function StudentSidebar() {
+const StudentSidebar = ({ isSidebarOpen }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const menuRef = useRef(null);
+  const STORAGE_KEY = "studentSidebarScroll";
+
+  const handleItemClick = (path) => {
+    if (menuRef.current) {
+      sessionStorage.setItem(STORAGE_KEY, menuRef.current.scrollTop);
+    }
+    navigate(path);
+  };
+
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem(STORAGE_KEY);
+    if (menuRef.current && savedScroll !== null) {
+      menuRef.current.scrollTop = parseInt(savedScroll, 10);
+    }
+  }, [location.pathname]);
+
   return (
-    <nav className="sidebar">
-      <div className="logo">
-        <h2>📘 SMS 2025/26</h2>
+    <div className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <div className="admin-sidebar-header">
+        <div className="icon">📘</div>
+        <span>{isSidebarOpen ? "SMS 2025/26" : "SMS"}</span>
       </div>
-      <ul className="nav-list">
-        <li><a href="#"><FaClock /> Dashboard</a></li>
-        <li><a href="#"><FaBook /> Kurset</a></li>
-        <li><a href="#"><FaFileAlt /> Materialet</a></li>
-        <li><a href="#"><FaClock /> Orari</a></li>
-        <li><a href="#"><FaCalendarCheck /> Orari i Leksioneve</a></li>
-        <li><a href="#"><FaClipboard /> Provimet</a></li>
-        <li><a href="#"><FaGraduationCap /> Notat</a></li>
-        <li><a href="#"><FaGraduationCap /> Bursat</a></li>
-        <li><a href="#"><FaQuestionCircle /> FAQ</a></li>
-        <li><a href="#"><FaCog /> Cilësimet</a></li>
+      <ul className="admin-sidebar-menu" ref={menuRef}>
+        <li onClick={() => handleItemClick("/StudentDashboard")} className="menu-item">
+          <FaClock className="menu-icon" />
+          {isSidebarOpen && <span>Dashboard</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-courses")} className="menu-item">
+          <FaBook className="menu-icon" />
+          {isSidebarOpen && <span>Kurset</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-materials")} className="menu-item">
+          <FaFileAlt className="menu-icon" />
+          {isSidebarOpen && <span>Materialet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-schedule")} className="menu-item">
+          <FaClock className="menu-icon" />
+          {isSidebarOpen && <span>Orari</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-lectures")} className="menu-item">
+          <FaCalendarCheck className="menu-icon" />
+          {isSidebarOpen && <span>Orari i Leksioneve</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-exams")} className="menu-item">
+          <FaClipboard className="menu-icon" />
+          {isSidebarOpen && <span>Provimet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-grades")} className="menu-item">
+          <FaGraduationCap className="menu-icon" />
+          {isSidebarOpen && <span>Notat</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-scholarships")} className="menu-item">
+          <FaGraduationCap className="menu-icon" />
+          {isSidebarOpen && <span>Bursat</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-faq")} className="menu-item">
+          <FaQuestionCircle className="menu-icon" />
+          {isSidebarOpen && <span>FAQ</span>}
+        </li>
+        <li onClick={() => handleItemClick("/student-settings")} className="menu-item">
+          <FaCog className="menu-icon" />
+          {isSidebarOpen && <span>Cilësimet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/")} className="menu-item">
+          <FaSignOutAlt className="menu-icon" />
+          {isSidebarOpen && <span>Logout</span>}
+        </li>
       </ul>
-      <div className="profile-section">
-        <div className="profile-infos">
-          <div className="avatar">SJ</div>
-          <div>
-            <p className="name">Student Johnson</p>
-            <p className="role">STUDENT</p>
+      <div className="admin-sidebar-user">
+        <div className="sidebar-user-logo">SJ</div>
+        {isSidebarOpen && (
+          <div className="admin-sidebar-user-text">
+            <div>Student Johnson</div>
+            <div>STUDENT</div>
           </div>
-        </div>
+        )}
       </div>
-    </nav>
+    </div>
   );
-}
+};
 
 export default StudentSidebar;
