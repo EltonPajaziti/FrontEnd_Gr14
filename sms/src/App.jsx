@@ -26,6 +26,8 @@ import Transcripts from './Pages/Admin/Transcripts';
 import Bursat from './Pages/Admin/Bursat';
 import FAQ from './Pages/Admin/FAQ';
 import Cilesimet from './Pages/Admin/Cilesimet';
+import StudentMaterials from './Pages/Student/StudentMaterials';
+
 function App() {
   return (
     <>
@@ -37,6 +39,7 @@ function App() {
         <Route path="/EServices" element={<EServices />} />
         <Route path="/Study" element={<Study />} />
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
+        <Route path="/student-materials" element={<StudentMaterials />} />
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
         <Route path="/admin-faculties" element={<Faculty />} />
@@ -56,6 +59,8 @@ function App() {
         <Route path="/admin-scholarships" element={<Bursat />} />
         <Route path="/admin-faq" element={<FAQ />} />
         <Route path="/admin-settings" element={<Cilesimet />} />
+        {/* <Route path="/student-materials" element={<StudentMaterials />} /> */}
+
 
       </Routes>
     </>
