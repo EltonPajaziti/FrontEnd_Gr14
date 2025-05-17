@@ -27,6 +27,7 @@ import Bursat from './Pages/Admin/Bursat';
 import FAQ from './Pages/Admin/FAQ';
 import Cilesimet from './Pages/Admin/Cilesimet';
 import StudentMaterials from './Pages/Student/StudentMaterials';
+import StudentCourses from './Pages/Student/StudentCourses';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/Study" element={<Study />} />
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
         <Route path="/student-materials" element={<StudentMaterials />} />
+        <Route path="/student-courses" element={<StudentCourses />} />
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
         <Route path="/admin-faculties" element={<Faculty />} />
