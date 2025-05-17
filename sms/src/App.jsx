@@ -28,6 +28,8 @@ import FAQ from './Pages/Admin/FAQ';
 import Cilesimet from './Pages/Admin/Cilesimet';
 import StudentMaterials from './Pages/Student/StudentMaterials';
 import StudentCourses from './Pages/Student/StudentCourses';
+import StudentSchedule from './Pages/Student/StudentSchedule';
+
 
 function App() {
   return (
@@ -42,6 +44,7 @@ function App() {
         <Route path="/StudentDashboard" element={<StudentDashboard />} />
         <Route path="/student-materials" element={<StudentMaterials />} />
         <Route path="/student-courses" element={<StudentCourses />} />
+        <Route path="/student-schedule" element={<StudentSchedule />} />
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
         <Route path="/admin-faculties" element={<Faculty />} />
