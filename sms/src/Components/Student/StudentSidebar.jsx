@@ -48,10 +48,6 @@ const StudentSidebar = ({ isSidebarOpen }) => {
           <FaClock className="menu-icon" />
           {isSidebarOpen && <span>Orari</span>}
         </li>
-        <li onClick={() => handleItemClick("/student-lectures")} className="menu-item">
-          <FaCalendarCheck className="menu-icon" />
-          {isSidebarOpen && <span>Orari i Leksioneve</span>}
-        </li>
         <li onClick={() => handleItemClick("/student-exams")} className="menu-item">
           <FaClipboard className="menu-icon" />
           {isSidebarOpen && <span>Provimet</span>}

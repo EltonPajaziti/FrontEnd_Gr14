@@ -29,6 +29,7 @@ import Cilesimet from './Pages/Admin/Cilesimet';
 import StudentMaterials from './Pages/Student/StudentMaterials';
 import StudentCourses from './Pages/Student/StudentCourses';
 import StudentSchedule from './Pages/Student/StudentSchedule';
+import StudentExams from "./Pages/Student/StudentExams"; 
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
         <Route path="/student-materials" element={<StudentMaterials />} />
         <Route path="/student-courses" element={<StudentCourses />} />
         <Route path="/student-schedule" element={<StudentSchedule />} />
+        <Route path="/student-exams" element={<StudentExams />} /> 
         <Route path="/Dashboard" element={<AdminDashboard />} />
         <Route path="/admin-add-user" element={<AddUser />} />
         <Route path="/admin-faculties" element={<Faculty />} />

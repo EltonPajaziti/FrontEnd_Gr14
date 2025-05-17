@@ -69,7 +69,7 @@ const StudentMaterials = () => {
 
           <div className="page-container">
             <div className="content-container">
-              <h2 className="section-title">📚 Shkarko materialet mësimore</h2>
+              <h2 className="section-title"> Shkarko materialet mësimore</h2>
 
               <div className="filter-section">
                 <select value={academicYear} onChange={(e) => setAcademicYear(e.target.value)}>
