@@ -14,8 +14,7 @@ const Departments = () => {
   const [editingId, setEditingId] = useState(null);
   const [adminName, setAdminName] = useState('Admin');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [departmentCount, setDepartmentCount] = useState(0);
-  const [loadingStats, setLoadingStats] = useState(false);
+
 
   const API_URL = 'http://localhost:8080/api/departments';
   const FACULTIES_API_URL = 'http://localhost:8080/api/faculties';
@@ -72,11 +71,10 @@ const Departments = () => {
     const fetchStats = async () => {
       setLoadingStats(true);
       const deptCount = departments.length;
-      animateCount(deptCount, setDepartmentCount);
       setLoadingStats(false);
     };
     fetchStats();
-  }, [departments]);
+  }, []);
 
   const getGreeting = () => {
     const currentHour = new Date('2025-05-16T17:38:00+02:00').getHours();
