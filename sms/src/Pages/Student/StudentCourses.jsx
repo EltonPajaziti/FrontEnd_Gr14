@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import StudentSidebar from "../../Components/Student/StudentSidebar";
 import StudentHeader from "../../Components/Student/StudentHeader";
 import "../../CSS/Admin/AdminDashboard.css";
@@ -8,53 +9,54 @@ import "../../CSS/Student/StudentCourses.css";
 const StudentCourses = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [viewMode, setViewMode] = useState(""); // "register" or "view"
-  const [semester, setSemester] = useState("5");
+  const [semester, setSemester] = useState("");
+  const [availableCourses, setAvailableCourses] = useState([]);
+  const [yearOfStudy, setYearOfStudy] = useState(1);
   const [showCourses, setShowCourses] = useState(false);
-  const studentName = "Student Johnson";
 
-  const registeredCourses = [
-    {
-      id: 1,
-      code: "CS305",
-      name: "Programim në Web",
-      professor: "Prof. Dr. Williams",
-      credits: 3,
-    },
-    {
-      id: 2,
-      code: "CS302",
-      name: "Programim i Avancuar",
-      professor: "Prof. Dr. Johnson",
-      credits: 4,
-    },
-  ];
-
-  const availableCourses = [
-    {
-      id: 1,
-      code: "CS101",
-      name: "Hyrje në Shkencat Kompjuterike",
-      professor: "Prof. Dr. Jane Smith",
-      credits: 3,
-      semester: "5",
-    },
-    {
-      id: 2,
-      code: "MATH201",
-      name: "Kalkulusi II",
-      professor: "Prof. Dr. Robert Johnson",
-      credits: 4,
-      semester: "6",
-    },
-  ];
+  const studentId = localStorage.getItem("studentId");
+  const studentName = "Student"; // ose merr nga API/localStorage nëse ke
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const handleSearchCourses = () => {
-    setShowCourses(true);
+  // Merr vitin e studimit kur ngarkohet komponenti
+  useEffect(() => {
+    if (studentId) {
+      axios.get(`http://localhost:8080/api/students/${studentId}`)
+        .then((res) => {
+          setYearOfStudy(res.data.yearOfStudy);
+        })
+        .catch((err) => console.error("Gabim në marrjen e vitit të studimit:", err));
+    }
+  }, [studentId]);
+
+  // Gjeneron semestrat në bazë të vitit të studimeve
+  const generateSemesterOptions = () => {
+    const options = [];
+    for (let i = 1; i <= yearOfStudy * 2; i++) {
+      options.push(
+        <option key={i} value={i}>
+          Semestri {i}
+        </option>
+      );
+    }
+    return options;
   };
 
-  const filteredCourses = availableCourses.filter((c) => c.semester === semester);
+  // Kërkon kurset që nuk janë të regjistruara për semestrin e zgjedhur
+  const handleSearchCourses = () => {
+    if (!semester || !studentId) return;
+
+    axios
+      .get(`http://localhost:8080/api/students/${studentId}/available-courses?semester=${semester}`)
+      .then((res) => {
+        setAvailableCourses(res.data);
+        setShowCourses(true);
+      })
+      .catch((err) => {
+        console.error("Gabim në marrjen e kurseve:", err);
+      });
+  };
 
   return (
     <div className="app-container">
@@ -84,8 +86,8 @@ const StudentCourses = () => {
                   <h3 className="subtitle">Regjistrohu në kurset e semestrit</h3>
                   <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                     <select value={semester} onChange={(e) => setSemester(e.target.value)}>
-                      <option value="5">Semestri i pestë</option>
-                      <option value="6">Semestri i gjashtë</option>
+                      <option value="">Zgjedh semestrin</option>
+                      {generateSemesterOptions()}
                     </select>
                     <button className="search-btn" onClick={handleSearchCourses}>
                       Kërko
@@ -94,17 +96,26 @@ const StudentCourses = () => {
 
                   {showCourses && (
                     <div className="course-grid">
-                      {filteredCourses.map((course) => (
-                        <div className="course-card" key={course.id}>
-                          <div className="course-code">{course.code}</div>
-                          <div className="course-name">{course.name}</div>
-                          <div className="credit-badge">{course.credits} Kredite</div>
-                          <div className="course-details">
-                            <strong>Profesori:</strong> {course.professor}
+                      {availableCourses.length === 0 ? (
+                        <p>Nuk ka kurse të disponueshme për këtë semestër.</p>
+                      ) : (
+                        availableCourses.map((course) => (
+                          <div className="course-card" key={course.id}>
+                            <div className="course-code">{course.code}</div>
+                            <div className="course-name">{course.name}</div>
+                            <div className="credit-badge">{course.credits} Kredite</div>
+                            <div className="course-details">
+                              <strong>Profesori:</strong> {course.professorName}
+                            </div>
+                            <button
+                              className="enroll-btn"
+                              onClick={() => alert(`Do të regjistrohet në: ${course.name}`)}
+                            >
+                              Regjistrohu
+                            </button>
                           </div>
-                          <button className="enroll-btn">Regjistrohu</button>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
@@ -114,16 +125,7 @@ const StudentCourses = () => {
                 <div className="course-view">
                   <h3 className="subtitle">Kurset e mia të regjistruara</h3>
                   <div className="course-grid">
-                    {registeredCourses.map((course) => (
-                      <div className="course-card" key={course.id}>
-                        <div className="course-code">{course.code}</div>
-                        <div className="course-name">{course.name}</div>
-                        <div className="credit-badge">{course.credits} Kredite</div>
-                        <div className="course-details">
-                          <strong>Profesori:</strong> {course.professor}
-                        </div>
-                      </div>
-                    ))}
+                    <p>(Funksionaliteti "Shiko Kurset" implementohet më vonë.)</p>
                   </div>
                 </div>
               )}

@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import StudentSidebar from "../../Components/Student/StudentSidebar";
-import StudentHeader from "../../Components/Student/StudentHeader"; // ← importo headerin e ri
+import StudentHeader from "../../Components/Student/StudentHeader";
 import "../../CSS/Admin/AdminDashboard.css";
 import "../../CSS/Student/StudentDashboard.css";
 
 function StudentDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const studentName = "Student Johnson";
+  const [studentName, setStudentName] = useState("Student");
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      axios.get(`http://localhost:8080/api/students/by-user/${userId}`)
+        .then(res => {
+          const studentId = res.data.id;
+          const fullName = `${res.data.user.firstName} ${res.data.user.lastName}`;
+          localStorage.setItem("studentId", studentId);
+          setStudentName(fullName);
+        })
+        .catch(err => {
+          console.error("Nuk u gjet studenti:", err);
+        });
+    } else {
+      alert("User nuk është i kyçur.");
+    }
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -19,7 +38,7 @@ function StudentDashboard() {
           <StudentSidebar isSidebarOpen={isSidebarOpen} />
         </div>
         <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-          <StudentHeader studentName={studentName} toggleSidebar={toggleSidebar} /> {/* ← përdor këtu */}
+          <StudentHeader studentName={studentName} toggleSidebar={toggleSidebar} />
           <div className="page-container">
             <div className="content-container">
               <div className="dashboard-header">
