@@ -8,7 +8,7 @@ import Header from "../../Components/Admin/Header";
 const Departments = () => {
   const [departments, setDepartments] = useState([]);
   const [faculties, setFaculties] = useState([]);
-  const [formData, setFormData] = useState({ name: '', tenantId: '' });
+  const [formData, setFormData] = useState({ name: '', tenantId: localStorage.getItem('tenantId') || '' });
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -165,13 +165,7 @@ const Departments = () => {
                     <FaPlus /> Add Department
                   </button>
                 </div>
-                <div className="stats-section">
-                  <div className="stat-card">
-                    <h3>Statistikat</h3>
-                    <p>Total Departamente</p>
-                    <p className="count">{loadingStats ? 'Loading...' : departmentCount}</p>
-                  </div>
-                </div>
+                
                 <div className="search-section">
                   <div className="search-box">
                     <FaSearch className="search-icon" />
@@ -245,22 +239,7 @@ const Departments = () => {
                             required
                           />
                         </div>
-                        <div className="form-group">
-                          <label>Faculty*</label>
-                          <select
-                            name="tenantId"
-                            value={formData.tenantId}
-                            onChange={handleInputChange}
-                            required
-                          >
-                            <option value="">Select a faculty</option>
-                            {faculties.map(faculty => (
-                              <option key={faculty.id} value={faculty.id}>
-                                {faculty.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+
                         <div className="form-actions">
                           <button type="button" className="cancel-btn" onClick={resetForm}>
                             Cancel
