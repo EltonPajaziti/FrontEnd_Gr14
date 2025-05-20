@@ -10,6 +10,8 @@ import '../CSS/Home.css';
 function Home(){
     return(
         <>
+    <Navbar />
+
     <div className="home">
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
@@ -45,6 +47,7 @@ function Home(){
         <p>The University of Prishtina is located in the capital of Kosovo and stands as the oldest and largest higher education institution in the country. With thousands of dedicated students and academic staff, it forms a dynamic scientific and educational community. In the region, the University is recognized for its ongoing contribution to society, education, and scientific research. Since its establishment on February 13, 1970, the University of Prishtina has played a vital role in shaping a brighter future for new generations.</p>
         </div>
     </div>
+    <Footer />
 
         </>
 
