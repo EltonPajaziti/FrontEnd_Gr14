@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import StudentSidebar from "../../Components/Student/StudentSidebar";
+import '../../CSS/Student/StudentDashboard.css';
 import StudentHeader from "../../Components/Student/StudentHeader";
 import "../../CSS/Admin/AdminDashboard.css";
 import "../../CSS/Student/StudentDashboard.css";
+
 
 function StudentDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
