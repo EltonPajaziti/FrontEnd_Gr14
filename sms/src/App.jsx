@@ -13,16 +13,13 @@ import Faculty from './Pages/Admin/Faculty';
 import Departments from './Pages/Admin/Departments';
 import Programs from './Pages/Admin/Programs';
 import Users from './Pages/Admin/Users'; // Add this import for the Users page
-import Professors from './Pages/Admin/Professors'; 
+import ManageUsers from './Pages/Admin/ManageUsers';
+import Professors from './Pages/Admin/Professors'; // Add this import for the Professors page
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Materials from './Pages/Admin/Materials';
 import Enrollments from './Pages/Admin/Registrations';
 import Schedule from './Pages/Admin/Schedule';
-import ManageUsers from './Pages/Admin/ManageUsers'; 
-import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
-
-
 import Exams from './Pages/Admin/Exams';
 import Grades from "./Pages/Admin/Grades";
 import Transcripts from './Pages/Admin/Transcripts';
@@ -33,16 +30,15 @@ import StudentMaterials from './Pages/Student/StudentMaterials';
 import StudentCourses from './Pages/Student/StudentCourses';
 import StudentSchedule from './Pages/Student/StudentSchedule';
 import StudentExams from "./Pages/Student/StudentExams"; 
-
-
+import ProfessorDashboard from './Pages/Professors/ProfessorDashboard';
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Login />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/Login" element={<Login />} />
+        <Route path="/Home" element={<Home />} />
         <Route path="/About" element={<About />} />
         <Route path="/EServices" element={<EServices />} />
         <Route path="/Study" element={<Study />} />
@@ -64,9 +60,6 @@ function App() {
         <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
         <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
         <Route path="/admin-schedule" element={<Schedule />} /> {/* Add this route */}
-
-        <Route path="/ProfessorDashboard" element={<ProfessorDashboard />} />
-
         <Route path="/admin-exams" element={<Exams />} />
         <Route path="/admin-grades" element={<Grades />} />
         <Route path="/admin-transcripts" element={<Transcripts />} />
@@ -75,6 +68,7 @@ function App() {
         <Route path="/admin-settings" element={<Cilesimet />} />
         {/* <Route path="/student-materials" element={<StudentMaterials />} /> */}
 
+        <Route path="/professor-dashboard" element={<ProfessorDashboard/>} />
 
 
       </Routes>
