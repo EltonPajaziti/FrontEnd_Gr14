@@ -30,6 +30,7 @@ import ProfessorDashboard from './Pages/Professors/ProfessorsDashboard';
 import ProfessorStudents from './Pages/Professors/ProfessorsStudents';
 import ProfessorCourses from './Pages/Professors/ProfessorsCourses';
 import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
+import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
 function App() {
   return (
     <>
@@ -65,6 +66,8 @@ function App() {
         <Route path="/professor-students" element={<ProfessorStudents/>} />
         <Route path="/professor-courses" element={<ProfessorCourses/>} />
         <Route path="/professor-materials" element={<ProfessorMaterials/>} />
+        <Route path="/professor-schedule" element={<ProfessorSchedule/>} />
+
 
       </Routes>
     </>
