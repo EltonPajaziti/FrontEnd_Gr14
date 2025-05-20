@@ -32,6 +32,10 @@ function Navbar(){
             </li>
           </ul>
         </div>
+
+    <div className="d-flex ms-auto">
+  <Link to="../../Pages/Login" className="login-button">Login</Link>
+        </div>
       </div>
     </nav>
   );
