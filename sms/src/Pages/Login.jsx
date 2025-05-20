@@ -25,6 +25,8 @@ const Login = () => {
         const data = await response.json();
         localStorage.setItem('token', data.token); // ruaj tokenin
   localStorage.setItem('tenantId', data.tenantId); // ruaj tenantId
+  localStorage.setItem("userId", data.userId); 
+
 
         //   Ridrejto te dashboardi i adminit
         navigate('/admin-dashboard');
