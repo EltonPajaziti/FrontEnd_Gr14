@@ -87,15 +87,6 @@ const ProfessorSidebar = ({ professorName = "Professor", isSidebarOpen = false }
           {isSidebarOpen && <span>Materialet</span>}
         </li>
         <li
-          className={`menu-item ${location.pathname === "/professor-registrations" ? "bg-gray-700" : ""}`}
-          onClick={() => handleItemClick("/professor-registrations")}
-          role="menuitem"
-          aria-label="Regjistrimet"
-        >
-          <FaClipboardList className="menu-icon" />
-          {isSidebarOpen && <span>Regjistrimet</span>}
-        </li>
-        <li
           className={`menu-item ${location.pathname === "/professor-schedule" ? "bg-gray-700" : ""}`}
           onClick={() => handleItemClick("/professor-schedule")}
           role="menuitem"
