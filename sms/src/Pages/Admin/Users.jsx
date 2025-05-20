@@ -10,14 +10,14 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [adminName, setAdminName] = useState('Admin');
-  const [sortField, setSortField] = useState('name');
+  const [sortField, setSortField] = useState('firstName');
   const [sortOrder, setSortOrder] = useState('asc');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const navigate = useNavigate();
 
   const API_URL = 'http://localhost:8080/api/users';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+  //const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
   useEffect(() => {
     fetchData();
@@ -25,12 +25,12 @@ const Users = () => {
 
   const fetchData = async () => {
     try {
-      const [usersResponse, authResponse] = await Promise.all([
+      const [usersResponse] = await Promise.all([
         axios.get(API_URL),
-        axios.get(AUTH_API_URL),
+        //axios.get(AUTH_API_URL),
       ]);
       setUsers(sortData(usersResponse.data, sortField, sortOrder));
-      setAdminName(authResponse.data.name || 'Admin');
+      setAdminName('Admin');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -65,7 +65,7 @@ const Users = () => {
   };
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(search.toLowerCase())
+  `${user.firstName} ${user.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleSidebar = () => {
@@ -114,7 +114,7 @@ const Users = () => {
                     <thead>
                       <tr>
                         <th onClick={() => handleSort('id')}>ID {sortField === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
-                        <th onClick={() => handleSort('name')}>Name {sortField === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
+                        <th onClick={() => handleSort('firstName')}>Name {sortField === 'firstName' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                         <th>Email</th>
                         <th>Role</th>
                         <th onClick={() => handleSort('createdAt')}>Created At {sortField === 'createdAt' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
@@ -126,9 +126,9 @@ const Users = () => {
                         filteredUsers.map((user) => (
                           <tr key={user.id}>
                             <td>{user.id}</td>
-                            <td>{user.name}</td>
+                            <td>{`${user.firstName} ${user.lastName}`}</td>
                             <td>{user.email}</td>
-                            <td>{user.role}</td>
+                            <td>{user.role?.name || 'N/A'}</td>
                             <td>{user.createdAt ? new Date(user.createdAt).toLocaleString() : '-'}</td>
                             <td className="actions-cell">
                               <button className="edit-btn" onClick={() => navigate(`/admin/manage-users/${user.id}`)}>

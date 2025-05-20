@@ -8,7 +8,7 @@ import Header from "../../Components/Admin/Header";
 const Programs = () => {
   const [programs, setPrograms] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [formData, setFormData] = useState({ name: '', departmentId: '', credits: '' });
+  const [formData, setFormData] = useState({ name: '', departmentId: '', level: '' });
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -25,20 +25,25 @@ const Programs = () => {
     fetchData();
   }, [sortField, sortOrder]);
 
-  const fetchData = async () => {
-    try {
-      const [progResponse, deptResponse, authResponse] = await Promise.all([
-        axios.get(API_URL),
-        axios.get(DEPARTMENTS_API_URL),
-        axios.get(AUTH_API_URL),
-      ]);
-      setPrograms(sortData(progResponse.data, sortField, sortOrder));
-      setDepartments(deptResponse.data);
-      setAdminName(authResponse.data.name || 'Admin');
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+const fetchData = async () => {
+  try {
+    const [progResponse, deptResponse] = await Promise.all([
+      axios.get(API_URL),
+      axios.get(DEPARTMENTS_API_URL),
+      // axios.get(AUTH_API_URL),
+    ]);
+
+    console.log("Programs fetched:", progResponse.data);
+    console.log("Departments fetched:", deptResponse.data);
+
+    setPrograms(sortData(progResponse.data, sortField, sortOrder));
+    setDepartments(deptResponse.data);
+    setAdminName('Admin');
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
 
   const sortData = (data, field, order) => {
     return [...data].sort((a, b) => {
@@ -64,9 +69,8 @@ const Programs = () => {
     try {
       const payload = {
         name: formData.name,
-        level: formData.level,
         departmentId: formData.departmentId,
-        tenantId: formData.tenantId   
+        level: formData.level,
       };
 
       if (editingId) {
@@ -103,7 +107,7 @@ const Programs = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', departmentId: '', credits: '' });
+    setFormData({ name: '', departmentId: '', level: '' });
     setEditingId(null);
     setShowForm(false);
   };
@@ -165,7 +169,7 @@ const Programs = () => {
                         <th onClick={() => handleSort('id')}>ID {sortField === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                         <th onClick={() => handleSort('name')}>Name {sortField === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                         <th>Department</th>
-                        <th>Credits</th>
+                        <th>Level</th>
                         <th onClick={() => handleSort('createdAt')}>Created At {sortField === 'createdAt' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                         <th>Actions</th>
                       </tr>
@@ -177,7 +181,7 @@ const Programs = () => {
                             <td>{program.id}</td>
                             <td>{program.name}</td>
                             <td>{getDepartmentName(program.department?.id)}</td>
-                            <td>{program.credits}</td>
+                            <td>{program.level}</td>
                             <td>{program.createdAt ? new Date(program.createdAt).toLocaleString() : '-'}</td>
                             <td className="actions-cell">
                               <button className="edit-btn" onClick={() => handleEdit(program)}>
@@ -234,15 +238,14 @@ const Programs = () => {
                           </select>
                         </div>
                         <div className="form-group">
-                          <label>Credits*</label>
-                          <input
-                            type="number"
-                            name="credits"
-                            value={formData.credits}
-                            onChange={handleInputChange}
-                            required
-                            min="1"
-                          />
+                        <label>Level*</label>
+                        <input
+                          type="text"
+                          name="level"
+                          value={formData.level}
+                          onChange={handleInputChange}
+                          required
+                        />
                         </div>
                         <div className="form-actions">
                           <button type="button" className="cancel-btn" onClick={resetForm}>
