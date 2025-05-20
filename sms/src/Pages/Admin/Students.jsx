@@ -63,14 +63,16 @@ const Students = () => {
           Array.isArray(data)
             ? data.map((s) => ({
                 id: s.id || '',
-                user_id: s.user_id || null,
-                program_id: s.program_id || null,
-                tenant_id: s.tenant_id || null,
-                enrollment_date: s.enrollment_date || '',
-                created_at: s.created_at || '',
-                updated_at: s.updated_at || '',
+                name: `${s.user?.firstName || ''} ${s.user?.lastName || ''}`,
+                email: s.user?.email || '',
+                program_name: s.program?.name || '',
+                department_name: s.program?.department?.name || '',
+                enrollment_date: s.enrollmentDate || '',
+                created_at: s.createdAt || '',
+                updated_at: s.updatedAt || '',
               }))
             : []
+
       );
     };
 
@@ -148,13 +150,6 @@ const Students = () => {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <div className="stats-section">
-                  <div className="stat-card">
-                    <h3>Statistikat</h3>
-                    <p>Total Students</p>
-                    <p className="count">{loading ? 'Loading...' : filteredStudents.length}</p>
-                  </div>
-                </div>
 
                 <div className="filter-section">
                   <h3>Student Records</h3>
@@ -174,41 +169,45 @@ const Students = () => {
                 ) : (
                   <div className="table-container">
                     <table className="students-table">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>User ID</th>
-                          <th>Program ID</th>
-                          <th>Tenant ID</th>
-                          <th>Enrollment Date</th>
-                          <th>Created At</th>
-                          <th>Updated At</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredStudents.length > 0 ? (
-                          filteredStudents.map((student) => (
-                            <tr key={student.id}>
-                              <td>{student.id}</td>
-                              <td>{student.user_id || '-'}</td>
-                              <td>{student.program_id || '-'}</td>
-                              <td>{student.tenant_id || '-'}</td>
-                              <td>{student.enrollment_date || '-'}</td>
-                              <td>{student.created_at || '-'}</td>
-                              <td>{student.updated_at || '-'}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" className="no-data">
-                              <div className="empty-state">
-                                <p>No students found</p>
-                                <p className="hint">Try a different search term</p>
-                              </div>
-                            </td>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Program</th>
+                        <th>Department</th>
+                        <th>Enrollment Date</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {filteredStudents.length > 0 ? (
+                        filteredStudents.map((student) => (
+                          <tr key={student.id}>
+                            <td>{student.id}</td>
+                            <td>{student.name}</td>
+                            <td>{student.email}</td>
+                            <td>{student.program_name}</td>
+                            <td>{student.department_name}</td>
+                            <td>{student.enrollment_date}</td>
+                            <td>{student.created_at}</td>
+                            <td>{student.updated_at}</td>
                           </tr>
-                        )}
-                      </tbody>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="8" className="no-data">
+                            <div className="empty-state">
+                              <p>No students found</p>
+                              <p className="hint">Try a different search term</p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+
                     </table>
                   </div>
                 )}
@@ -303,47 +302,8 @@ const Students = () => {
           margin: 0;
           font-size: 0.9rem;
         }
-        .stats-section {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-          justify-content: center;
-        }
-        .stat-card {
-          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-          padding: 1rem;
-          border-radius: 10px;
-          width: 200px;
-          text-align: center;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          cursor: pointer;
-        }
-        .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-          background: linear-gradient(135deg, #e7f3ff 0%, #d1e7ff 100%);
-        }
-        .stat-card h3 {
-          font-size: 1.1rem;
-          color: #2c3e50;
-          margin: 0;
-          font-weight: 600;
-        }
-        .stat-card p {
-          font-size: 0.9rem;
-          color: #7f8c8d;
-          margin: 0.4rem 0;
-        }
-        .stat-card .count {
-          font-size: 1.5rem;
-          color: #007bff;
-          font-weight: 700;
-          transition: color 0.3s ease;
-        }
-        .stat-card:hover .count {
-          color: #0056b3;
-        }
+
+
         .filter-section {
           display: flex;
           justify-content: space-between;

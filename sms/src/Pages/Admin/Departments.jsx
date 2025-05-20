@@ -68,12 +68,7 @@ const Departments = () => {
     fetchFaculties();
     fetchAdminName();
 
-    const fetchStats = async () => {
-      setLoadingStats(true);
-      const deptCount = departments.length;
-      setLoadingStats(false);
-    };
-    fetchStats();
+
   }, []);
 
   const getGreeting = () => {
@@ -115,11 +110,14 @@ const Departments = () => {
   };
 
   const handleDelete = async (id) => {
+
+    if(window.confirm("Are you sure you want to delete this department?")){
     try {
       await axios.delete(`${API_URL}/${id}`);
       fetchDepartments();
     } catch (error) {
       console.error('Error deleting department:', error);
+    }
     }
   };
 

@@ -258,13 +258,6 @@ const Courses = () => {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <div className="stats-section">
-                  <div className="stat-card">
-                    <h3>Statistikat</h3>
-                    <p>Total Courses</p>
-                    <p className="count">{loading ? 'Loading...' : courseCount}</p>
-                  </div>
-                </div>
 
                 <div className="filter-section">
                   <h3>Course Records</h3>
