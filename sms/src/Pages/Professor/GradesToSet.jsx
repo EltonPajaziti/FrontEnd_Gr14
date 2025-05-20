@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../CSS/Professor/GradesToSet.css';
+
 
 function GradesToSet() {
   return (

@@ -1,11 +1,9 @@
-/* Kontejneri kryesor */
 .dashboard-container {
   display: flex;
   padding: 20px;
   background-color: #f8fafc;
 }
 
-/* Përmbajtja kryesore */
 .dashboard-content {
   flex: 1;
   display: flex;
@@ -13,7 +11,6 @@
   gap: 30px;
 }
 
-/* Header: përshëndetje + buton */
 .header {
   display: flex;
   justify-content: space-between;
@@ -40,7 +37,6 @@
   background-color: #1d4ed8;
 }
 
-/* Kartat lart për statistika */
 .dashboard-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -66,14 +62,12 @@
   color: #111827;
 }
 
-/* Pjesa poshtë: Kurset dhe Notat */
 .dashboard-main-sections {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 30px;
 }
 
-/* Kurset Aktuale */
 .courses {
   background-color: #ffffff;
   border-radius: 12px;

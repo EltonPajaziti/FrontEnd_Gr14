@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from './Sidebar';
+import ProfessorSidebar from '../../Components/Professor/ProfessorSidebar';
 import Header from './Header';
 import DashboardCards from './DashboardCards'
 import GradesToSet from './GradesToSet';
@@ -12,7 +12,7 @@ import '../../CSS/Professor/ProfessorDashboard.css';
 function ProfessorDashboard() {
   return (
    <div className="dashboard-container">
-  <Sidebar />
+  <ProfessorSidebar />
   <div className="dashboard-content">
     <Header />
     <DashboardCards />

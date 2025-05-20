@@ -1,6 +1,5 @@
-// ================= Sidebar.jsx =================
 import React from 'react';
-import '../../CSS/Sidebar.css';
+
 
 function Sidebar() {
   return (

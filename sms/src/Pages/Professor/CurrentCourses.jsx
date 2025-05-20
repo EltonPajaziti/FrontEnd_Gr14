@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../CSS/Professor/CurrentCourses.css'; // Rruga e saktë nëse ke strukturën CSS/Professor
+
 
 function CurrentCourses() {
   return (

@@ -13,7 +13,7 @@ import Faculty from './Pages/Admin/Faculty';
 import Departments from './Pages/Admin/Departments';
 import Programs from './Pages/Admin/Programs';
 import Users from './Pages/Admin/Users'; // Add this import for the Users page
-import Professors from './Pages/Admin/Professors'; // Add this import for the Professors page
+import Professors from './Pages/Admin/Professors'; 
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Materials from './Pages/Admin/Materials';

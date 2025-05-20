@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../CSS/Professor/DashboardCards.css';
+
 
 function DashboardCards() {
   return (
