@@ -29,7 +29,7 @@ const Login = () => {
 
 
         //   Ridrejto te dashboardi i adminit
-        navigate('/admin-dashboard');
+        navigate('/professor-dashboard');
       } else {
         const text = await response.text();
         setError(text || 'Login failed');
