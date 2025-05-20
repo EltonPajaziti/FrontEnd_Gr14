@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../Components/Professors/ProfessorSidebar";
-import Header from "../../Components/Professors/ProfessorHeader";
+import Sidebar from "../../Components/Professor/ProfessorsSidebar";
+import Header from "../../Components/Professor/ProfessorsHeader";
 import StatsCard from "../../Components/Admin/StatsCard";
 import '../../CSS/Professors/ProfessorsDashboard.css';
 

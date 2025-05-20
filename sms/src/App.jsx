@@ -30,7 +30,7 @@ import StudentMaterials from './Pages/Student/StudentMaterials';
 import StudentCourses from './Pages/Student/StudentCourses';
 import StudentSchedule from './Pages/Student/StudentSchedule';
 import StudentExams from "./Pages/Student/StudentExams"; 
-import ProfessorDashboard from './Pages/Professors/ProfessorDashboard';
+import ProfessorDashboard from './Pages/Professors/ProfessorsDashboard';
 
 function App() {
   return (
