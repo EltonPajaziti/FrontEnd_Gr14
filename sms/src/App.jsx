@@ -33,6 +33,7 @@ import StudentExams from "./Pages/Student/StudentExams";
 import ProfessorDashboard from './Pages/Professors/ProfessorsDashboard';
 import ProfessorStudents from './Pages/Professors/ProfessorsStudents';
 import ProfessorCourses from './Pages/Professors/ProfessorsCourses';
+import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
 function App() {
   return (
     <>
@@ -71,6 +72,7 @@ function App() {
         <Route path="/professor-dashboard" element={<ProfessorDashboard/>} />
         <Route path="/professor-students" element={<ProfessorStudents/>} />
         <Route path="/professor-courses" element={<ProfessorCourses/>} />
+        <Route path="/professor-materials" element={<ProfessorMaterials/>} />
 
       </Routes>
     </>
