@@ -1,0 +1,100 @@
+.enrollment-form {
+  max-width: 700px;
+  margin: auto;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 50px; 
+  position: relative;
+}
+
+.enrollment-form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.enrollment-form label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.enrollment-form input,
+.enrollment-form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+.enrollment-form button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4b60ff;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.enrollment-form button:hover {
+  background-color: #3949ab;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+    .back-button {
+    left: 5%;  /* Adjust left position for mobile screens */
+    top: 5%;   /* Adjust top position for mobile screens */
+    font-size: 0.9rem;  /* Reduce font size */
+    padding: 6px 12px;  /* Adjust padding for smaller screens */
+  }
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+.back-button {
+  display: inline-block;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 8px 16px;
+  background-color: #e0e0e0;
+  color: #333;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.back-button:hover {
+  background-color: #ccc;
+}

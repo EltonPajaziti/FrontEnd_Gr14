@@ -1,0 +1,133 @@
+.study-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  padding: 40px;
+  background-color: #f9f9f9;
+}
+
+.program-card {
+  perspective: 1000px;
+  height: 320px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+}
+
+.program-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.card-front {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+}
+
+.card-front img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  display: block;
+}
+
+.card-front .text-content {
+  background: white;
+  width: 100%;
+  padding: 16px;
+  border-radius: 0 0 8px 8px;
+  text-align: center;
+}
+
+.card-front .text-content h3 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+.card-front .text-content p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+.card-back {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: rotateY(180deg);
+  padding: 20px;
+}
+
+.card-back h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.read-more {
+  padding: 8px 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #2a6ebd;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.read-more:hover {
+  background-color: #f0f0f0;
+}
+
+.program-links {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.link-button {
+  text-decoration: none;
+  font-size: 18px;
+  color: #2a6ebd;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.link-button:hover {
+  color: #174ea6;
+  text-decoration: underline;
+}
+
+.section {
+  padding: 80px 20px;
+}
+
+.master-h2 h2{
+ text-align:  center;
+ font-size: 28px;
+  margin-bottom: 20px;
+}

@@ -1,0 +1,125 @@
+/* ============================
+   CSS për StudentCourses UI
+   ============================ */
+
+.student-courses-container {
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.student-courses-container h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #2d3436;
+}
+
+.button-group {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.button-group button,
+.search-btn {
+  padding: 10px 22px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #6c5ce7;
+  color: white;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.button-group button:hover,
+.search-btn:hover {
+  background-color: #574bdb;
+}
+
+.course-registration select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  margin-right: 15px;
+  margin-top: 10px;
+}
+
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.course-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-code {
+  font-weight: 700;
+  color: #2d3436;
+  font-size: 18px;
+}
+
+.course-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.course-details {
+  font-size: 14px;
+  color: #636e72;
+}
+
+.credit-badge {
+  display: inline-block;
+  background-color: #a29bfe;
+  color: white;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.enroll-btn {
+  margin-top: 10px;
+  align-self: flex-start;
+  padding: 8px 16px;
+  background-color: #00b894;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.enroll-btn:hover {
+  background-color: #019974;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2d3436;
+  margin-bottom: 20px;
+}

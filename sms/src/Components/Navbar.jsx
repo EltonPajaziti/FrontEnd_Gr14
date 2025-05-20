@@ -1,5 +1,5 @@
 import React from 'react';
-import './Navbar.css';
+import '../Css/Navbar.css';
 import sms2 from '../assets/sms2.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';  
