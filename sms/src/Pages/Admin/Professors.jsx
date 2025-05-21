@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import "../../CSS/Admin/AdminDashboard.css";
 import Sidebar from "../../Components/Admin/Sidebar";
 import Header from "../../Components/Admin/Header";
 
@@ -15,11 +15,11 @@ const Professors = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [professorCount, setProfessorCount] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const PROFESSORS_API_URL = 'http://localhost:8080/api/professors';
   const DEPARTMENTS_API_URL = 'http://localhost:8080/api/departments';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+  const AUTH_API_URL = 'http://localhost:8080/api/auth/users';
 
   const animateCount = (target, setCount) => {
     let start = 0;
@@ -87,12 +87,13 @@ const Professors = () => {
           Array.isArray(data)
             ? data.map((p) => ({
                 id: p.id || 0,
-                user_id: p.user_id || null,
-                department_id: p.department_id || null,
-                academic_title: p.academic_title || '',
-                hired_date: p.hired_date || '',
-                tenant_id: p.tenant_id || null,
-                created_at: p.created_at || '',
+                user_id: p.user?.id || null,
+                user_name: `${p.user?.firstName || ''} ${p.user?.lastName || ''}`,
+                department_id: p.department?.id || null,
+                department_name: p.department?.name || '',
+                academic_title: p.academicTitle || '',
+                hired_date: p.hiredDate || '',
+                tenant_id: p.tenantID?.name || null,
               }))
             : []
       );
@@ -119,7 +120,7 @@ const Professors = () => {
   });
 
   const exportToCSV = () => {
-    const headers = ['ID,User ID,Department ID,Academic Title,Hired Date,Tenant ID,Created At'];
+    const headers = ['ID,User ID,Department Name,Academic Title,Hired Date,Tenant ID'];
     const rows = filteredProfessors.map((professor) => [
       professor.id,
       professor.user_id,
@@ -127,7 +128,6 @@ const Professors = () => {
       professor.academic_title,
       professor.hired_date,
       professor.tenant_id,
-      professor.created_at,
     ]
       .map((value) => `"${value || ''}"`)
       .join(','));
@@ -178,13 +178,6 @@ const Professors = () => {
                 {error && <div className="error-message">{error}</div>}
                 {successMessage && <div className="success-message">{successMessage}</div>}
 
-                <div className="stats-section">
-                  <div className="stat-card">
-                    <h3>Statistikat</h3>
-                    <p>Total Profesorë</p>
-                    <p className="count">{loading ? 'Loading...' : professorCount}</p>
-                  </div>
-                </div>
 
                 <div className="filter-section">
                   <h3>Lista e Profesorëve</h3>
@@ -208,25 +201,23 @@ const Professors = () => {
                         <tr>
                           <th>ID</th>
                           <th>User ID</th>
-                          <th>Department ID</th>
-                          <th>Academic Title</th>
-                          <th>Hired Date</th>
-                          <th>Tenant ID</th>
-                          <th>Created At</th>
+                          <th>Emri i Departmentit</th>
+                          <th>Titulli Akademik</th>
+                          <th>Data e punesimit</th>
+                          <th>Fakulteti</th>
                         </tr>
                       </thead>
                       <tbody>
                         {filteredProfessors.length > 0 ? (
                           filteredProfessors.map((professor) => (
-                            <tr key={professor.id}>
-                              <td>{professor.id}</td>
-                              <td>{professor.user_id || '-'}</td>
-                              <td>{professor.department_id || '-'}</td>
-                              <td>{professor.academic_title || '-'}</td>
-                              <td>{professor.hired_date || '-'}</td>
-                              <td>{professor.tenant_id || '-'}</td>
-                              <td>{professor.created_at || '-'}</td>
-                            </tr>
+                          <tr key={professor.id}>
+                            <td>{professor.id}</td>
+                            <td>{professor.user_name || '-'}</td>
+                            <td>{professor.department_name || '-'}</td>
+                            <td>{professor.academic_title || '-'}</td>
+                            <td>{professor.hired_date || '-'}</td>
+                            <td>{professor.tenant_id || '-'}</td>
+                          </tr>
                           ))
                         ) : (
                           <tr>
@@ -333,47 +324,8 @@ const Professors = () => {
           margin: 0;
           font-size: 0.9rem;
         }
-        .stats-section {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-          justify-content: center;
-        }
-        .stat-card {
-          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-          padding: 1rem;
-          border-radius: 10px;
-          width: 200px;
-          text-align: center;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          cursor: pointer;
-        }
-        .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-          background: linear-gradient(135deg, #e7f3ff 0%, #d1e7ff 100%);
-        }
-        .stat-card h3 {
-          font-size: 1.1rem;
-          color: #2c3e50;
-          margin: 0;
-          font-weight: 600;
-        }
-        .stat-card p {
-          font-size: 0.9rem;
-          color: #7f8c8d;
-          margin: 0.4rem 0;
-        }
-        .stat-card .count {
-          font-size: 1.5rem;
-          color: #007bff;
-          font-weight: 700;
-          transition: color 0.3s ease;
-        }
-        .stat-card:hover .count {
-          color: #0056b3;
-        }
+
+        
         .filter-section {
           display: flex;
           justify-content: space-between;

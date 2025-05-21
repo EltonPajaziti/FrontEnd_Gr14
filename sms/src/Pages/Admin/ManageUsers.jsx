@@ -12,7 +12,6 @@ const ManageUsers = () => {
   const [professors, setProfessors] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [programs, setPrograms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [adminName, setAdminName] = useState("Admin");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,7 +29,6 @@ const ManageUsers = () => {
   const PROFESSORS_API_URL = "http://localhost:8080/api/professors";
   const FACULTIES_API_URL = "http://localhost:8080/api/faculties";
   const DEPARTMENTS_API_URL = "http://localhost:8080/api/departments";
-  const PROGRAMS_API_URL = "http://localhost:8080/api/programs";
   const AUTH_API_URL = "http://localhost:8080/api/auth/user";
 
   const fetchData = async (url, setData, errorMessage, transform = (d) => d) => {
@@ -72,7 +70,6 @@ const ManageUsers = () => {
               lastName: response.data.lastName || response.data.user?.lastName || "",
               email: response.data.email || response.data.user?.email || "",
             },
-            program_id: response.data.programId || response.data.program_id || null,
             enrollment_date: response.data.enrollmentDate || response.data.enrollment_date || "",
             status: response.data.status || "Active",
           }
@@ -123,7 +120,7 @@ const ManageUsers = () => {
                   lastName: s.lastName || s.user?.lastName || "",
                   email: s.email || s.user?.email || "",
                 },
-                program_id: s.programId || s.program_id || null,
+                department_name: s.program?.department?.name || "-",
                 enrollment_date: s.enrollmentDate || s.enrollment_date || "",
                 status: s.status || "Active",
               }))
@@ -142,8 +139,8 @@ const ManageUsers = () => {
                   lastName: p.lastName || p.user?.lastName || "",
                   email: p.email || p.user?.email || "",
                 },
-                department_id: p.departmentId || p.department_id || null,
-                academic_title: p.title || p.academic_title || "",
+                department_id: p.department?.id || null,
+                academic_title: p.academicTitle || "",
                 hired_date: p.hiredDate || p.hired_date || "",
                 status: p.status || "Active",
               }))
@@ -151,14 +148,13 @@ const ManageUsers = () => {
       );
       await fetchData(FACULTIES_API_URL, setFaculties, "Failed to load faculties");
       await fetchData(DEPARTMENTS_API_URL, setDepartments, "Failed to load departments");
-      await fetchData(PROGRAMS_API_URL, setPrograms, "Failed to load programs");
 
       if (!studentsSuccess && !id) {
         setStudents([
           {
             id: 1,
             user: { firstName: "John", lastName: "Doe", email: "john.doe@example.com" },
-            program_id: 1,
+            department_name: "Default Department",
             enrollment_date: "2023-09-01",
             status: "Active",
           },
@@ -194,14 +190,14 @@ const ManageUsers = () => {
     return currentHour < 12 ? "Good Morning" : currentHour < 18 ? "Good Afternoon" : "Good Evening";
   };
 
-  const getProgramName = (programId) => programs.find((p) => p.id === programId)?.name || "-";
   const getDepartmentName = (departmentId) => departments.find((d) => d.id === departmentId)?.name || "-";
 
   const filteredStudents = students.filter((student) => {
     const name = `${student.user?.firstName || ""} ${student.user?.lastName || ""}`.toLowerCase();
     const email = (student.user?.email || "").toLowerCase();
-    const program = getProgramName(student.program_id).toLowerCase();
-    return [name, email, program].some((field) => field.includes(searchTerm.toLowerCase()));
+    const department = (student.department_name || "").toLowerCase();
+    
+    return [name, email, department].some((field) => field.includes(searchTerm.toLowerCase()));
   });
 
   const filteredProfessors = professors.filter((professor) => {
@@ -352,7 +348,7 @@ const ManageUsers = () => {
                             <tr>
                               <th>Name</th>
                               <th>Email</th>
-                              <th>Program</th>
+                              <th>Department Name</th>
                               <th>Enrollment Date</th>
                               <th>Status</th>
                               <th>Actions</th>
@@ -364,7 +360,7 @@ const ManageUsers = () => {
                                 <tr key={student.id}>
                                   <td>{`${student.user?.firstName || ""} ${student.user?.lastName || ""}`}</td>
                                   <td>{student.user?.email || "-"}</td>
-                                  <td>{getProgramName(student.program_id)}</td>
+                                  <td>{student.department_name}</td>
                                   <td>{student.enrollment_date || "-"}</td>
                                   <td>{student.status || "Active"}</td>
                                   <td>
@@ -479,9 +475,7 @@ const ManageUsers = () => {
                       </p>
                       {activeTab === "Students" ? (
                         <>
-                          <p>
-                            <strong>Program:</strong> {getProgramName(selectedUser.program_id)}
-                          </p>
+
                           <p>
                             <strong>Enrollment Date:</strong> {selectedUser.enrollment_date || "-"}
                           </p>
@@ -561,26 +555,7 @@ const ManageUsers = () => {
                       </div>
                       {activeTab === "Students" ? (
                         <>
-                          <div className="form-group">
-                            <label>Program:</label>
-                            <select
-                              value={selectedUser.program_id || ""}
-                              onChange={(e) =>
-                                setSelectedUser({
-                                  ...selectedUser,
-                                  program_id: parseInt(e.target.value) || null,
-                                })
-                              }
-                              required
-                            >
-                              <option value="">Select Program</option>
-                              {programs.map((program) => (
-                                <option key={program.id} value={program.id}>
-                                  {program.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+
                           <div className="form-group">
                             <label>Enrollment Date:</label>
                             <input

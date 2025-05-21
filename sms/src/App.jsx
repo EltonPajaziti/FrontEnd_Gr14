@@ -12,12 +12,13 @@ import AddUser from './Pages/Admin/AddUser';
 import Faculty from './Pages/Admin/Faculty';
 import Departments from './Pages/Admin/Departments';
 import Programs from './Pages/Admin/Programs';
-import Users from './Pages/Admin/Users'; // Add this import for the Users page
+import Users from './Pages/Admin/Users'; 
+import ManageUsers from './Pages/Admin/ManageUsers';
 import Professors from './Pages/Admin/Professors'; 
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
-import Materials from './Pages/Admin/Materials';
 import Enrollments from './Pages/Admin/Registrations';
+<<<<<<< HEAD
 import Schedule from './Pages/Admin/Schedule';
 import ManageUsers from './Pages/Admin/ManageUsers'; 
 import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
@@ -29,6 +30,22 @@ import ProfessorLecture from './Pages/Professor/ProfessorLecture';
 
 
 
+=======
+import Exams from './Pages/Admin/Exams';
+import Bursat from './Pages/Admin/Bursat';
+import FAQ from './Pages/Admin/FAQ';
+import Cilesimet from './Pages/Admin/Cilesimet';
+import StudentMaterials from './Pages/Student/StudentMaterials';
+import StudentCourses from './Pages/Student/StudentCourses';
+import StudentSchedule from './Pages/Student/StudentSchedule';
+import StudentExams from "./Pages/Student/StudentExams"; 
+import ProfessorDashboard from './Pages/Professors/ProfessorsDashboard';
+import ProfessorStudents from './Pages/Professors/ProfessorsStudents';
+import ProfessorCourses from './Pages/Professors/ProfessorsCourses';
+import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
+import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
+import ProfessorsExams from './Pages/Professors/ProfessorsExams';
+>>>>>>> main
 
 function App() {
   return (
@@ -50,22 +67,32 @@ function App() {
         <Route path="/admin-faculties" element={<Faculty />} />
         <Route path="/admin-departments" element={<Departments />} />
         <Route path="/admin-programs" element={<Programs />} />
-        <Route path="/admin-users" element={<Users />} /> {/* Add this route */}
+        <Route path="/admin-users" element={<Users />} /> 
         <Route path="/admin-manage-users" element={<ManageUsers />} />
+<<<<<<< HEAD
         <Route path="/admin-professors" element={<Professors />} /> {/* Add this route */}
         <Route path="/admin-students" element={<Students />} /> {/* Add this route */}
         <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
 
         <Route path="/ProfessorDashboard" element={<ProfessorDashboard />} />
 
+=======
+        <Route path="/admin-professors" element={<Professors />} /> 
+        <Route path="/admin-students" element={<Students />} />
+        <Route path="/admin-courses" element={<Courses />} />
+        <Route path="/admin-registrations" element={<Enrollments />} />
+>>>>>>> main
         <Route path="/admin-exams" element={<Exams />} />
-        <Route path="/admin-grades" element={<Grades />} />
-        <Route path="/admin-transcripts" element={<Transcripts />} />
         <Route path="/admin-scholarships" element={<Bursat />} />
         <Route path="/admin-faq" element={<FAQ />} />
         <Route path="/admin-settings" element={<Cilesimet />} />
         {/* <Route path="/student-materials" element={<StudentMaterials />} /> */}
-
+        <Route path="/professor-dashboard" element={<ProfessorDashboard/>} />
+        <Route path="/professor-students" element={<ProfessorStudents/>} />
+        <Route path="/professor-courses" element={<ProfessorCourses/>} />
+        <Route path="/professor-materials" element={<ProfessorMaterials/>} />
+        <Route path="/professor-schedule" element={<ProfessorSchedule/>} />
+        <Route path="/professor-exams" element={<ProfessorsExams/>} />
 
 
       </Routes>

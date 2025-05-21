@@ -71,30 +71,17 @@ const Sidebar = ({ isSidebarOpen }) => {
           <FaBookOpen className="menu-icon" />
           {isSidebarOpen && <span>Kurset</span>}
         </li>
-        <li onClick={() => handleItemClick("/admin-materials")} className="menu-item">
-          <FaFileAlt className="menu-icon" />
-          {isSidebarOpen && <span>Materialet</span>}
-        </li>
         <li onClick={() => handleItemClick("/admin-registrations")} className="menu-item">
           <FaClipboardList className="menu-icon" />
           {isSidebarOpen && <span>Regjistrimet</span>}
         </li>
-        <li onClick={() => handleItemClick("/admin-schedule")} className="menu-item">
-          <FaCalendarAlt className="menu-icon" />
-          {isSidebarOpen && <span>Orari</span>}
-        </li>
+
         <li onClick={() => handleItemClick("/admin-exams")} className="menu-item">
           <FaClipboardCheck className="menu-icon" />
           {isSidebarOpen && <span>Provimet</span>}
         </li>
-        <li onClick={() => handleItemClick("/admin-grades")} className="menu-item">
-          <FaPen className="menu-icon" />
-          {isSidebarOpen && <span>Notat</span>}
-        </li>
-        <li onClick={() => handleItemClick("/admin-transcripts")} className="menu-item">
-          <FaFileAlt className="menu-icon" />
-          {isSidebarOpen && <span>Transkriptet</span>}
-        </li>
+
+
         <li onClick={() => handleItemClick("/admin-scholarships")} className="menu-item">
           <FaMoneyCheckAlt className="menu-icon" />
           {isSidebarOpen && <span>Bursat</span>}

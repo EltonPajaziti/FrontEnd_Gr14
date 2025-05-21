@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
-import Sidebar from "../../Components/Admin/Sidebar";
-import Header from "../../Components/Admin/Header";
+import "../../CSS/Admin/AdminDashboard.css"; // Use AdminDashboard.css for consistency
+import Sidebar from "../../Components/Professor/ProfessorsSidebar";
+import Header from "../../Components/Professor/ProfessorsHeader";
 
-const Students = () => {
+const ProfessorStudents = () => {
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [adminName, setAdminName] = useState('Admin');
-  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T03:12:00+02:00')); // Koha aktuale CEST
+  const [professorName, setProfessorName] = useState('Professor');
+  const [currentTime, setCurrentTime] = useState(new Date()); // Use current time
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const STUDENTS_API_URL = 'http://localhost:8080/api/students';
+  const STUDENTS_API_URL = 'http://localhost:8080/api/professors/students';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
   const fetchData = async (url, setData, errorMessage, transform = (d) => d) => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Authentication token is missing. Please log in.');
+    const tenantId = localStorage.getItem('tenantId');
+    console.log('Token:', token, 'TenantId:', tenantId);
+    if (!token || !tenantId) {
+      setError('Authentication token or tenant ID is missing. Please log in.');
       setLoading(false);
       return false;
     }
@@ -29,30 +31,36 @@ const Students = () => {
     try {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
+        params: { tenantId },
+        timeout: 5000,
       });
+      console.log('API Response:', response.data);
       const transformedData = transform(response.data);
       setData(transformedData);
       return true;
     } catch (error) {
-      console.error(`Error fetching data from ${url}:`, error);
-      setError(errorMessage || `Failed to load data from ${url}`);
+      console.error(`Error fetching data from ${url}:`, error.response?.data || error.message);
+      setError(errorMessage || `Failed to load data: ${error.message}`);
       return false;
     } finally {
       setLoading(false);
+      console.log('Loading set to false');
     }
   };
 
   useEffect(() => {
+    console.log('ProfessorStudents component mounted');
     const loadData = async () => {
       try {
         const token = localStorage.getItem('token');
         const authResponse = await axios.get(AUTH_API_URL, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setAdminName(authResponse.data.firstName || authResponse.data.name || 'Admin');
+        console.log('Auth Response:', authResponse.data);
+        setProfessorName(authResponse.data.firstName || authResponse.data.name || 'Professor');
       } catch (error) {
-        console.error('Error fetching admin name:', error);
-        setAdminName('Admin');
+        console.error('Error fetching professor name:', error);
+        setProfessorName('Professor');
       }
 
       await fetchData(
@@ -63,17 +71,16 @@ const Students = () => {
           Array.isArray(data)
             ? data.map((s) => ({
                 id: s.id || '',
-                name: `${s.user?.firstName || ''} ${s.user?.lastName || ''}`,
-                email: s.user?.email || '',
-                program_name: s.program?.name || '',
-                department_name: s.program?.department?.name || '',
-                enrollment_date: s.enrollmentDate || '',
-                created_at: s.createdAt || '',
-                updated_at: s.updatedAt || '',
+                user_id: s.user_id || null,
+                program_id: s.program_id || null, // Assuming program_id links to courses
+                tenant_id: s.tenant_id || null,
+                enrollment_date: s.enrollment_date || '',
+                created_at: s.created_at || '',
+                updated_at: s.updated_at || '',
               }))
             : []
-
       );
+      console.log('Students:', students);
     };
 
     loadData();
@@ -84,37 +91,21 @@ const Students = () => {
 
   const getGreeting = () => {
     const currentHour = currentTime.getHours();
-    return currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
+    return currentHour < 12 ? 'Mirëmëngjes' : currentHour < 18 ? 'Mirëdita' : 'Mirëmbrëma';
+  };
+
+  // Filter students enrolled in the professor's courses
+  const getProfessorCourses = () => {
+    // This is a placeholder; ideally, fetch the professor's courses from an API
+    // For now, assume program_id matches the professor's courses (e.g., based on tenantId or a specific course ID)
+    const professorCourseIds = ['p1', 'p2']; // Replace with actual course IDs from professor's data
+    return professorCourseIds;
   };
 
   const filteredStudents = students.filter((student) => {
-    return true; // Nuk ka fusha për të filtruar drejtpërdrejt, mund të shtohet logjikë shtesë nëse API-ja kthen emra
+    const professorCourses = getProfessorCourses();
+    return professorCourses.includes(student.program_id); // Filter based on program_id
   });
-
-  const exportToCSV = () => {
-    const headers = ['ID,User ID,Program ID,Tenant ID,Enrollment Date,Created At,Updated At'];
-    const rows = filteredStudents.map((student) => [
-      student.id,
-      student.user_id,
-      student.program_id,
-      student.tenant_id,
-      student.enrollment_date,
-      student.created_at,
-      student.updated_at,
-    ]
-      .map((value) => `"${value || ''}"`)
-      .join(','));
-
-    const csvContent = [...headers, ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `students_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -124,40 +115,44 @@ const Students = () => {
     <div className="app-container">
       <div className="main-content">
         <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
-          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+          <Sidebar professorName={professorName} isSidebarOpen={isSidebarOpen} />
         </div>
         <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <Header professorName={professorName} toggleSidebar={toggleSidebar} />
           <div className="page-container">
             <div className="content-container">
               <div className="students-container">
                 <div className="header-section">
                   <div className="header-text">
                     <h1>SMS 2025/26</h1>
-                    <h2>{getGreeting()}, {adminName}</h2>
+                    <h2>{getGreeting()}, {professorName}</h2>
                   </div>
-                  <button className="export-btn" onClick={exportToCSV}>
-                    Export
-                  </button>
                 </div>
 
                 <div className="section-header">
                   <div>
-                    <h3>Students</h3>
-                    <p>Manage and view all student records</p>
+                    <h3>Studentët</h3>
+                    <p>Menaxho dhe shiko të dhënat e studentëve të regjistruar në kursin tënd</p>
                   </div>
                 </div>
 
                 {error && <div className="error-message">{error}</div>}
 
+                <div className="stats-section">
+                  <div className="stat-card">
+                    <h3>Statistikat</h3>
+                    <p>Totali i Studentëve</p>
+                    <p className="count">{loading ? 'Ngarkohet...' : filteredStudents.length}</p>
+                  </div>
+                </div>
 
                 <div className="filter-section">
-                  <h3>Student Records</h3>
+                  <h3>Regjistrimet e Studentëve</h3>
                   <div className="search-box">
                     <FaSearch className="search-icon" />
                     <input
                       type="text"
-                      placeholder="Search students..."
+                      placeholder="Kërko studentë..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -165,49 +160,45 @@ const Students = () => {
                 </div>
 
                 {loading ? (
-                  <div className="loading">Loading...</div>
+                  <div className="loading">Ngarkohet...</div>
                 ) : (
                   <div className="table-container">
                     <table className="students-table">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Program</th>
-                        <th>Department</th>
-                        <th>Enrollment Date</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {filteredStudents.length > 0 ? (
-                        filteredStudents.map((student) => (
-                          <tr key={student.id}>
-                            <td>{student.id}</td>
-                            <td>{student.name}</td>
-                            <td>{student.email}</td>
-                            <td>{student.program_name}</td>
-                            <td>{student.department_name}</td>
-                            <td>{student.enrollment_date}</td>
-                            <td>{student.created_at}</td>
-                            <td>{student.updated_at}</td>
-                          </tr>
-                        ))
-                      ) : (
+                      <thead>
                         <tr>
-                          <td colSpan="8" className="no-data">
-                            <div className="empty-state">
-                              <p>No students found</p>
-                              <p className="hint">Try a different search term</p>
-                            </div>
-                          </td>
+                          <th>ID</th>
+                          <th>User ID</th>
+                          <th>Program ID</th>
+                          <th>Tenant ID</th>
+                          <th>Data e Regjistrimit</th>
+                          <th>Krijuar Më</th>
+                          <th>Përditësuar Më</th>
                         </tr>
-                      )}
-                    </tbody>
-
+                      </thead>
+                      <tbody>
+                        {filteredStudents.length > 0 ? (
+                          filteredStudents.map((student) => (
+                            <tr key={student.id}>
+                              <td>{student.id}</td>
+                              <td>{student.user_id || '-'}</td>
+                              <td>{student.program_id || '-'}</td>
+                              <td>{student.tenant_id || '-'}</td>
+                              <td>{student.enrollment_date || '-'}</td>
+                              <td>{student.created_at || '-'}</td>
+                              <td>{student.updated_at || '-'}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="7" className="no-data">
+                              <div className="empty-state">
+                                <p>Nuk u gjetën studentë</p>
+                                <p className="hint">Provo një term tjetër kërkimi</p>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
                     </table>
                   </div>
                 )}
@@ -267,24 +258,6 @@ const Students = () => {
           0% { opacity: 0; }
           100% { opacity: 1; }
         }
-        .export-btn {
-          position: absolute;
-          top: 0;
-          right: 0;
-          padding: 8px 16px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          background: #fff;
-          color: #007bff;
-          cursor: pointer;
-          font-size: 0.9rem;
-          transition: all 0.3s ease;
-        }
-        .export-btn:hover {
-          background: #007bff;
-          color: #fff;
-          border-color: #007bff;
-        }
         .section-header {
           display: flex;
           justify-content: space-between;
@@ -302,8 +275,47 @@ const Students = () => {
           margin: 0;
           font-size: 0.9rem;
         }
-
-
+        .stats-section {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          justify-content: center;
+        }
+        .stat-card {
+          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+          padding: 1rem;
+          border-radius: 10px;
+          width: 200px;
+          text-align: center;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+        .stat-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+          background: linear-gradient(135deg, #e7f3ff 0%, #d1e7ff 100%);
+        }
+        .stat-card h3 {
+          font-size: 1.1rem;
+          color: #2c3e50;
+          margin: 0;
+          font-weight: 600;
+        }
+        .stat-card p {
+          font-size: 0.9rem;
+          color: #7f8c8d;
+          margin: 0.4rem 0;
+        }
+        .stat-card .count {
+          font-size: 1.5rem;
+          color: #007bff;
+          font-weight: 700;
+          transition: color 0.3s ease;
+        }
+        .stat-card:hover .count {
+          color: #0056b3;
+        }
         .filter-section {
           display: flex;
           justify-content: space-between;
@@ -420,4 +432,4 @@ const Students = () => {
   );
 };
 
-export default Students;
+export default ProfessorStudents;

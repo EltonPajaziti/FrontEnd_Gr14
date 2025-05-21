@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaPlus, FaTrash, FaEdit, FaEye, FaDownload } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
-import Sidebar from "../../Components/Admin/Sidebar";
-import Header from "../../Components/Admin/Header";
+import "../../CSS/Admin/AdminDashboard.css"; // Use AdminDashboard.css for consistency
+import Sidebar from "../../Components/Professor/ProfessorsSidebar";
+import Header from "../../Components/Professor/ProfessorsHeader";
 
 // Sample initial data to ensure a material is visible
 const initialMaterials = [
   {
     id: 1,
-    title: 'Introduction to Algorithms',
+    title: 'Hyrje në Algoritme',
     tenant_id: 4, // Engineering course
-    uploaded_at: '2025-05-16T17:22:00+02:00', // Updated to current time (05:22 PM CEST)
+    uploaded_at: '2025-05-20T21:11:00+02:00', // Updated to current time (09:11 PM CEST)
     file_url: 'https://example.com/files/algorithms.pdf',
-    description: 'Basic algorithms course material',
+    description: 'Material bazë për algoritme',
   },
 ];
 
-const CourseMaterials = () => {
+const ProfessorMaterials = () => {
   const [materials, setMaterials] = useState(initialMaterials);
   const [formData, setFormData] = useState({ title: '', description: '', file: null, tenantId: 1 });
   const [search, setSearch] = useState('');
@@ -25,19 +25,19 @@ const CourseMaterials = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [adminName, setAdminName] = useState('Admin');
+  const [professorName, setProfessorName] = useState('Professor');
   const [sortField, setSortField] = useState('title');
   const [sortOrder, setSortOrder] = useState('asc');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar
 
-  const API_URL = 'http://localhost:8080/api/course-materials';
+  const API_URL = 'http://localhost:8080/api/professors/materials'; // Adjusted endpoint for professor's materials
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
   const tenantToCourse = {
-    1: 'Computer Science',
-    2: 'Mathematics',
-    3: 'Physics',
-    4: 'Engineering',
+    1: 'Shkenca Kompjuterike',
+    2: 'Matematikë',
+    3: 'Fizikë',
+    4: 'Inxhinieri',
   };
 
   useEffect(() => {
@@ -47,27 +47,29 @@ const CourseMaterials = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('Authentication token is missing. Please log in.');
+      const tenantId = localStorage.getItem('tenantId');
+      if (!token || !tenantId) {
+        console.error('Authentication token or tenant ID is missing. Please log in.');
         setMaterials(sortData(initialMaterials, sortField, sortOrder));
-        setAdminName('Admin');
+        setProfessorName('Professor');
         return;
       }
 
       const [materialsResponse, authResponse] = await Promise.all([
         axios.get(API_URL, {
           headers: { Authorization: `Bearer ${token}` },
+          params: { tenantId },
         }),
         axios.get(AUTH_API_URL, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
       setMaterials(sortData(materialsResponse.data.length > 0 ? materialsResponse.data : initialMaterials, sortField, sortOrder));
-      setAdminName(authResponse.data.firstName || authResponse.data.name || 'Admin');
+      setProfessorName(authResponse.data.firstName || authResponse.data.name || 'Professor');
     } catch (error) {
       console.error('Error fetching data:', error);
       setMaterials(sortData(initialMaterials, sortField, sortOrder));
-      setAdminName('Admin');
+      setProfessorName('Professor');
     }
   };
 
@@ -88,8 +90,8 @@ const CourseMaterials = () => {
   };
 
   const getGreeting = () => {
-    const currentHour = new Date('2025-05-16T17:22:00+02:00').getHours();
-    return currentHour < 12 ? 'Good Morning' : currentHour < 18 ? 'Good Afternoon' : 'Good Evening';
+    const currentHour = new Date().getHours();
+    return currentHour < 12 ? 'Mirëmëngjes' : currentHour < 18 ? 'Mirëdita' : 'Mirëmbrëma';
   };
 
   const handleInputChange = (e) => {
@@ -175,7 +177,7 @@ const CourseMaterials = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this course material?')) {
+    if (window.confirm('A je i sigurt që dëshiron të fshish këtë material kursi?')) {
       const token = localStorage.getItem('token');
       if (!token) {
         console.error('Authentication token is missing. Please log in.');
@@ -195,7 +197,7 @@ const CourseMaterials = () => {
 
   const handleDownload = (material) => {
     if (!material.file_url) {
-      alert('No file available to download.');
+      alert('Nuk ka skedar të disponueshëm për shkarkim.');
       return;
     }
     const link = document.createElement('a');
@@ -206,14 +208,14 @@ const CourseMaterials = () => {
 
   const handleExport = () => {
     const exportData = materials.map(material => ({
-      Title: material.title,
-      Course: tenantToCourse[material.tenant_id] || 'Unknown Course',
-      'Uploaded By': adminName,
-      'Upload Date': material.uploaded_at ? new Date(material.uploaded_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : '-',
-      File: material.file_url || '-',
+      Titulli: material.title,
+      Kursi: tenantToCourse[material.tenant_id] || 'Kurs i Panjohur',
+      'Ngarkuar Nga': professorName,
+      'Data e Ngarkimit': material.uploaded_at ? new Date(material.uploaded_at).toLocaleString('sq-AL', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : '-',
+      Skedari: material.file_url || '-',
     }));
 
-    const headers = ['Title', 'Course', 'Uploaded By', 'Upload Date', 'File'];
+    const headers = ['Titulli', 'Kursi', 'Ngarkuar Nga', 'Data e Ngarkimit', 'Skedari'];
     const csvRows = [
       headers.join(','),
       ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(',')),
@@ -224,7 +226,7 @@ const CourseMaterials = () => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `course_materials_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `materialet_kursit_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     window.URL.revokeObjectURL(url);
   };
@@ -239,15 +241,15 @@ const CourseMaterials = () => {
     material.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const getCourseName = (tenantId) => tenantToCourse[tenantId] || 'Unknown Course';
+  const getCourseName = (tenantId) => tenantToCourse[tenantId] || 'Kurs i Panjohur';
 
   const getFileInfo = (material) => {
-    if (!material.file_url) return 'Not Uploaded';
-    const fileName = material.file_url.split('/').pop() || 'Unknown File';
+    if (!material.file_url) return 'Nuk është Ngarkuar';
+    const fileName = material.file_url.split('/').pop() || 'Skedar i Panjohur';
     const extension = fileName.split('.').pop().toLowerCase();
-    return extension === 'pdf' ? `${fileName} (PDF Uploaded)` : 
-           extension === 'doc' || extension === 'docx' ? `${fileName} (Word Uploaded)` : 
-           `${fileName} (Uploaded)`;
+    return extension === 'pdf' ? `${fileName} (PDF Ngarkuar)` : 
+           extension === 'doc' || extension === 'docx' ? `${fileName} (Word Ngarkuar)` : 
+           `${fileName} (Ngarkuar)`;
   };
 
   const toggleSidebar = () => {
@@ -258,28 +260,28 @@ const CourseMaterials = () => {
     <div className="app-container">
       <div className="main-content">
         <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
-          <Sidebar adminName={adminName} isSidebarOpen={isSidebarOpen} />
+          <Sidebar professorName={professorName} isSidebarOpen={isSidebarOpen} />
         </div>
         <div className={`content-wrapper ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-          <Header adminName={adminName} toggleSidebar={toggleSidebar} />
+          <Header professorName={professorName} toggleSidebar={toggleSidebar} />
           <div className="page-container">
             <div className="content-container">
               <div className="materials-container" style={{ position: 'relative' }}>
                 <div className="header-section">
                   <h1>SMS 2025/26</h1>
-                  <h2>{getGreeting()}, {adminName}</h2>
+                  <h2>{getGreeting()}, {professorName}</h2>
                 </div>
                 <div className="materials-header">
                   <div>
-                    <h3>Course Materials</h3>
-                    <p>Browse and download course materials for all courses</p>
+                    <h3>Materialet e Kursit</h3>
+                    <p>Shfleto dhe shkarko materialet e kurseve të tua</p>
                   </div>
                   <div className="header-buttons">
                     <button className="add-button" onClick={() => setShowForm(true)}>
-                      <FaPlus /> Upload Material
+                      <FaPlus /> Ngarko Material
                     </button>
                     <button className="export-button" onClick={handleExport}>
-                      <FaDownload /> Export
+                      <FaDownload /> Eksporto
                     </button>
                   </div>
                 </div>
@@ -288,7 +290,7 @@ const CourseMaterials = () => {
                     <FaSearch className="search-icon" />
                     <input
                       type="text"
-                      placeholder="Search materials..."
+                      placeholder="Kërko materiale..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -299,17 +301,17 @@ const CourseMaterials = () => {
                     <thead>
                       <tr>
                         <th onClick={() => handleSort('title')}>
-                          Title {sortField === 'title' && (sortOrder === 'asc' ? '↑' : '↓')}
+                          Titulli {sortField === 'title' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
-                        <th>Course</th>
-                        <th onClick={() => handleSort('adminName')}>
-                          Uploaded By {sortField === 'adminName' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        <th>Kursi</th>
+                        <th onClick={() => handleSort('professorName')}>
+                          Ngarkuar Nga {sortField === 'professorName' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
                         <th onClick={() => handleSort('uploaded_at')}>
-                          Upload Date {sortField === 'uploaded_at' && (sortOrder === 'asc' ? '↑' : '↓')}
+                          Data e Ngarkimit {sortField === 'uploaded_at' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
-                        <th>File</th>
-                        <th>Actions</th>
+                        <th>Skedari</th>
+                        <th>Veprimet</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -318,25 +320,25 @@ const CourseMaterials = () => {
                           <tr key={material.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
                             <td>{material.title}</td>
                             <td>{getCourseName(material.tenant_id)}</td>
-                            <td>{adminName}</td>
+                            <td>{professorName}</td>
                             <td>
                               {material.uploaded_at
-                                ? new Date(material.uploaded_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
+                                ? new Date(material.uploaded_at).toLocaleString('sq-AL', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
                                 : '-'}
                             </td>
                             <td>{getFileInfo(material)}</td>
                             <td className="actions-cell">
                               <button className="view-btn" onClick={() => handleView(material)}>
-                                <FaEye /> View
+                                <FaEye /> Shikoni
                               </button>
                               <button className="edit-btn" onClick={() => handleEdit(material)}>
-                                <FaEdit /> Edit
+                                <FaEdit /> Redakto
                               </button>
                               <button className="delete-btn" onClick={() => handleDelete(material.id)}>
-                                <FaTrash /> Delete
+                                <FaTrash /> Fshi
                               </button>
                               <button className="download-btn" onClick={() => handleDownload(material)} disabled={!material.file_url}>
-                                <FaDownload /> Download
+                                <FaDownload /> Shkarko
                               </button>
                             </td>
                           </tr>
@@ -345,8 +347,8 @@ const CourseMaterials = () => {
                         <tr>
                           <td colSpan="6" className="no-data">
                             <div className="empty-state">
-                              <p>No course materials found</p>
-                              <p className="hint">Try a different search term or upload a new material</p>
+                              <p>Nuk u gjetën materiale kursi</p>
+                              <p className="hint">Provo një term tjetër kërkimi ose ngarko një material të ri</p>
                             </div>
                           </td>
                         </tr>
@@ -358,10 +360,10 @@ const CourseMaterials = () => {
                 {showForm && (
                   <div className="modal-overlay">
                     <div className="modal-content">
-                      <h3>{editingId ? 'Edit Material' : 'Upload New Material'}</h3>
+                      <h3>{editingId ? 'Redakto Material' : 'Ngarko Material të Ri'}</h3>
                       <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                          <label>Title*</label>
+                          <label>Titulli*</label>
                           <input
                             type="text"
                             name="title"
@@ -371,7 +373,7 @@ const CourseMaterials = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label>Description</label>
+                          <label>Përshkrimi</label>
                           <textarea
                             name="description"
                             value={formData.description}
@@ -380,7 +382,7 @@ const CourseMaterials = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label>Course*</label>
+                          <label>Kursi*</label>
                           <select
                             name="tenantId"
                             value={formData.tenantId}
@@ -395,7 +397,7 @@ const CourseMaterials = () => {
                           </select>
                         </div>
                         <div className="form-group">
-                          <label>File*</label>
+                          <label>Skedari*</label>
                           <input
                             type="file"
                             name="file"
@@ -405,10 +407,10 @@ const CourseMaterials = () => {
                         </div>
                         <div className="form-actions">
                           <button type="button" className="cancel-btn" onClick={resetForm}>
-                            Cancel
+                            Anulo
                           </button>
                           <button type="submit" className="submit-btn">
-                            {editingId ? 'Update' : 'Upload'}
+                            {editingId ? 'Përditëso' : 'Ngarko'}
                           </button>
                         </div>
                       </form>
@@ -419,26 +421,26 @@ const CourseMaterials = () => {
                 {showViewModal && viewMaterial && (
                   <div className="modal-overlay">
                     <div className="modal-content">
-                      <h3>View Material</h3>
+                      <h3>Shiko Material</h3>
                       <div className="view-details">
-                        <p><strong>Title:</strong> {viewMaterial.title}</p>
-                        <p><strong>Description:</strong> {viewMaterial.description || 'No description'}</p>
-                        <p><strong>Course:</strong> {getCourseName(viewMaterial.tenant_id)}</p>
+                        <p><strong>Titulli:</strong> {viewMaterial.title}</p>
+                        <p><strong>Përshkrimi:</strong> {viewMaterial.description || 'Pa përshkrim'}</p>
+                        <p><strong>Kursi:</strong> {getCourseName(viewMaterial.tenant_id)}</p>
                         <p>
-                          <strong>File:</strong>{' '}
+                          <strong>Skedari:</strong>{' '}
                           {viewMaterial.file_url ? (
                             <a href={viewMaterial.file_url} target="_blank" rel="noopener noreferrer">
-                              Download File
+                              Shkarko Skedarin
                             </a>
                           ) : (
-                            'No file available'
+                            'Nuk ka skedar të disponueshëm'
                           )}
                         </p>
-                        <p><strong>Uploaded At:</strong> {new Date(viewMaterial.uploaded_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                        <p><strong>Data e Ngarkimit:</strong> {new Date(viewMaterial.uploaded_at).toLocaleString('sq-AL', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
                       </div>
                       <div className="form-actions">
                         <button className="cancel-btn" onClick={() => setShowViewModal(false)}>
-                          Close
+                          Mbylle
                         </button>
                       </div>
                     </div>
@@ -596,4 +598,4 @@ const CourseMaterials = () => {
   );
 };
 
-export default CourseMaterials;
+export default ProfessorMaterials;
