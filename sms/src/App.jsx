@@ -45,6 +45,7 @@ import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
 import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
 import ProfessorsExams from './Pages/Professors/ProfessorsExams';
 import ProfessorsGrades from './Pages/Professors/ProfessorsGrades';
+import ProfessorsFAQ from './Pages/Professors/ProfessorsFAQ';
 
 
 function App() {
@@ -86,7 +87,6 @@ function App() {
         <Route path="/admin-scholarships" element={<Bursat />} />
         <Route path="/admin-faq" element={<FAQ />} />
         <Route path="/admin-settings" element={<Cilesimet />} />
-        {/* <Route path="/student-materials" element={<StudentMaterials />} /> */}
         <Route path="/professor-dashboard" element={<ProfessorDashboard/>} />
         <Route path="/professor-students" element={<ProfessorStudents/>} />
         <Route path="/professor-courses" element={<ProfessorCourses/>} />
@@ -94,6 +94,7 @@ function App() {
         <Route path="/professor-schedule" element={<ProfessorSchedule/>} />
         <Route path="/professor-exams" element={<ProfessorsExams/>} />
         <Route path="/professor-grades" element={<ProfessorsGrades/>} />
+        <Route path="/professor-faq" element={<ProfessorsFAQ/>} />
 
 
       </Routes>
