@@ -21,6 +21,8 @@ import Enrollments from './Pages/Admin/Registrations';
 import Schedule from './Pages/Admin/Schedule';
 import ManageUsers from './Pages/Admin/ManageUsers'; 
 import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
+import ProfessorGrades from './Pages/Professor/ProfessorGrades';
+import ProfessorLecture from './Pages/Professor/ProfessorLecture';
 
 
 
