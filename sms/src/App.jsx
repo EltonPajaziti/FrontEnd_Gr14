@@ -34,7 +34,7 @@ import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
 import ProfessorsExams from './Pages/Professors/ProfessorsExams';
 import ProfessorsGrades from './Pages/Professors/ProfessorsGrades';
 import ProfessorsFAQ from './Pages/Professors/ProfessorsFAQ';
-
+import ProfessorsSettings from './Pages/Professors/ProfessorsSettings';
 function App() {
   return (
     <>
@@ -72,6 +72,8 @@ function App() {
         <Route path="/professor-exams" element={<ProfessorsExams />} />
         <Route path="/professor-grades" element={<ProfessorsGrades />} />
         <Route path="/professor-faq" element={<ProfessorsFAQ />} />
+        <Route path="/professor-settings" element={<ProfessorsSettings />} />
+
       </Routes>
     </>
   );
