@@ -1,0 +1,51 @@
+.grades-page {
+  padding: 2rem;
+  background-color: #f7f8fa;
+}
+
+.grades-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.gpa-display {
+  float: right;
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.grades-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.grades-table th,
+.grades-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.status {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.status.passed {
+  background-color: #e0fce0;
+  color: #2e7d32;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}

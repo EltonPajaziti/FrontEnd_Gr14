@@ -18,6 +18,18 @@ import Professors from './Pages/Admin/Professors';
 import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Enrollments from './Pages/Admin/Registrations';
+
+import Schedule from './Pages/Admin/Schedule';
+import ManageUsers from './Pages/Admin/ManageUsers'; 
+import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
+import ProfessorGrades from './Pages/Professor/ProfessorGrades';
+import ProfessorLecture from './Pages/Professor/ProfessorLecture';
+
+
+
+
+
+
 import Exams from './Pages/Admin/Exams';
 import Bursat from './Pages/Admin/Bursat';
 import FAQ from './Pages/Admin/FAQ';
@@ -33,6 +45,7 @@ import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
 import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
 import ProfessorsExams from './Pages/Professors/ProfessorsExams';
 import ProfessorsGrades from './Pages/Professors/ProfessorsGrades';
+
 
 function App() {
   return (
@@ -56,10 +69,19 @@ function App() {
         <Route path="/admin-programs" element={<Programs />} />
         <Route path="/admin-users" element={<Users />} /> 
         <Route path="/admin-manage-users" element={<ManageUsers />} />
+
+        <Route path="/admin-professors" element={<Professors />} /> {/* Add this route */}
+        <Route path="/admin-students" element={<Students />} /> {/* Add this route */}
+        <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
+
+        <Route path="/ProfessorDashboard" element={<ProfessorDashboard />} />
+
+
         <Route path="/admin-professors" element={<Professors />} /> 
         <Route path="/admin-students" element={<Students />} />
         <Route path="/admin-courses" element={<Courses />} />
         <Route path="/admin-registrations" element={<Enrollments />} />
+
         <Route path="/admin-exams" element={<Exams />} />
         <Route path="/admin-scholarships" element={<Bursat />} />
         <Route path="/admin-faq" element={<FAQ />} />

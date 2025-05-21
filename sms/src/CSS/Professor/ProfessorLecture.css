@@ -1,0 +1,40 @@
+.lecture-schedule-page {
+  padding: 2rem;
+  background-color: #f7f8fa;
+}
+
+.lecture-schedule-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.calendar-btn {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.lecture-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.lecture-table th,
+.lecture-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
