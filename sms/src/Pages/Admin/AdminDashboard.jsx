@@ -5,13 +5,12 @@ import StatsCard from "../../Components/Admin/StatsCard";
 import { Link } from "react-router-dom";
 import Header from "../../Components/Admin/Header";
 
-
 function AdminDashboard() {
   const [studentCount, setStudentCount] = useState(0);
   const [professorCount, setProfessorCount] = useState(0);
   const [courseCount, setCourseCount] = useState(0);
   const [departmentCount, setDepartmentCount] = useState(0);
-  
+
   const [adminName, setAdminName] = useState('Admin User');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -28,44 +27,51 @@ function AdminDashboard() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const tenantId = localStorage.getItem("tenantId");
-    if (!tenantId) return;
-      fetch(`/api/students/count/by-tenant/${tenantId}`)
-          .then(res => res.json())
-          .then(data => setStudentCount(data))
-          .catch(err => console.error(err));
+    if (!tenantId || !token) return;
 
-        fetch(`/api/professors/count/by-tenant/${tenantId}`)
-          .then(res => res.json())
-          .then(data => setProfessorCount(data))
-          .catch(err => console.error(err));
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
 
-        fetch(`/api/courses/count/by-tenant/${tenantId}`)
-          .then(res => res.json())
-          .then(data => setCourseCount(data))
-          .catch(err => console.error(err));
+    const fetchStats = async () => {
+      try {
+        const [studentsRes, professorsRes, coursesRes, departmentsRes] = await Promise.all([
+          fetch(`/api/students/count/by-tenant/${tenantId}`, { headers }),
+          fetch(`/api/professors/count/by-tenant/${tenantId}`, { headers }),
+          fetch(`/api/courses/count/by-tenant/${tenantId}`, { headers }),
+          fetch(`/api/departments/count/by-tenant/${tenantId}`, { headers }),
+        ]);
 
-        fetch(`/api/departments/count/by-tenant/${tenantId}`)
-          .then(res => res.json())
-          .then(data => setDepartmentCount(data))
-          .catch(err => console.error(err));  
+        const [students, professors, courses, departments] = await Promise.all([
+          studentsRes.ok ? studentsRes.json() : 0,
+          professorsRes.ok ? professorsRes.json() : 0,
+          coursesRes.ok ? coursesRes.json() : 0,
+          departmentsRes.ok ? departmentsRes.json() : 0,
+        ]);
 
-    const fetchAdminName = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await fetch('http://localhost:8080/api/auth/user', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await response.json();
-          setAdminName(data.firstName || data.name || 'Admin User');
-        } catch (error) {
-          console.error("Error fetching admin name:", error);
-          setAdminName('Admin User');
-        }
+        setStudentCount(students);
+        setProfessorCount(professors);
+        setCourseCount(courses);
+        setDepartmentCount(departments);
+      } catch (err) {
+        console.error("Gabim gjatë marrjes së statistikave:", err);
       }
     };
 
+    const fetchAdminName = async () => {
+      try {
+        const res = await fetch(`/api/auth/user`, { headers });
+        const data = await res.json();
+        setAdminName(data.firstName || data.name || 'Admin User');
+      } catch (error) {
+        console.error("Gabim gjatë marrjes së emrit të adminit:", error);
+        setAdminName('Admin User');
+      }
+    };
+
+    fetchStats();
     fetchAdminName();
 
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);

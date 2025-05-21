@@ -43,8 +43,8 @@ function AddUser() {
 
     try {
       const tenantId = localStorage.getItem("tenantId");
+      const token = localStorage.getItem("token");
 
-      // MAPIMI I GJINISË DHE ROLIT NE ENUM që backend pret
       const genderMap = {
         "Mashkull": "MALE",
         "Femër": "FEMALE"
@@ -64,16 +64,18 @@ function AddUser() {
         ...rawData,
         gender: genderMap[formData.gender],
         roleName: roleMap[formData.roleName],
-        profilePicture: null // ende nuk po e dërgojmë si file
+        profilePicture: null // ende nuk po dërgojmë si file
       };
 
-      // await axios.post(
-      //   `http://localhost:8080/api/users/create?tenantId=${tenantId}`,
-      //   payload
-      // );
-
-      await axios.post(`/api/users/create?tenantId=${tenantId}`, payload);
-
+      await axios.post(
+        `/api/users/create?tenantId=${tenantId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
       setSuccess("Përdoruesi u shtua me sukses!");
       setError("");

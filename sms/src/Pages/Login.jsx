@@ -23,13 +23,26 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', data.token); // ruaj tokenin
-  localStorage.setItem('tenantId', data.tenantId); // ruaj tenantId
-  localStorage.setItem("userId", data.userId); 
 
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('tenantId', data.tenantId);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('role', data.role); // ruaj rolin
 
-        //   Ridrejto te dashboardi i adminit
-        navigate('/professor-dashboard');
+        // Ridrejto sipas rolit
+        switch (data.role) {
+          case 'ADMIN':
+            navigate('/admin-dashboard');
+            break;
+          case 'STUDENT':
+            navigate('/student-dashboard');
+            break;
+          case 'PROFESSOR':
+            navigate('/professor-dashboard');
+            break;
+          default:
+            navigate('/');
+        }
       } else {
         const text = await response.text();
         setError(text || 'Login failed');

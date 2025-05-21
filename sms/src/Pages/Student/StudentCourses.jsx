@@ -17,14 +17,21 @@ const StudentCourses = () => {
 
   const studentId = localStorage.getItem("studentId");
   const tenantId = localStorage.getItem("tenantId");
+  const token = localStorage.getItem("token");
   const studentName = "Student";
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  const authHeaders = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
   useEffect(() => {
     if (studentId) {
       axios
-        .get(`http://localhost:8080/api/students/${studentId}`)
+        .get(`http://localhost:8080/api/students/${studentId}`, authHeaders)
         .then((res) => {
           setYearOfStudy(res.data.yearOfStudy);
         })
@@ -51,7 +58,8 @@ const StudentCourses = () => {
 
     axios
       .get(
-        `http://localhost:8080/api/students/${studentId}/available-courses?semester=${semester}`
+        `http://localhost:8080/api/students/${studentId}/available-courses?semester=${semester}`,
+        authHeaders
       )
       .then((res) => {
         setAvailableCourses(res.data);
@@ -70,7 +78,7 @@ const StudentCourses = () => {
     };
 
     axios
-      .post("http://localhost:8080/api/enrollments/register", payload)
+      .post("http://localhost:8080/api/enrollments/register", payload, authHeaders)
       .then(() => {
         setAvailableCourses((prevCourses) =>
           prevCourses.filter((course) => course.id !== courseId)
@@ -85,7 +93,8 @@ const StudentCourses = () => {
     if (!studentId) return;
     axios
       .get(
-        `http://localhost:8080/api/enrollments/student/${studentId}/registered-courses`
+        `http://localhost:8080/api/enrollments/student/${studentId}/registered-courses`,
+        authHeaders
       )
       .then((res) => {
         setRegisteredCourses(res.data);
