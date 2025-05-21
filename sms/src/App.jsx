@@ -31,6 +31,8 @@ import ProfessorStudents from './Pages/Professors/ProfessorsStudents';
 import ProfessorCourses from './Pages/Professors/ProfessorsCourses';
 import ProfessorMaterials from './Pages/Professors/ProfessorsMaterials';
 import ProfessorSchedule from './Pages/Professors/ProfessorsSchedule';
+import ProfessorsExams from './Pages/Professors/ProfessorsExams';
+
 function App() {
   return (
     <>
@@ -67,6 +69,7 @@ function App() {
         <Route path="/professor-courses" element={<ProfessorCourses/>} />
         <Route path="/professor-materials" element={<ProfessorMaterials/>} />
         <Route path="/professor-schedule" element={<ProfessorSchedule/>} />
+        <Route path="/professor-exams" element={<ProfessorsExams/>} />
 
 
       </Routes>
