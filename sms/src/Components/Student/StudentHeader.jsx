@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
 
-const Header = ({ adminName, toggleSidebar }) => {
+const StudentHeader = ({ studentName, toggleSidebar }) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -12,14 +12,14 @@ const Header = ({ adminName, toggleSidebar }) => {
 
   const handleProfile = () => {
     setIsDropdownOpen(false);
-    navigate('/admin-settings'); // Updated to navigate to /admin-settings
+    navigate('/student-settings'); // ndryshuar nga /admin-settings
   };
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
     localStorage.removeItem('token');
     localStorage.removeItem('tenantId');
-    navigate('/'); // Navigates to /
+    navigate('/'); // logout
   };
 
   return (
@@ -40,8 +40,8 @@ const Header = ({ adminName, toggleSidebar }) => {
         </span>
         <div className="user-info-container">
           <span className="user-info" onClick={handleProfileClick}>
-            <span className="user-logo">{adminName.charAt(0).toUpperCase()}</span>
-            {adminName} ADMIN
+            <span className="user-logo">{studentName.charAt(0).toUpperCase()}</span>
+            {studentName} STUDENT
           </span>
           {isDropdownOpen && (
             <div className="user-dropdown bg-white border rounded-lg shadow-lg w-48 absolute right-0 mt-2">
@@ -67,4 +67,4 @@ const Header = ({ adminName, toggleSidebar }) => {
   );
 };
 
-export default Header;
+export default StudentHeader;

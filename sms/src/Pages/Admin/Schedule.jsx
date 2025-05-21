@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import "../../CSS/Admin/AdminDashboard.css";
 import Sidebar from "../../Components/Admin/Sidebar";
 import Header from "../../Components/Admin/Header";
 
@@ -15,7 +15,7 @@ const initialSchedule = [
     tenant_id: 4,
     course_professor_id: 1,
     program_id: 1,
-    created_at: '2025-05-16T17:30:00+02:00', // Updated to current time (05:30 PM CEST)
+    created_at: '2025-05-16T23:41:00+02:00',
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ const initialSchedule = [
     tenant_id: 4,
     course_professor_id: 2,
     program_id: 1,
-    created_at: '2025-05-16T17:30:00+02:00',
+    created_at: '2025-05-16T23:41:00+02:00',
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const initialSchedule = [
     tenant_id: 4,
     course_professor_id: 3,
     program_id: 1,
-    created_at: '2025-05-16T17:30:00+02:00',
+    created_at: '2025-05-16T23:41:00+02:00',
   },
 ];
 
@@ -55,11 +55,8 @@ const Schedule = () => {
   });
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [adminName, setAdminName] = useState('Adrian Mehaj');
-  const [adminRole] = useState('ADMIN');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar
+  const [adminName, setAdminName] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const API_URL = 'http://localhost:8080/api/lecture-schedule';
   const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
@@ -87,8 +84,6 @@ const Schedule = () => {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(null);
     try {
       const [scheduleResponse, authResponse] = await Promise.all([
         axios.get(API_URL),
@@ -96,15 +91,11 @@ const Schedule = () => {
       ]);
       const fetchedSchedule = scheduleResponse.data.length > 0 ? scheduleResponse.data : initialSchedule;
       setSchedule(fetchedSchedule);
-      setAdminName(authResponse.data.name || 'Adrian Mehaj');
+      setAdminName(authResponse.data.name || '');
       console.log('Fetched schedule:', fetchedSchedule);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Failed to fetch schedule data. Using default data.');
       setSchedule(initialSchedule);
-      console.log('Fallback to initialSchedule:', initialSchedule);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -134,7 +125,6 @@ const Schedule = () => {
       fetchData();
     } catch (error) {
       console.error('Error saving schedule:', error);
-      setError('Failed to save schedule.');
     }
   };
 
@@ -159,7 +149,6 @@ const Schedule = () => {
         fetchData();
       } catch (error) {
         console.error('Error deleting schedule:', error);
-        setError('Failed to delete schedule.');
       }
     }
   };
@@ -197,7 +186,7 @@ const Schedule = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  if (loading) {
+  if (!schedule) {
     return <div style={{ textAlign: 'center', padding: '20px' }}>Loading schedule...</div>;
   }
 
@@ -212,33 +201,13 @@ const Schedule = () => {
           <div className="page-container">
             <div className="content-container">
               <div className="schedule-container" style={{ position: 'relative' }}>
-                {error && (
-                  <div style={{ textAlign: 'center', padding: '10px', color: 'red' }}>
-                    <p>{error}</p>
-                    <button
-                      onClick={fetchData}
-                      style={{
-                        padding: '5px 10px',
-                        background: '#3498db',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Retry
-                    </button>
-                  </div>
-                )}
                 <main className="schedule-main">
                   <div className="header-section">
                     <h2>Weekly Schedule</h2>
                     <p>Your class schedule for the current semester</p>
-                    {adminRole === 'ADMIN' && (
-                      <button className="add-button" onClick={() => setShowForm(true)} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}>
-                        <FaPlus /> Add
-                      </button>
-                    )}
+                    <button className="add-button" onClick={() => setShowForm(true)} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}>
+                      <FaPlus /> Add
+                    </button>
                   </div>
                   <div className="schedule-content">
                     <h3>Spring Semester 2025</h3>
@@ -263,16 +232,14 @@ const Schedule = () => {
                                     <div>
                                       <p>{courseProfessorToDetails[scheduleItem.course_professor_id]?.course || 'Unknown Course'}</p>
                                       <p>Room: {scheduleItem.room}</p>
-                                      {adminRole === 'ADMIN' && (
-                                        <div className="schedule-actions">
-                                          <button className="edit-btn" onClick={() => handleEdit(scheduleItem)}>
-                                            <FaEdit /> Edit
-                                          </button>
-                                          <button className="delete-btn" onClick={() => handleDelete(scheduleItem.id)}>
-                                            <FaTrash /> Delete
-                                          </button>
-                                        </div>
-                                      )}
+                                      <div className="schedule-actions">
+                                        <button className="edit-btn" onClick={() => handleEdit(scheduleItem)}>
+                                          <FaEdit /> Edit
+                                        </button>
+                                        <button className="delete-btn" onClick={() => handleDelete(scheduleItem.id)}>
+                                          <FaTrash /> Delete
+                                        </button>
+                                      </div>
                                     </div>
                                   ) : (
                                     <span>No class scheduled</span>
@@ -284,10 +251,6 @@ const Schedule = () => {
                         ))}
                       </tbody>
                     </table>
-                  </div>
-                  <div className="admin-info">
-                    <span>{adminName}</span>
-                    <span>{adminRole}</span>
                   </div>
                 </main>
 
@@ -387,14 +350,14 @@ const Schedule = () => {
         .content-container {
           flex: 1;
           padding: 20px;
-          min-height: 100vh; /* Ensure it stretches to the bottom */
-          overflow-y: auto; /* Allow scrolling if content overflows */
+          min-height: 100vh;
+          overflow-y: auto;
           transition: margin-left 0.3s;
         }
         .schedule-container {
-          position: relative; /* Provide positioning context for modal */
+          position: relative;
           display: flex;
-          min-height: calc(100% - 40px); /* Stretch to bottom, accounting for padding */
+          min-height: calc(100% - 40px);
           flex-direction: column;
           padding: 0.5rem;
           background: #ffffff;
@@ -519,15 +482,6 @@ const Schedule = () => {
         }
         .delete-btn:hover {
           background: rgba(231, 76, 60, 0.1);
-        }
-        .admin-info {
-          margin-top: 0.5rem;
-          text-align: right;
-          color: #2c3e50;
-        }
-        .admin-info span {
-          display: block;
-          font-size: 0.8rem;
         }
         .modal-overlay {
           position: fixed;

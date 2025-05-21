@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';  
 import { Link } from 'react-router-dom';
 
-
 function Navbar(){
   return(
 
@@ -31,6 +30,10 @@ function Navbar(){
             <Link className="nav-link" to="../Study">Study</Link>
             </li>
           </ul>
+        </div>
+
+    <div className="d-flex ms-auto">
+      <Link to="/Login" className="login-button">Login</Link>
         </div>
       </div>
     </nav>
