@@ -21,6 +21,10 @@ import Enrollments from './Pages/Admin/Registrations';
 import Schedule from './Pages/Admin/Schedule';
 import ManageUsers from './Pages/Admin/ManageUsers'; 
 import ProfessorDashboard from "./Pages/Professor/ProfessorDashboard";
+import ProfessorStudents from './Pages/Professor/ProfessorStudents';
+import ProfessorLecture  from './Pages/Professor/ProfessorLecture';
+import ProfessorGrades from './Pages/Professor/ProfessorGrades';
+
 
 
 
@@ -46,9 +50,9 @@ function App() {
         <Route path="/admin-professors" element={<Professors />} /> {/* Add this route */}
         <Route path="/admin-students" element={<Students />} /> {/* Add this route */}
         <Route path="/admin-courses" element={<Courses />} /> {/* Add this route */}
-        <Route path="/admin-materials" element={<Materials />} /> {/* Add this route */}
-        <Route path="/admin-registrations" element={<Enrollments />} /> {/* Add this route */}
-        <Route path="/admin-schedule" element={<Schedule />} /> {/* Add this route */}
+        <Route path="/admin-materials" element={<Materials />} /> 
+        <Route path="/admin-registrations" element={<Enrollments />} /> 
+        <Route path="/admin-schedule" element={<Schedule />} /> 
         <Route path="/ProfessorDashboard" element={<ProfessorDashboard />} />
 
       </Routes>
