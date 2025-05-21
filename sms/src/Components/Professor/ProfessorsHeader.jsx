@@ -7,6 +7,7 @@ const ProfessorHeader = ({ professorName = "Professor", toggleSidebar, notificat
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -37,93 +38,109 @@ const ProfessorHeader = ({ professorName = "Professor", toggleSidebar, notificat
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
-    console.log("Search query:", e.target.value);
   };
 
   const handleNotificationClick = () => {
-    navigate("/professor-notifications");
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
-    <header className="admin-header">
-      <div className="header-left">
-        <button
-          type="button"
-          className="hamburger-icon"
-          onClick={toggleSidebar}
-          aria-label="Toggle sidebar"
-        >
-          <FaBars />
-        </button>
-        <span className="header-title">Student Management System</span>
-      </div>
-
-      <div className="header-center">
-        <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Kërko..."
-            value={searchQuery}
-            onChange={handleSearch}
-            aria-label="Search"
-          />
-        </div>
-      </div>
-
-      <div className="header-right">
-        <button
-          type="button"
-          className="notification-bell"
-          onClick={handleNotificationClick}
-          aria-label={`Notifications, ${notificationCount} new`}
-        >
-          <FaBell />
-          {notificationCount > 0 && (
-            <span className="notification-badge">{notificationCount}</span>
-          )}
-        </button>
-
-        <div className="user-info-container" ref={dropdownRef}>
+    <>
+      <header className="admin-header">
+        <div className="header-left">
           <button
             type="button"
-            className="user-info"
-            onClick={handleProfileClick}
-            aria-expanded={isDropdownOpen}
-            aria-label={`User menu for ${professorName}`}
+            className="hamburger-icon"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
           >
-            <span className="user-logo">
-              {professorName.charAt(0).toUpperCase()}
-            </span>
-            <span>
-              {professorName}
-            </span>
+            <FaBars />
+          </button>
+          <span className="header-title">Student Management System</span>
+        </div>
+
+        <div className="header-center">
+          <div className="search-container">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Kërko..."
+              value={searchQuery}
+              onChange={handleSearch}
+              aria-label="Search"
+            />
+          </div>
+        </div>
+
+        <div className="header-right">
+          <button
+            type="button"
+            className="notification-bell"
+            onClick={handleNotificationClick}
+            aria-label={`Notifications, ${notificationCount} new`}
+          >
+            <FaBell />
+            {notificationCount > 0 && (
+              <span className="notification-badge">{notificationCount}</span>
+            )}
           </button>
 
-          {isDropdownOpen && (
-            <div className="user-dropdown bg-white border rounded-lg shadow-lg w-48 absolute right-0 mt-2">
-              <ul className="py-2">
-                <li
-                  onClick={handleProfile}
-                  className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
-                  role="menuitem"
-                >
-                  Profili
-                </li>
-                <li
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors duration-200"
-                  role="menuitem"
-                >
-                  Dil
-                </li>
-              </ul>
-            </div>
-          )}
+          <div className="user-info-container" ref={dropdownRef}>
+            <button
+              type="button"
+              className="user-info"
+              onClick={handleProfileClick}
+              aria-expanded={isDropdownOpen}
+              aria-label={`User menu for ${professorName}`}
+            >
+              <span className="user-logo">
+                {professorName.charAt(0).toUpperCase()}
+              </span>
+              <span>{professorName}</span>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="user-dropdown bg-white border rounded-lg shadow-lg w-48 absolute right-0 mt-2">
+                <ul className="py-2">
+                  <li
+                    onClick={handleProfile}
+                    className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer"
+                  >
+                    Profili
+                  </li>
+                  <li
+                    onClick={handleLogout}
+                    className="px-4 py-2 text-gray-700 hover:bg-blue-100 cursor-pointer"
+                  >
+                    Dil
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {showModal && (
+        <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="modal-content bg-white p-6 rounded-lg shadow-lg w-80 text-center relative">
+            <h2 className="text-lg font-semibold mb-4">Njoftim</h2>
+            <p>Nuk ka asnjë njoftim.</p>
+            <button
+              onClick={closeModal}
+              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              Mbylle
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
