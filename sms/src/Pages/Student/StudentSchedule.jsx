@@ -11,6 +11,7 @@ const StudentSchedule = () => {
 
   const userId = localStorage.getItem("userId");
   const tenantId = localStorage.getItem("tenantId");
+  const token = localStorage.getItem("token");
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const times = [
@@ -21,14 +22,19 @@ const StudentSchedule = () => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
-    if (userId && tenantId) {
+    if (userId && tenantId && token) {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          userId: userId,
+          tenantId: tenantId
+        }
+      };
+
       axios
-        .get("http://localhost:8080/api/lecture-schedules/student", {
-          params: {
-            userId: userId,
-            tenantId: tenantId
-          }
-        })
+        .get("http://localhost:8080/api/lecture-schedules/student", config)
         .then((res) => {
           setScheduleData(res.data);
         })
@@ -36,7 +42,7 @@ const StudentSchedule = () => {
           console.error("Gabim në marrjen e orarit:", err);
         });
     }
-  }, [userId, tenantId]);
+  }, [userId, tenantId, token]);
 
   return (
     <div className="app-container">

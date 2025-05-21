@@ -19,6 +19,13 @@ const StudentMaterials = () => {
 
   const studentName = "Student Johnson";
   const studentId = localStorage.getItem("studentId");
+  const token = localStorage.getItem("token");
+
+  const authHeaders = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -27,7 +34,7 @@ const StudentMaterials = () => {
   useEffect(() => {
     if (studentId) {
       axios
-        .get(`http://localhost:8080/api/students/${studentId}`)
+        .get(`http://localhost:8080/api/students/${studentId}`, authHeaders)
         .then((res) => {
           setYearOfStudy(res.data.yearOfStudy);
         })
@@ -53,7 +60,8 @@ const StudentMaterials = () => {
     if (semester && studentId) {
       axios
         .get(
-          `http://localhost:8080/api/enrollments/student/${studentId}/courses-by-semester?semester=${semester}`
+          `http://localhost:8080/api/enrollments/student/${studentId}/courses-by-semester?semester=${semester}`,
+          authHeaders
         )
         .then((res) => {
           setCourses(res.data);
@@ -81,7 +89,8 @@ const StudentMaterials = () => {
 
     axios
       .get(
-        `http://localhost:8080/api/course-materials/by-course?courseId=${selectedCourseId}`
+        `http://localhost:8080/api/course-materials/by-course?courseId=${selectedCourseId}`,
+        authHeaders
       )
       .then((res) => {
         setMaterials(res.data);
