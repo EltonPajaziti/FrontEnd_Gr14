@@ -1,0 +1,54 @@
+.eServices {
+  padding: 40px;
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #002d62;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  width: fit-content;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  transition: box-shadow 0.3s ease;
+  background-color: #fff;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  font-size: 40px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #002d62;
+}
+
+.explore-link {
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+}
