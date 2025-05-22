@@ -17,7 +17,7 @@ const Users = () => {
   const navigate = useNavigate();
 
   const API_URL = 'http://localhost:8080/api/users';
-  //const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
   useEffect(() => {
     fetchData();
@@ -25,9 +25,16 @@ const Users = () => {
 
   const fetchData = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const [usersResponse] = await Promise.all([
-        axios.get(API_URL),
-        //axios.get(AUTH_API_URL),
+        axios.get(API_URL, config),
+        //axios.get(AUTH_API_URL, config), // duhet te rregullohet
       ]);
       setUsers(sortData(usersResponse.data, sortField, sortOrder));
       setAdminName('Admin');

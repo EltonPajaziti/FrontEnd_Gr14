@@ -27,10 +27,16 @@ const Programs = () => {
 
 const fetchData = async () => {
   try {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     const [progResponse, deptResponse] = await Promise.all([
-      axios.get(API_URL),
-      axios.get(DEPARTMENTS_API_URL),
-      // axios.get(AUTH_API_URL),
+      axios.get(API_URL, config),
+      axios.get(DEPARTMENTS_API_URL, config),
     ]);
 
     console.log("Programs fetched:", progResponse.data);
@@ -43,6 +49,7 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 };
+
 
 
   const sortData = (data, field, order) => {
@@ -64,26 +71,35 @@ const fetchData = async () => {
 
   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        name: formData.name,
-        departmentId: formData.departmentId,
-        level: formData.level,
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      if (editingId) {
-        await axios.put(`${API_URL}/${editingId}`, payload);
-      } else {
-        await axios.post(`${API_URL}/create`, payload);
-      }
-      resetForm();
-      fetchData();
-    } catch (error) {
-      console.error('Error saving program:', error);
+    const payload = {
+      name: formData.name,
+      departmentId: formData.departmentId,
+      level: formData.level,
+    };
+
+    if (editingId) {
+      await axios.put(`${API_URL}/${editingId}`, payload, config);
+    } else {
+      await axios.post(`${API_URL}/create`, payload, config);
     }
-  };
+
+    resetForm();
+    fetchData();
+  } catch (error) {
+    console.error('Error saving program:', error);
+  }
+};
+
 
   const handleEdit = (program) => {
     setFormData({

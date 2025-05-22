@@ -22,7 +22,15 @@ const Departments = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+      };
+
+      const response = await axios.get(API_URL, config);
       setDepartments(response.data);
     } catch (error) {
       console.error('Error fetching departments:', error);
@@ -31,7 +39,15 @@ const Departments = () => {
 
   const fetchFaculties = async () => {
     try {
-      const response = await axios.get(FACULTIES_API_URL);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+      };
+      
+      const response = await axios.get(FACULTIES_API_URL, config);
       setFaculties(response.data);
     } catch (error) {
       console.error('Error fetching faculties:', error);
@@ -40,7 +56,14 @@ const Departments = () => {
 
   const fetchAdminName = async () => {
     try {
-      const response = await axios.get(AUTH_API_URL);
+      const token = localStorage.getItem("token");
+      const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      };
+
+      const response = await axios.get(AUTH_API_URL, config);
       setAdminName(response.data.name || 'Admin');
     } catch (error) {
       console.error('Error fetching admin name:', error);

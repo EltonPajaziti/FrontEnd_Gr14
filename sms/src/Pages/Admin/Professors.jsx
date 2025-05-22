@@ -19,7 +19,7 @@ const Professors = () => {
 
   const PROFESSORS_API_URL = 'http://localhost:8080/api/professors';
   const DEPARTMENTS_API_URL = 'http://localhost:8080/api/departments';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/users';
+  //const AUTH_API_URL = 'http://localhost:8080/api/auth/users';
 
   const animateCount = (target, setCount) => {
     let start = 0;
