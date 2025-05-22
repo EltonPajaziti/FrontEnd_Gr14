@@ -3,7 +3,7 @@ import sms2 from '../assets/sms2.jpg';
 import uni1 from '../assets/uni1.jpg';
 import unii2 from '../assets/unii2.png';
 import unii3 from '../assets/unii3.png';
-import about1 from '../assets/about1.jpg';
+import abouti from '../assets/abouti.jpg';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import studentii from '../assets/studentii.jpg';   
@@ -16,15 +16,16 @@ import '../CSS/About.css';
 function About() {
     return <div>
       <Navbar/>
-      <div className="about-us-container" style={{ backgroundImage: `url(${about1})` }}>
+      <div className="about-us-container" style={{ backgroundImage: `url(${abouti})` }}>
       <div className="overlay">
-        <h1>About us</h1>
+        {/* <h1>About us</h1> */}
       </div>
     </div>
 
      <div className="about-section">
       <div class="introduction">
         <p className="section-label">ABOUT US</p>
+
         <h2><span className="highlight">Introduction</span> To Our<br></br> Student Management System</h2>
         </div>
         <div className="description-columns">
@@ -55,7 +56,28 @@ function About() {
       </div>
     </div>
 
-     
+     <section class="stats-section">
+  <h2 class="stats-title">Our Impact</h2>
+  <div class="stats-container">
+    <div class="stat-box">
+      <i class="fas fa-school stat-icon"></i>
+      <p class="stat-number">10+</p>
+      <p class="stat-label">Institutions Onboarded</p>
+    </div>
+    <div class="stat-box">
+      <i class="fas fa-user-graduate stat-icon"></i>
+      <p class="stat-number">5,000+</p>
+      <p class="stat-label">Students Managed</p>
+    </div>
+    <div class="stat-box">
+      <i class="fas fa-check-circle stat-icon"></i>
+      <p class="stat-number">98%</p>
+      <p class="stat-label">Record Accuracy</p>
+    </div>
+  </div>
+</section>
+
+
     <Footer/>
     </div>;
   }
