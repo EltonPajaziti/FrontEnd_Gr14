@@ -18,7 +18,7 @@ const Departments = () => {
 
   const API_URL = 'http://localhost:8080/api/departments';
   const FACULTIES_API_URL = 'http://localhost:8080/api/faculties';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+  //const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
   const fetchDepartments = async () => {
     try {
@@ -63,8 +63,8 @@ const Departments = () => {
       },
       };
 
-      const response = await axios.get(AUTH_API_URL, config);
-      setAdminName(response.data.name || 'Admin');
+      //const response = await axios.get(AUTH_API_URL, config);
+      setAdminName('Admin');
     } catch (error) {
       console.error('Error fetching admin name:', error);
       setAdminName('Admin');
@@ -89,7 +89,6 @@ const Departments = () => {
   useEffect(() => {
     fetchDepartments();
     fetchFaculties();
-    fetchAdminName();
 
 
   }, []);
@@ -106,25 +105,34 @@ const Departments = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        name: formData.name,
-        tenantID: formData.tenantId
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      if (editingId) {
-        await axios.put(`${API_URL}/${editingId}`, payload);
-      } else {
-        await axios.post(`${API_URL}/create`, payload);
-      }
-      resetForm();
-      fetchDepartments();
-    } catch (error) {
-      console.error('Error saving department:', error);
+    const payload = {
+      name: formData.name,
+      tenantID: localStorage.getItem("tenantId"),
+    };
+
+    if (editingId) {
+      await axios.put(`${API_URL}/${editingId}`, payload, config); // ✅ FIXED
+    } else {
+      await axios.post(`${API_URL}/create`, payload, config); // ✅ FIXED
     }
-  };
+
+    resetForm();
+    fetchDepartments();
+  } catch (error) {
+    console.error('Error saving department:', error);
+  }
+};
+
 
   const handleEdit = (department) => {
     setFormData({ name: department.name, tenantId: department.tenantID?.id || '' });
