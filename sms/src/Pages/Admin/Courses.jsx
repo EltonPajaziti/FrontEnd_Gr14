@@ -1,32 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaEye, FaEdit } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import "../../CSS/Admin/AdminDashboard.css";
 import Sidebar from "../../Components/Admin/Sidebar";
 import Header from "../../Components/Admin/Header";
 
 const Courses = () => {
-  const [courses, setCourses] = useState([
-    // Kurs shembull i shtuar këtu për testim
-    {
-      id: 1,
-      name: "Introduction to Programming",
-      code: "CS101",
-      credits: 3,
-      semester: 1,
-      year_study: 1,
-      program_id: 1,
-      tenant_id: 1,
-      description: "This course covers the basics of programming using Python.",
-      created_at: "2024-01-10T10:00:00Z",
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [adminName, setAdminName] = useState('Admin');
-  const [currentTime, setCurrentTime] = useState(new Date('2025-05-16T17:02:00+02:00')); // Updated to match current time (05:02 PM CEST)
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [courseCount, setCourseCount] = useState(1); // Përditësuar për kursin shembull
+  const [courseCount, setCourseCount] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -38,16 +24,14 @@ const Courses = () => {
     semester: '',
     year_study: '',
     program_id: '',
-    tenant_id: '',
+    fakulteti: '',
     description: '',
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Added state for sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const COURSES_API_URL = 'http://localhost:8080/api/courses';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
-  const fetchData = async (url, setData, errorMessage, transform = (d) => d) => {
-    const token = localStorage.getItem('token');
+  const fetchData = async (url, setData, errorMessage, transform = (d) => d, token = null) => {
     if (!token) {
       setError('Authentication token is missing. Please log in.');
       setLoading(false);
@@ -59,6 +43,7 @@ const Courses = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       const transformedData = transform(response.data);
       setData(transformedData);
 
@@ -97,7 +82,7 @@ const Courses = () => {
         semester: '',
         year_study: '',
         program_id: '',
-        tenant_id: '',
+        fakulteti: '',
         description: '',
       });
     } catch (error) {
@@ -136,15 +121,10 @@ const Courses = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const authResponse = await axios.get(AUTH_API_URL, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setAdminName(authResponse.data.firstName || authResponse.data.name || 'Admin');
-      } catch (error) {
-        console.error('Error fetching admin name:', error);
-        setAdminName('Admin');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError("Authentication token missing.");
+        return;
       }
 
       await fetchData(
@@ -161,16 +141,18 @@ const Courses = () => {
                 semester: c.semester || null,
                 year_study: c.year_study || null,
                 program_id: c.program_id || null,
-                tenant_id: c.tenant_id || null,
+                fakulteti: c.program?.department?.tenantID?.name || '-',
                 description: c.description || '',
                 created_at: c.created_at || '',
               }))
-            : []
+            : [],
+        token
       );
+
+      setAdminName('Admin');
     };
 
     loadData();
-
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
@@ -193,7 +175,7 @@ const Courses = () => {
 
   const exportToCSV = () => {
     const headers = [
-      'ID,Name,Code,Credits,Semester,Year Study,Program ID,Tenant ID,Description,Created At',
+      'ID,Name,Code,Credits,Semester,Year Study,Program ID,Fakulteti,Description,Created At',
     ];
     const rows = filteredCourses.map((course) => [
       course.id,
@@ -203,7 +185,7 @@ const Courses = () => {
       course.semester,
       course.year_study,
       course.program_id,
-      course.tenant_id,
+      course.fakulteti,
       course.description,
       course.created_at,
     ]
@@ -224,6 +206,7 @@ const Courses = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
 
   return (
     <div className="app-container">
@@ -286,7 +269,7 @@ const Courses = () => {
                           <th>Semester</th>
                           <th>Year Study</th>
                           <th>Program ID</th>
-                          <th>Tenant ID</th>
+                          <th>Fakulteti</th>
                           <th>Description</th>
                           <th>Created At</th>
                           <th>Actions</th>
@@ -303,7 +286,7 @@ const Courses = () => {
                               <td>{course.semester || '-'}</td>
                               <td>{course.year_study || '-'}</td>
                               <td>{course.program_id || '-'}</td>
-                              <td>{course.tenant_id || '-'}</td>
+                              <td>{course.fakulteti || '-'}</td>
                               <td>{course.description || '-'}</td>
                               <td>{course.created_at || '-'}</td>
                               <td>
@@ -397,12 +380,12 @@ const Courses = () => {
                             setNewCourse({ ...newCourse, program_id: e.target.value })
                           }
                         />
-                        <label>Tenant ID:</label>
+                        <label>Fakultet:</label>
                         <input
                           type="number"
-                          value={newCourse.tenant_id}
+                          value={newCourse.fakulteti}
                           onChange={(e) =>
-                            setNewCourse({ ...newCourse, tenant_id: e.target.value })
+                            setNewCourse({ ...newCourse, fakulteti: e.target.value })
                           }
                         />
                         <label>Description:</label>
@@ -441,7 +424,7 @@ const Courses = () => {
                         <p><strong>Semester:</strong> {selectedCourse.semester || '-'}</p>
                         <p><strong>Year Study:</strong> {selectedCourse.year_study || '-'}</p>
                         <p><strong>Program ID:</strong> {selectedCourse.program_id || '-'}</p>
-                        <p><strong>Tenant ID:</strong> {selectedCourse.tenant_id || '-'}</p>
+                        <p><strong>Fakulteti:</strong> {selectedCourse.fakulteti || '-'}</p>
                         <p><strong>Description:</strong> {selectedCourse.description || '-'}</p>
                         <p><strong>Created At:</strong> {selectedCourse.created_at || '-'}</p>
                       </div>
@@ -511,12 +494,12 @@ const Courses = () => {
                             setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
                           }
                         />
-                        <label>Tenant ID:</label>
+                        <label>Fakulteti:</label>
                         <input
-                          type="number"
-                          value={selectedCourse.tenant_id}
+                          type="text"
+                          value={selectedCourse.fakulteti}
                           onChange={(e) =>
-                            setSelectedCourse({ ...selectedCourse, tenant_id: e.target.value })
+                            setSelectedCourse({ ...selectedCourse, fakulteti: e.target.value })
                           }
                         />
                         <label>Description:</label>

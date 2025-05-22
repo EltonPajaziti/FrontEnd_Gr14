@@ -14,7 +14,6 @@ const Faculty = () => {
     address: ''
   });
   const [search, setSearch] = useState("");
-  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [adminName, setAdminName] = useState("Admin");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -77,38 +76,30 @@ const Faculty = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setSuccessMessage(null);
-    try {
-      const token = localStorage.getItem("token");
-      const payload = {
-        facultyId: Number(formData.facultyId),
-        name: formData.name,
-        email: formData.email,
-        address: formData.address || null,
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setSuccessMessage(null);
+  try {
+    const token = localStorage.getItem("token");
+    const payload = {
+      name: formData.name,
+      address: formData.address || null,
+    };
 
-      if (editingId) {
-        delete payload.email;
-        await axios.put(`${API_URL}/${editingId}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSuccessMessage("Faculty updated successfully!");
-      } else {
-        await axios.post(`${API_URL}/create`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSuccessMessage("Faculty added successfully!");
-      }
-      resetForm();
-      fetchFaculties();
-    } catch (error) {
-      console.error("Error saving faculty:", error);
-      setError("Failed to save faculty. Please try again.");
-    }
-  };
+    await axios.put(`${API_URL}/${editingId}`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setSuccessMessage("Faculty updated successfully!");
+    resetForm();
+    fetchFaculties();
+  } catch (error) {
+    console.error("Error saving faculty:", error);
+    setError("Failed to update faculty. Please try again.");
+  }
+};
+
 
   const handleEdit = (faculty) => {
     setFormData({
@@ -118,7 +109,6 @@ const Faculty = () => {
       address: faculty.address || "",
     });
     setEditingId(faculty.id);
-    setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -139,9 +129,8 @@ const Faculty = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", email: "", address: "" });
+    setFormData({ name: "", address: "" });
     setEditingId(null);
-    setShowForm(false);
     setError(null);
     setSuccessMessage(null);
   };
@@ -178,9 +167,6 @@ const Faculty = () => {
                     <h3>Faculties</h3>
                     <p>Manage academic faculties in the institution</p>
                   </div>
-                  <button className="add-button" onClick={() => setShowForm(true)}>
-                    <FaPlus /> Add Faculty
-                  </button>
                 </div>
 
                 {error && <div className="error-message">{error}</div>}
@@ -264,21 +250,11 @@ const Faculty = () => {
                   )}
                 </div>
 
-                {showForm && (
+                {editingId && (
                   <div className="modal-overlay" onClick={resetForm}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                      <h3>{editingId ? "Edit Faculty" : "Add New Faculty"}</h3>
+                      <h3>Edit Faculty</h3>
                       <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                          <label>Faculty ID*</label>
-                          <input
-                            type="number"
-                            name="facultyId"
-                            value={formData.facultyId}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
                         <div className="form-group">
                           <label>Faculty Name*</label>
                           <input
@@ -290,16 +266,17 @@ const Faculty = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label>Email*</label>
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                            disabled={!!editingId}
-                          />
+                          <label>Email:</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          disabled={!!editingId}
+                        />
                         </div>
+                        
                         <div className="form-group">
                           <label>Address</label>
                           <input
@@ -309,18 +286,21 @@ const Faculty = () => {
                             onChange={handleInputChange}
                           />
                         </div>
+
+
                         <div className="form-actions">
                           <button type="button" className="cancel-btn" onClick={resetForm}>
                             Cancel
                           </button>
                           <button type="submit" className="submit-btn">
-                            {editingId ? "Update Faculty" : "Add Faculty"}
+                            Update Faculty
                           </button>
                         </div>
                       </form>
                     </div>
                   </div>
                 )}
+
 
                 {deleteConfirmation && (
                   <div className="modal-overlay" onClick={() => setDeleteConfirmation(null)}>
@@ -404,23 +384,6 @@ const Faculty = () => {
                 color: #7f8c8d;
                 margin: 0;
                 font-size: 1.1rem; /* Slightly larger */
-              }
-              .add-button {
-                background-color: #3498db;
-                color: white;
-                border: none;
-                padding: 1rem 2rem; /* Increased padding for larger button */
-                border-radius: 6px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-weight: 600;
-                font-size: 1.1rem; /* Larger font */
-                transition: background-color 0.2s;
-              }
-              .add-button:hover {
-                background-color: #2980b9;
               }
               .error-message {
                 color: #e74c3c;
