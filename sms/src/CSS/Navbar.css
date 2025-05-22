@@ -1,9 +1,8 @@
 .navbar{
     background-color: white;
- 
+   
 }
 
-  
 .navbar-brand{
     margin-right:0;
     padding: 0 1em;
@@ -17,7 +16,7 @@
     padding: .5em 1em;
 }
  .login-button {
-  background: linear-gradient(135deg, #4b6cb7, #182848); /* Gradient blu */
+  background: linear-gradient(135deg, #4b6cb7, #182848); 
   color: white;
   padding: 10px 24px;
   border: none;
@@ -31,7 +30,7 @@
 }
 
  .login-button:hover {
-  background: linear-gradient(135deg, #182848, #4b6cb7); /* Ndërrim i gradientit në hover */
+  background: linear-gradient(135deg, #182848, #4b6cb7); 
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
 }

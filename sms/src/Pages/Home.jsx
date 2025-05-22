@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import sms2 from '../assets/sms2.jpg';
 import uni1 from '../assets/uni1.jpg';
 import unii2 from '../assets/unii2.png';
@@ -8,6 +8,8 @@ import Footer from '../Components/Footer';
 import '../CSS/Home.css';
 
 function Home(){
+
+
     return(
         <>
     <Navbar />
@@ -39,14 +41,66 @@ function Home(){
         </div>
     </div>
 
-    <div className="UP-text-container">
-        <div className="Up-text-header">
-        <h1>The University of Prishtina is the academic heart of Kosovo, making an impact beyond borders</h1>
-        </div>
-        <div className="Up-text-paragraph">
-        <p>The University of Prishtina is located in the capital of Kosovo and stands as the oldest and largest higher education institution in the country. With thousands of dedicated students and academic staff, it forms a dynamic scientific and educational community. In the region, the University is recognized for its ongoing contribution to society, education, and scientific research. Since its establishment on February 13, 1970, the University of Prishtina has played a vital role in shaping a brighter future for new generations.</p>
-        </div>
+  
+
+<div class="student-services-container">
+  <div class="sidebar">
+    <ul>
+      <li><a href="#">Kartela Studentore</a></li>
+      <li class="active"><a href="#">SMS</a></li>
+      <li><a href="#">SMIS</a></li>
+      <li><a href="#">Asistencë Financiare</a></li>
+      <li><a href="#">Plani Mësimor</a></li>
+      <li><a href="#">Shërbime Këshillimore</a></li>
+      <li><a href="#">Transkriptet</a></li>
+      <li><a href="#">Studentët Ndërkombëtarë</a></li>
+    </ul>
+  </div>
+
+  <div class="service-description">
+    <h2>Platforma SMS</h2>
+    <p>
+      SMS është një platformë mësimore e krijuar për të ofruar mësimdhënësve, administratorëve dhe studentëve një sistem të vetëm të sigurt dhe të integruar për të ndërtuar përvoja mësimore të personalizuara.
+    </p>
+    <p>
+      SMS është e besueshme dhe përdoret nga institucione të shumta, përfshirë edhe UBT-në për stafin dhe studentët. Ajo ka një ndërfaqe të thjeshtë, mundësi tërheqje dhe lëshimi (drag-and-drop), si dhe burime të dokumentuara mirë që e bëjnë shumë të lehtë për përdorim.
+    </p>
+    <p>
+      SMS është platformë online dhe mund të aksesohet nga çdo vend në botë. Me mbështetje për pajisje mobile dhe përputhshmëri me shumicën e shfletuesve, përmbajtja në Moodle është gjithmonë e qasshme dhe konsistente.
+    </p>
+    <p>
+      Ashtu si me shërbimet tjera elektronike të UBT-së, studentët kanë qasje në SMS përmes email-it personal të dhënë gjatë regjistrimit.
+    </p>
+  </div>
+</div>
+
+<section class="features-section">
+  <h2 class="features-title">Çfarë Ofron Platforma</h2>
+  <div class="features-grid">
+    <div class="feature-box">
+      <div class="feature-icon">📊</div>
+      <h3>Raporte Akademike</h3>
+      <p>Automatizoni vlerësimet dhe ndjekjen e performancës për të mbështetur suksesin e studentëve.</p>
     </div>
+    <div class="feature-box">
+      <div class="feature-icon">🗂️</div>
+      <h3>Dosje Studentore</h3>
+      <p>Profile të centralizuara të studentëve për qasje të shpejtë në historikun akademik dhe të dhënat personale.</p>
+    </div>
+    <div class="feature-box">
+      <div class="feature-icon">👩‍🏫</div>
+      <h3>Qasje me Role të Ndryshëm</h3>
+      <p>Panele të personalizuara për Administratorë, Mësimdhënës dhe Studentë për bashkëpunim efikas.</p>
+    </div>
+    <div class="feature-box">
+      <div class="feature-icon">📆</div>
+      <h3>Orari i Mësimeve</h3>
+      <p>Planifikoni, menaxhoni dhe përditësoni oraret e mësimeve me lehtësi dhe efikasitet.</p>
+    </div>
+  </div>
+</section>
+
+
     <Footer />
 
         </>
