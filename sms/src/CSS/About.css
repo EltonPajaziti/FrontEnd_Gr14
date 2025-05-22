@@ -1,5 +1,5 @@
 .about-us-container {
-  height: 400px;
+  height: 450px;
   background-size: cover;
   background-position: center;
   position: relative;
@@ -9,24 +9,15 @@
 }
 
 .overlay {
-  background-color: rgba(26, 25, 25, 0.5); 
+  background-color: rgba(32, 32, 32, 0.5); 
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.overlay h1 {
-  color: white;
-  font-size: 48px;
-  font-weight: bold;
-}
-.overlay h1 {
-  color: white;
-  font-size: 48px;
-  font-weight: bold;
-  font-family: 'Poppins', sans-serif; 
-}
+
+
 .about-section {
     display: flex;
 flex-direction: row;
@@ -34,6 +25,8 @@ justify-content: space-around;
   padding: 60px 10%;
   background-color: #fff;
   font-family: 'Poppins', sans-serif;
+     animation: bounce; 
+    animation-duration: 4s; 
 }
 
 .section-label {
@@ -43,6 +36,7 @@ justify-content: space-around;
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
+ 
 }
 
 .about-title {
@@ -115,3 +109,52 @@ width:300px;
 }
 
 
+.stats-section {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  margin-bottom: 50px;
+}
+
+.stats-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 40px;
+  color: #000f39;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 200px;
+  box-shadow: 0 4px 20px rgba(29, 29, 29, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: scale(1.05);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  color: #031b5e;
+  margin-bottom: 15px;
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #555;
+}
