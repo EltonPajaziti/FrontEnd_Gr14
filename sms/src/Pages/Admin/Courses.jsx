@@ -130,32 +130,63 @@ const isFormValid = () => {
 
 
   const updateCourse = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Authentication token is missing. Please log in.');
-      return;
-    }
+  const token = localStorage.getItem('token');
+  const tenantId = localStorage.getItem('tenantId');
+  console.log("Updating course with ID:", selectedCourse.id);
 
-    try {
-      const response = await axios.put(
-        `${COURSES_API_URL}/${selectedCourse.id}`,
-        selectedCourse,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setCourses(
-        courses.map((course) =>
-          course.id === selectedCourse.id ? response.data : course
-        )
-      );
-      setShowEditModal(false);
-      setSelectedCourse(null);
-    } catch (error) {
-      console.error('Error updating course:', error);
-      setError('Failed to update course');
-    }
+
+  if (!token) {
+    setError('Authentication token is missing. Please log in.');
+    return;
+  }
+
+  // Përgatit të dhënat në formatin që backend-u pret
+  const updatedCourse = {
+    id: selectedCourse.id,
+    name: selectedCourse.name,
+    code: selectedCourse.code,
+    credits: Number(selectedCourse.credits),
+    semester: Number(selectedCourse.semester),
+    yearStudy: Number(selectedCourse.year_study),
+    description: selectedCourse.description,
+    program: { id: Number(selectedCourse.program_id) },
+    tenant: { id: Number(tenantId) }
   };
+
+  try {
+    const response = await axios.put(
+      `${COURSES_API_URL}/${selectedCourse.id}`,
+      updatedCourse,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+   const updatedData = {
+  id: response.data.id,
+  name: response.data.name,
+  code: response.data.code,
+  credits: response.data.credits,
+  semester: response.data.semester,
+  year_study: response.data.yearStudy,
+  program_id: response.data.program?.id || '',
+  program_name: response.data.program?.name || '',
+  description: response.data.description,
+  created_at: response.data.createdAt ? new Date(response.data.createdAt) : null,
+};
+
+setCourses(
+  courses.map((course) =>
+    course.id === selectedCourse.id ? updatedData : course
+  )
+);
+
+    setShowEditModal(false);
+    setSelectedCourse(null);
+  } catch (error) {
+    console.error('Error updating course:', error.response?.data || error.message);
+    setError('Failed to update course: ' + (error.response?.data?.message || 'Unexpected error'));
+  }
+};
+
 
   const deleteCourse = async (courseId) => {
   const token = localStorage.getItem('token');
