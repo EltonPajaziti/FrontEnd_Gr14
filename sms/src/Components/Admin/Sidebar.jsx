@@ -76,20 +76,13 @@ const Sidebar = ({ isSidebarOpen }) => {
           {isSidebarOpen && <span>Regjistrimet</span>}
         </li>
 
-        <li onClick={() => handleItemClick("/admin-exams")} className="menu-item">
-          <FaClipboardCheck className="menu-icon" />
-          {isSidebarOpen && <span>Provimet</span>}
-        </li>
 
 
         <li onClick={() => handleItemClick("/admin-scholarships")} className="menu-item">
           <FaMoneyCheckAlt className="menu-icon" />
           {isSidebarOpen && <span>Bursat</span>}
         </li>
-        <li onClick={() => handleItemClick("/admin-faq")} className="menu-item">
-          <FaQuestionCircle className="menu-icon" />
-          {isSidebarOpen && <span>FAQ</span>}
-        </li>
+
         <li onClick={() => handleItemClick("/admin-settings")} className="menu-item">
           <FaCog className="menu-icon" />
           {isSidebarOpen && <span>Cilësimet</span>}
