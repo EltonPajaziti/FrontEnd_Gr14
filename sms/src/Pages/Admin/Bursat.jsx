@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaEye, FaEdit, FaPlus } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import existing CSS
+import "../../CSS/Admin/AdminDashboard.css";
 import Sidebar from "../../Components/Admin/Sidebar";
 import Header from "../../Components/Admin/Header";
 
-// Sample initial data based on the scholarship_application table
 const initialApplications = [
   { 
     id: 1,
@@ -111,10 +110,10 @@ const Bursat = () => {
 
   const handleApply = async (tenantId) => {
     const newApplication = {
-      student: { id: 101 }, // Replace with actual student ID
-      academicYear: { id: 1 }, // Replace with current academic year
+      student: { id: 101 },
+      academicYear: { id: 1 },
       tenantID: { id: tenantId },
-      gpa: 3.8, // Replace with actual GPA
+      gpa: 3.8,
       status: "PENDING",
       requestDate: new Date().toISOString(),
       decisionDate: null,
@@ -174,34 +173,9 @@ const Bursat = () => {
           <div className="admin-dashboard">
             <div className="scholarships-container">
               <h1>Scholarships</h1>
-              <p className="subtitle">Browse and apply for available scholarships</p>
-              <div className="apply-section">
-                <h3>Available Scholarships</h3>
-                <div className="available-scholarships">
-                  {Object.entries(scholarshipDetails).map(([id, details]) => (
-                    <div key={id} className="scholarship-card">
-                      <h4>{initialApplications.find(app => app.tenantID.id === parseInt(id))?.tenantID.name || `Scholarship ${id}`}</h4>
-                      <p><strong>Amount:</strong> ${details.amount}</p>
-                      <p><strong>Deadline:</strong> {details.deadline}</p>
-                      <p><strong>Requirements:</strong></p>
-                      <ul>
-                        {details.requirements.map((req, index) => (
-                          <li key={index}>{req}</li>
-                        ))}
-                      </ul>
-                      <button 
-                        className="apply-btn" 
-                        onClick={() => handleApply(parseInt(id))}
-                        disabled={applications.some(app => app.tenantID.id === parseInt(id) && app.status !== "REJECTED")}
-                      >
-                        <FaPlus /> Apply
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
               <div className="my-applications">
-                <h2>My Applications</h2>
+                <h2>Aplikimet</h2>
                 <div className="applications-list">
                   {applications.map((app) => {
                     const details = scholarshipDetails[app.tenantID.id] || {

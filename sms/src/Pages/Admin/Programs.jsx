@@ -114,7 +114,14 @@ const handleSubmit = async (e) => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this program?')) {
       try {
-        await axios.delete(`${API_URL}/${id}`);
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        await axios.delete(`${API_URL}/${id}`, config);
         fetchData();
       } catch (error) {
         console.error('Error deleting program:', error);
