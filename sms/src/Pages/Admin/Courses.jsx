@@ -12,6 +12,7 @@ const Courses = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [formError, setFormError] = useState('');
   const [courseCount, setCourseCount] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -24,72 +25,109 @@ const Courses = () => {
     semester: '',
     year_study: '',
     program_id: '',
-    fakulteti: '',
     description: '',
   });
+
+const isFormValid = () => {
+  const { name, code, credits, semester, year_study, program_id, description } = newCourse;
+  return (
+    name.trim() !== '' &&
+    code.trim() !== '' &&
+    credits !== '' &&
+    semester !== '' &&
+    year_study !== '' &&
+    program_id !== '' &&
+    description.trim() !== ''
+  );
+};
+
+
+  const [programs, setPrograms] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const COURSES_API_URL = 'http://localhost:8080/api/courses';
+  const PROGRAMS_API_URL = 'http://localhost:8080/api/programs';
 
-  const fetchData = async (url, setData, errorMessage, transform = (d) => d, token = null) => {
-    if (!token) {
-      setError('Authentication token is missing. Please log in.');
-      setLoading(false);
-      return false;
+ const fetchData = async (url, setData, errorMessage, transform = (d) => d, token = null) => {
+  if (!token) {
+    setError('Authentication token is missing. Please log in.');
+    setLoading(false);
+    return false;
+  }
+
+  setLoading(true);
+  try {
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const transformedData = transform(response.data);
+    setData(transformedData);
+
+    if (url === COURSES_API_URL) {
+      setCourseCount(transformedData.length);
     }
 
-    setLoading(true);
-    try {
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    return true;
+  } catch (error) {
+    console.error(`Error fetching data from ${url}:`, error);
+    setError(errorMessage || `Failed to load data from ${url}`);
+    return false;
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const transformedData = transform(response.data);
-      setData(transformedData);
 
-      if (url === COURSES_API_URL) {
-        setCourseCount(transformedData.length);
-      }
+ const addCourse = async () => {
+  setFormError('');
 
-      return true;
-    } catch (error) {
-      console.error(`Error fetching data from ${url}:`, error);
-      setError(errorMessage || `Failed to load data from ${url}`);
-      return false;
-    } finally {
-      setLoading(false);
-    }
+  if (!isFormValid()) {
+    setFormError('Please fill in all required fields before saving.');
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  const tenantId = localStorage.getItem('tenantId');
+
+  if (!token) {
+    setError('Authentication token is missing. Please log in.');
+    return;
+  }
+
+  const courseToSend = {
+    name: newCourse.name,
+    code: newCourse.code,
+    credits: Number(newCourse.credits),
+    semester: Number(newCourse.semester),
+    yearStudy: Number(newCourse.year_study),
+    description: newCourse.description,
+    program: { id: Number(newCourse.program_id) },
+    tenant: { id: Number(tenantId) },
   };
 
-  const addCourse = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Authentication token is missing. Please log in.');
-      return;
-    }
+  try {
+    const response = await axios.post(COURSES_API_URL, courseToSend, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setCourses([...courses, response.data]);
+    setCourseCount(courses.length + 1);
+    setShowAddModal(false);
+    setNewCourse({
+      name: '',
+      code: '',
+      credits: '',
+      semester: '',
+      year_study: '',
+      program_id: '',
+      description: '',
+    });
+  } catch (error) {
+    console.error('Error adding course:', error.response?.data || error.message);
+    setError('Failed to add course: ' + (error.response?.data?.message || 'Unexpected error'));
+  }
+};
 
-    try {
-      const response = await axios.post(COURSES_API_URL, newCourse, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setCourses([...courses, response.data]);
-      setCourseCount(courses.length + 1);
-      setShowAddModal(false);
-      setNewCourse({
-        name: '',
-        code: '',
-        credits: '',
-        semester: '',
-        year_study: '',
-        program_id: '',
-        fakulteti: '',
-        description: '',
-      });
-    } catch (error) {
-      console.error('Error adding course:', error);
-      setError('Failed to add course');
-    }
-  };
 
   const updateCourse = async () => {
     const token = localStorage.getItem('token');
@@ -119,6 +157,28 @@ const Courses = () => {
     }
   };
 
+  const deleteCourse = async (courseId) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    setError('Authentication token is missing. Please log in.');
+    return;
+  }
+
+  const confirmed = window.confirm("Are you sure you want to delete this course?");
+  if (!confirmed) return;
+
+  try {
+    await axios.delete(`${COURSES_API_URL}/${courseId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setCourses(courses.filter((course) => course.id !== courseId));
+    setCourseCount((prev) => prev - 1);
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    setError('Failed to delete course');
+  }
+};
+ 
   useEffect(() => {
     const loadData = async () => {
       const token = localStorage.getItem('token');
@@ -139,11 +199,11 @@ const Courses = () => {
                 code: c.code || '',
                 credits: c.credits || null,
                 semester: c.semester || null,
-                year_study: c.year_study || null,
-                program_id: c.program_id || null,
-                fakulteti: c.program?.department?.tenantID?.name || '-',
+                  year_study: c.yearStudy  || null,
+                   program_id: c.program?.id || '-',
+                program_name: c.program?.name || "-",
                 description: c.description || '',
-                created_at: c.created_at || '',
+              created_at: c.createdAt ? new Date(c.createdAt) : null,
               }))
             : [],
         token
@@ -156,6 +216,40 @@ const Courses = () => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+  const loadPrograms = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError("Authentication token missing.");
+      return;
+    }
+
+    await fetchData(
+      PROGRAMS_API_URL,
+      setPrograms,
+      'Failed to load programs',
+      (data) =>
+        Array.isArray(data)
+          ? data.map(p => ({
+              id: p.id,
+              name: p.name
+            }))
+          : [],
+      token
+    );
+  };
+
+  loadPrograms();
+}, []);
+
+  useEffect(() => {
+  if (showAddModal || showEditModal || showViewModal) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'auto';
+  }
+}, [showAddModal, showEditModal, showViewModal]);
 
   const getGreeting = () => {
     const currentHour = currentTime.getHours();
@@ -175,7 +269,7 @@ const Courses = () => {
 
   const exportToCSV = () => {
     const headers = [
-      'ID,Name,Code,Credits,Semester,Year Study,Program ID,Fakulteti,Description,Created At',
+      'ID,Name,Code,Credits,Semester,Year Study,Program ID,Description,Created At',
     ];
     const rows = filteredCourses.map((course) => [
       course.id,
@@ -185,7 +279,6 @@ const Courses = () => {
       course.semester,
       course.year_study,
       course.program_id,
-      course.fakulteti,
       course.description,
       course.created_at,
     ]
@@ -269,7 +362,6 @@ const Courses = () => {
                           <th>Semester</th>
                           <th>Year Study</th>
                           <th>Program ID</th>
-                          <th>Fakulteti</th>
                           <th>Description</th>
                           <th>Created At</th>
                           <th>Actions</th>
@@ -284,12 +376,11 @@ const Courses = () => {
                               <td>{course.code}</td>
                               <td>{course.credits || '-'}</td>
                               <td>{course.semester || '-'}</td>
-                              <td>{course.year_study || '-'}</td>
-                              <td>{course.program_id || '-'}</td>
-                              <td>{course.fakulteti || '-'}</td>
+                              <td>{course.year_study}</td>
+                              <td>{course.program_name || '-'}</td>
                               <td>{course.description || '-'}</td>
-                              <td>{course.created_at || '-'}</td>
-                              <td>
+                              <td>{course.created_at ? new Date(course.created_at).toLocaleString('sq-AL') : '-'}</td>
+                               <td>
                                 <button
                                   className="action-btn view-btn"
                                   onClick={() => {
@@ -308,6 +399,10 @@ const Courses = () => {
                                 >
                                   <FaEdit /> Edit
                                 </button>
+
+                                <button className="action-btn delete-btn" onClick={() => deleteCourse(course.id)} >
+                                🗑 Delete
+                              </button>
                               </td>
                             </tr>
                           ))
@@ -320,6 +415,7 @@ const Courses = () => {
                               </div>
                             </td>
                           </tr>
+                          
                         )}
                       </tbody>
                     </table>
@@ -332,6 +428,12 @@ const Courses = () => {
                     <div className="modal-content">
                       <h2>Add New Course</h2>
                       <div className="modal-form">
+                        {formError && (
+                    <div style={{ color: 'red', marginBottom: '1rem' }}>
+                      {formError}
+                    </div>
+                  )}
+
                         <label>Name:</label>
                         <input
                           type="text"
@@ -372,22 +474,22 @@ const Courses = () => {
                             setNewCourse({ ...newCourse, year_study: e.target.value })
                           }
                         />
-                        <label>Program ID:</label>
-                        <input
-                          type="number"
-                          value={newCourse.program_id}
-                          onChange={(e) =>
-                            setNewCourse({ ...newCourse, program_id: e.target.value })
-                          }
-                        />
-                        <label>Fakultet:</label>
-                        <input
-                          type="number"
-                          value={newCourse.fakulteti}
-                          onChange={(e) =>
-                            setNewCourse({ ...newCourse, fakulteti: e.target.value })
-                          }
-                        />
+                        <label>Program:</label>
+                        <select
+                        value={newCourse.program_id}
+                        onChange={(e) =>
+                        setNewCourse({ ...newCourse, program_id: e.target.value })
+                        }
+                          >
+                            <option value="">-- Select a program --</option>
+                            {programs.map((program) => (
+                              <option key={program.id} value={program.id}>
+                                {program.name}
+                              </option>
+                            ))}
+                          </select>
+
+                      
                         <label>Description:</label>
                         <textarea
                           value={newCourse.description}
@@ -396,9 +498,10 @@ const Courses = () => {
                           }
                         />
                         <div className="modal-actions">
-                          <button className="modal-btn save-btn" onClick={addCourse}>
-                            Save
-                          </button>
+                         <button className="modal-btn save-btn" onClick={addCourse} disabled={!isFormValid()}>
+                                Save
+                              </button>
+
                           <button
                             className="modal-btn cancel-btn"
                             onClick={() => setShowAddModal(false)}
@@ -424,9 +527,8 @@ const Courses = () => {
                         <p><strong>Semester:</strong> {selectedCourse.semester || '-'}</p>
                         <p><strong>Year Study:</strong> {selectedCourse.year_study || '-'}</p>
                         <p><strong>Program ID:</strong> {selectedCourse.program_id || '-'}</p>
-                        <p><strong>Fakulteti:</strong> {selectedCourse.fakulteti || '-'}</p>
                         <p><strong>Description:</strong> {selectedCourse.description || '-'}</p>
-                        <p><strong>Created At:</strong> {selectedCourse.created_at || '-'}</p>
+                        <p><strong>Created At:</strong> {selectedCourse.created_at ? new Date(selectedCourse.created_at).toLocaleString('en-GB') : '-'}</p>
                       </div>
                       <div className="modal-actions">
                         <button
@@ -486,22 +588,23 @@ const Courses = () => {
                             setSelectedCourse({ ...selectedCourse, year_study: e.target.value })
                           }
                         />
-                        <label>Program ID:</label>
-                        <input
-                          type="number"
-                          value={selectedCourse.program_id}
-                          onChange={(e) =>
-                            setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
-                          }
-                        />
-                        <label>Fakulteti:</label>
-                        <input
-                          type="text"
-                          value={selectedCourse.fakulteti}
-                          onChange={(e) =>
-                            setSelectedCourse({ ...selectedCourse, fakulteti: e.target.value })
-                          }
-                        />
+                       <label>Program:</label>
+<select
+  value={selectedCourse.program_id}
+  onChange={(e) =>
+    setSelectedCourse({ ...selectedCourse, program_id: e.target.value })
+  }
+>
+  <option value="">-- Select a program --</option>
+  {programs.map((program) => (
+    <option key={program.id} value={program.id}>
+      {program.name}
+    </option>
+  ))}
+</select>
+
+
+                      
                         <label>Description:</label>
                         <textarea
                           value={selectedCourse.description}
@@ -531,18 +634,20 @@ const Courses = () => {
       </div>
 
       <style jsx>{`
+  
+      
         .page-container {
           display: flex;
-          min-height: 100vh;
+          flex-direction: column;
+          min-height: 100%;
+          height: auto;
           background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
           font-family: 'Poppins', sans-serif;
         }
         .content-container {
-          flex: 1;
-          padding: 20px;
-          max-height: 100vh;
-          overflow-y: hidden;
-          transition: margin-left 0.3s;
+            flex: 1;
+         padding: 20px;
+         transition: margin-left 0.3s;
         }
         .courses-container {
           padding: 1.5rem;
@@ -778,6 +883,15 @@ const Courses = () => {
         .edit-btn:hover {
           background: #e0a800;
         }
+
+         .delete-btn {
+          background: #dc3545;
+          color: #fff;
+        }
+        .delete-btn:hover {
+          background: #c82333;
+        }
+
         .no-data {
           text-align: center;
           padding: 2.5rem;
@@ -812,11 +926,14 @@ const Courses = () => {
           left: 0;
           width: 100%;
           height: 100%;
+          overflow-y: auto;
           background: rgba(0, 0, 0, 0.5);
           display: flex;
           justify-content: center;
           align-items: center;
           z-index: 1000;
+          align-items: flex-start; 
+           padding-top: 50px; 
         }
         .modal-content {
           background: #fff;
