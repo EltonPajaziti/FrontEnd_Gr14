@@ -25,9 +25,9 @@ function Home(){
             <div class="carousel-item active c-item">
                 <img src={unii2} class="d-block w-100 c-img"/>
             </div>
-            <div class="carousel-item c-item">
+            {/* <div class="carousel-item c-item">
                 <img src={unii3} class="d-block w-100 c-img"/>
-            </div>
+            </div> */}
 
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
