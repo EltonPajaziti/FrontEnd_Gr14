@@ -231,27 +231,62 @@ const ManageUsers = () => {
     setSuccessMessage(null);
   };
 
-  const handleSaveEdit = async () => {
-    setError(null);
-    setSuccessMessage(null);
-    try {
-      const url = activeTab === "Students" ? `${STUDENTS_API_URL}/${selectedUser.id}` : `${PROFESSORS_API_URL}/${selectedUser.id}`;
-      const token = localStorage.getItem("token");
-      await axios.put(url, selectedUser, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (activeTab === "Students") {
-        setStudents(students.map((s) => (s.id === selectedUser.id ? selectedUser : s)));
-      } else {
-        setProfessors(professors.map((p) => (p.id === selectedUser.id ? selectedUser : p)));
-      }
-      setSuccessMessage("User updated successfully!");
-      closeModal();
-    } catch (error) {
-      console.error("Error saving user:", error);
-      setError("Failed to save user changes. Please try again.");
+const handleSaveEdit = async () => {
+  setError(null);
+  setSuccessMessage(null);
+  try {
+    const url = activeTab === "Students" ? `${STUDENTS_API_URL}/${selectedUser.id}` : `${PROFESSORS_API_URL}/${selectedUser.id}`;
+    const token = localStorage.getItem("token");
+
+    let payload;
+
+    if (activeTab === "Professors") {
+      payload = {
+        id: selectedUser.id,
+        academicTitle: selectedUser.academic_title,
+        hiredDate: selectedUser.hired_date,
+        department: selectedUser.department_id ? { id: selectedUser.department_id } : null,
+        user: {
+          id: selectedUser.user?.id,
+          firstName: selectedUser.user.firstName,
+          lastName: selectedUser.user.lastName,
+          email: selectedUser.user.email
+        },
+        
+      };
+    } else if(activeTab === "Students"){
+      payload = {
+        id: selectedUser.id,
+        user: {
+          id: selectedUser.user?.id,
+          firstName: selectedUser.user.firstName,
+          lastName: selectedUser.user.lastName,
+          email: selectedUser.user.email,
+        },
+        program: selectedUser.program_id ? { id: selectedUser.program_id } : null,
+        enrollmentDate: selectedUser.enrollment_date,
+        status: selectedUser.status
+      };
     }
-  };
+
+    await axios.put(url, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (activeTab === "Students") {
+      setStudents(students.map((s) => (s.id === selectedUser.id ? selectedUser : s)));
+    } else {
+      setProfessors(professors.map((p) => (p.id === selectedUser.id ? selectedUser : p)));
+    }
+
+    setSuccessMessage("User updated successfully!");
+    closeModal();
+  } catch (error) {
+    console.error("Error saving user:", error);
+    setError("Failed to save user changes. Please try again.");
+  }
+};
+
 
   const handleDelete = async () => {
     setError(null);

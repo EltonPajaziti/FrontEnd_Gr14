@@ -19,9 +19,7 @@ import Students from './Pages/Admin/Students';
 import Courses from './Pages/Admin/Courses';
 import Enrollments from './Pages/Admin/Registrations';
 import ProfessorDashboard from './Pages/Professors/ProfessorsDashboard'; // Përdor një burim të vetëm
-import Exams from './Pages/Admin/Exams';
 import Bursat from './Pages/Admin/Bursat';
-import FAQ from './Pages/Admin/FAQ';
 import Cilesimet from './Pages/Admin/Cilesimet';
 import StudentMaterials from './Pages/Student/StudentMaterials';
 import StudentCourses from './Pages/Student/StudentCourses';
@@ -60,9 +58,7 @@ function App() {
         <Route path="/admin-students" element={<Students />} />
         <Route path="/admin-courses" element={<Courses />} />
         <Route path="/admin-registrations" element={<Enrollments />} />
-        <Route path="/admin-exams" element={<Exams />} />
         <Route path="/admin-scholarships" element={<Bursat />} />
-        <Route path="/admin-faq" element={<FAQ />} />
         <Route path="/admin-settings" element={<Cilesimet />} />
         <Route path="/professor-dashboard" element={<ProfessorDashboard />} />
         <Route path="/professor-students" element={<ProfessorStudents />} />

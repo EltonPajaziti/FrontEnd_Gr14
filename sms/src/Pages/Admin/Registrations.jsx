@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaPlus, FaTrash, FaEdit, FaEye, FaDownload } from 'react-icons/fa';
-import "../../CSS/Admin/AdminDashboard.css"; // Import AdminDashboard CSS for sidebar and header
+import "../../CSS/Admin/AdminDashboard.css"; 
 import Sidebar from "../../Components/Admin/Sidebar";
 import Header from "../../Components/Admin/Header";
 
-// Sample initial data to ensure table is populated
 const initialEnrollments = [
   {
     id: 1,
     student_id: 101,
-    course_id: 201,
+    course_name: "--",
     enrollment_date: '2025-05-15',
     academic_year: 2025,
     tenant_id: 4,
-    created_at: '2025-05-16T17:27:00+02:00', // Updated to current time (05:27 PM CEST)
+    created_at: '2025-05-16T17:27:00+02:00', 
   },
 ];
 
 const Enrollments = () => {
   const [enrollments, setEnrollments] = useState(initialEnrollments);
-  const [formData, setFormData] = useState({ student_id: '', course_id: '', enrollment_date: '', academic_year: '', tenant_id: 1 });
+  const [formData, setFormData] = useState({ student_id: '', course_name: '', enrollment_date: '', academic_year: '', tenant_id: 1 });
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -29,35 +28,47 @@ const Enrollments = () => {
   const [adminName, setAdminName] = useState('Admin');
   const [sortField, setSortField] = useState('enrollment_date');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
 
   const API_URL = 'http://localhost:8080/api/enrollments';
-  const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
+  //const AUTH_API_URL = 'http://localhost:8080/api/auth/user';
 
-  const tenantToFaculty = {
-    1: 'Computer Science Faculty',
-    2: 'Mathematics Faculty',
-    3: 'Physics Faculty',
-    4: 'Engineering Faculty',
-  };
 
   useEffect(() => {
     fetchData();
   }, [sortField, sortOrder]);
 
-  const fetchData = async () => {
-    try {
-      const [enrollmentsResponse, authResponse] = await Promise.all([
-        axios.get(API_URL),
-        axios.get(AUTH_API_URL),
-      ]);
-      setEnrollments(sortData(enrollmentsResponse.data.length > 0 ? enrollmentsResponse.data : initialEnrollments, sortField, sortOrder));
-      setAdminName(authResponse.data.name || 'Admin');
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setEnrollments(sortData(initialEnrollments, sortField, sortOrder));
-    }
-  };
+const fetchData = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const [enrollmentsResponse] = await Promise.all([
+      axios.get(API_URL, config),
+      //axios.get(AUTH_API_URL, config),
+    ]);
+
+    const transformed = enrollmentsResponse.data.map((enr) => ({
+      id: enr.id,
+      student_id: enr.student?.id,
+      course_name: enr.course?.name,
+      enrollment_date: enr.enrollmentDate,
+      academic_year: new Date(enr.academicYear?.startDate).getFullYear(),
+      tenant_name: enr.tenantID?.name,
+      created_at: enr.createdAt,
+      original: enr, 
+    }));
+
+    setEnrollments(sortData(transformed, sortField, sortOrder));
+    setAdminName('Admin');
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    setEnrollments(sortData(initialEnrollments, sortField, sortOrder));
+  }
+};
 
   const sortData = (data, field, order) => {
     return [...data].sort((a, b) => {
@@ -88,18 +99,25 @@ const Enrollments = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
       const data = {
         student_id: parseInt(formData.student_id),
-        course_id: parseInt(formData.course_id),
+        course_name: parseInt(formData.course_name),
         enrollment_date: formData.enrollment_date,
         academic_year: parseInt(formData.academic_year),
         tenant_id: parseInt(formData.tenant_id),
       };
 
       if (editingId) {
-        await axios.put(`${API_URL}/${editingId}`, data);
+        await axios.put(`${API_URL}/${editingId}`, data, config);
       } else {
-        await axios.post(API_URL, data);
+        await axios.post(API_URL, data, config);
       }
       resetForm();
       fetchData();
@@ -110,7 +128,14 @@ const Enrollments = () => {
 
   const handleView = async (enrollment) => {
     try {
-      const response = await axios.get(`${API_URL}/${enrollment.id}`);
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(`${API_URL}/${enrollment.id}`, config);
       setViewEnrollment(response.data);
       setShowViewModal(true);
     } catch (error) {
@@ -123,7 +148,7 @@ const Enrollments = () => {
   const handleEdit = (enrollment) => {
     setFormData({
       student_id: enrollment.student_id,
-      course_id: enrollment.course_id,
+      course_name: enrollment.course_name,
       enrollment_date: enrollment.enrollment_date,
       academic_year: enrollment.academic_year,
       tenant_id: enrollment.tenant_id,
@@ -135,7 +160,13 @@ const Enrollments = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this enrollment?')) {
       try {
-        await axios.delete(`${API_URL}/${id}`);
+        const token = localStorage.getItem('token');
+        const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+        await axios.delete(`${API_URL}/${id}`, config);
         fetchData();
       } catch (error) {
         console.error('Error deleting enrollment:', error);
@@ -146,13 +177,13 @@ const Enrollments = () => {
   const handleExport = () => {
     const exportData = enrollments.map(enrollment => ({
       Student_ID: enrollment.student_id,
-      Course_ID: enrollment.course_id,
+      Course: enrollment.course_name,
       Enrollment_Date: enrollment.enrollment_date,
       Academic_Year: enrollment.academic_year,
-      Faculty: tenantToFaculty[enrollment.tenant_id] || 'Unknown Faculty',
+      Faculty: enrollment.tenant_name || 'Unknown Faculty',
     }));
 
-    const headers = ['Student_ID', 'Course_ID', 'Enrollment_Date', 'Academic_Year', 'Faculty'];
+    const headers = ['Student_ID', 'Course', 'Enrollment_Date', 'Academic_Year', 'Faculty'];
     const csvRows = [
       headers.join(','),
       ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(',')),
@@ -169,19 +200,18 @@ const Enrollments = () => {
   };
 
   const resetForm = () => {
-    setFormData({ student_id: '', course_id: '', enrollment_date: '', academic_year: '', tenant_id: 1 });
+    setFormData({ student_id: '', course_name: '', enrollment_date: '', academic_year: '', tenant_id: 1 });
     setEditingId(null);
     setShowForm(false);
   };
 
   const filteredEnrollments = enrollments.filter((enrollment) =>
     enrollment.student_id.toString().includes(search) ||
-    enrollment.course_id.toString().includes(search) ||
+    enrollment.course_name.toString().includes(search) ||
     enrollment.enrollment_date.includes(search) ||
     enrollment.academic_year.toString().includes(search)
   );
 
-  const getFacultyName = (tenantId) => tenantToFaculty[tenantId] || 'Unknown Faculty';
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -234,8 +264,8 @@ const Enrollments = () => {
                         <th onClick={() => handleSort('student_id')}>
                           Student ID {sortField === 'student_id' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
-                        <th onClick={() => handleSort('course_id')}>
-                          Course ID {sortField === 'course_id' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        <th onClick={() => handleSort('course_name')}>
+                          Course Name {sortField === 'course_name' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
                         <th onClick={() => handleSort('enrollment_date')}>
                           Enrollment Date {sortField === 'enrollment_date' && (sortOrder === 'asc' ? '↑' : '↓')}
@@ -252,10 +282,10 @@ const Enrollments = () => {
                         filteredEnrollments.map((enrollment, index) => (
                           <tr key={enrollment.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
                             <td>{enrollment.student_id}</td>
-                            <td>{enrollment.course_id}</td>
+                            <td>{enrollment.course_name}</td>
                             <td>{enrollment.enrollment_date}</td>
                             <td>{enrollment.academic_year}</td>
-                            <td>{getFacultyName(enrollment.tenant_id)}</td>
+                            <td>{enrollment.tenant_name}</td>
                             <td className="actions-cell">
                               <button className="view-btn" onClick={() => handleView(enrollment)}>
                                 <FaEye /> View
@@ -299,11 +329,11 @@ const Enrollments = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label>Course ID*</label>
+                          <label>Course Name</label>
                           <input
-                            type="number"
-                            name="course_id"
-                            value={formData.course_id}
+                            type="text"
+                            name="course_name"
+                            value={formData.course_name}
                             onChange={handleInputChange}
                             required
                           />
@@ -328,21 +358,7 @@ const Enrollments = () => {
                             required
                           />
                         </div>
-                        <div className="form-group">
-                          <label>Faculty*</label>
-                          <select
-                            name="tenant_id"
-                            value={formData.tenant_id}
-                            onChange={handleInputChange}
-                            required
-                          >
-                            {Object.entries(tenantToFaculty).map(([id, name]) => (
-                              <option key={id} value={id}>
-                                {name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+                        
                         <div className="form-actions">
                           <button type="button" className="cancel-btn" onClick={resetForm}>
                             Cancel
@@ -361,12 +377,11 @@ const Enrollments = () => {
                     <div className="modal-content">
                       <h3>View Enrollment</h3>
                       <div className="view-details">
-                        <p><strong>Student ID:</strong> {viewEnrollment.student_id}</p>
-                        <p><strong>Course ID:</strong> {viewEnrollment.course_id}</p>
-                        <p><strong>Enrollment Date:</strong> {viewEnrollment.enrollment_date}</p>
-                        <p><strong>Academic Year:</strong> {viewEnrollment.academic_year}</p>
-                        <p><strong>Faculty:</strong> {getFacultyName(viewEnrollment.tenant_id)}</p>
-                        <p><strong>Created At:</strong> {new Date(viewEnrollment.created_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                        <p><strong>Student ID:</strong> {viewEnrollment.student?.id}</p>
+                        <p><strong>Course ID:</strong> {viewEnrollment.course?.id}</p>
+                        <p><strong>Enrollment Date:</strong> {viewEnrollment.enrollmentDate}</p>
+                        <p><strong>Academic Year:</strong> {viewEnrollment.academicYear?.name}</p>
+                        <p><strong>Faculty:</strong> {viewEnrollment.tenantID?.name}</p>
                       </div>
                       <div className="form-actions">
                         <button className="cancel-btn" onClick={() => setShowViewModal(false)}>
