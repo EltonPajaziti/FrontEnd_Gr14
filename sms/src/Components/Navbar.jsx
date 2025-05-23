@@ -16,7 +16,7 @@ function Navbar(){
             <Link className="nav-link" to="../">Home</Link>
             </li>
             <li className="nav-item">
-            <Link className="nav-link" to="../eServices">eServices</Link>
+            <Link className="nav-link" to="../e-services">eServices</Link>
             </li>
     
             <a className="navbar-brand d-none d-lg-block" href="">
