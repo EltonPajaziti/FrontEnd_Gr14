@@ -1,22 +1,162 @@
-.sidebar {
-  width: 220px;
+.admin-sidebar {
   background: linear-gradient(to bottom, #2e0c75, #6d3bd1);
   color: white;
   padding: 20px;
+  height: 100vh; /* Lartësia e viewport-it */
+  transition: width 0.3s ease;
+  width: 70px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden; /* Heq scroll-in e jashtëm nga sidebar-i */
 }
 
-.sidebar-header {
+.admin-sidebar.open {
+  width: 220px;
+}
+
+.admin-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-left: 0;
+  min-height: 60px;
 }
 
-.sidebar-menu {
+.admin-sidebar-header .icon {
+  font-size: 60px;
+  margin-right: 10px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  max-height: 100%;
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header {
+  justify-content: center;
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header .icon {
+  margin-right: 5px;
+  font-size: 30px;
+}
+
+.admin-sidebar:not(.open) .admin-sidebar-header span {
+  font-size: 14px;
+}
+
+.admin-sidebar-menu {
   list-style: none;
   padding: 0;
+  margin: 0;
+  flex-grow: 1; /* Lista merr hapësirën e mbetur */
+  overflow-y: auto; /* Shton scroll-in për listën */
+  max-height: calc(100vh - 120px); /* Lartësia maksimale: viewport minus header dhe padding */
+  scrollbar-width: thin; /* Për Firefox */
 }
 
-.sidebar-menu li {
-  margin: 15px 0;
+.admin-sidebar-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-track {
+  background: #2e0c75;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb {
+  background: #6d3bd1;
+  border-radius: 4px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: #5a2fc0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
   cursor: pointer;
+  white-space: nowrap;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.admin-sidebar-menu li span {
+  display: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.admin-sidebar.open .admin-sidebar-menu li span {
+  display: inline;
+}
+
+.admin-sidebar-user {
+  padding-top: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-user-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-user-logo {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  color: #2e0c75;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.admin-sidebar-user-text {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.sidebar-user-dropdown {
+  position: absolute;
+  bottom: 60px;
+  background: #fff;
+  color: #2e0c75;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-user-dropdown ul {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}
+
+.sidebar-user-dropdown li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Heq scroll-in e jashtëm nga sidebar-i */
+.admin-sidebar::-webkit-scrollbar {
+  display: none; /* Fsheh scroll-in e jashtëm */
 }

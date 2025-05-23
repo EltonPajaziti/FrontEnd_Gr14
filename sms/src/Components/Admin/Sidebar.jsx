@@ -1,71 +1,104 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
-  FaTachometerAlt,
-  FaUniversity,
-  FaBuilding,
-  FaProjectDiagram,
-  FaUsers,
-  FaUserCog,
-  FaChalkboardTeacher,
-  FaUserGraduate,
-  FaBookOpen,
-  FaFileAlt,
-  FaClipboardList,
-  FaCalendarAlt
-} from 'react-icons/fa';
+  FaTachometerAlt, FaUniversity, FaBuilding, FaProjectDiagram, FaUsers, FaUserCog,
+  FaChalkboardTeacher, FaUserGraduate, FaBookOpen, FaFileAlt, FaClipboardList,
+  FaCalendarAlt, FaClipboardCheck, FaPen, FaMoneyCheckAlt, FaQuestionCircle,
+  FaCog, FaSignOutAlt
+} from "react-icons/fa";
 
-const Sidebar = () => {
-  const navigate = useNavigate(); // Mënyra moderne për navigim në React Router
+const Sidebar = ({ isSidebarOpen }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const menuRef = useRef(null);
+
+  const STORAGE_KEY = "sidebarScroll";
 
   const handleItemClick = (path) => {
+    if (menuRef.current) {
+      sessionStorage.setItem(STORAGE_KEY, menuRef.current.scrollTop);
+    }
     navigate(path);
   };
 
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem(STORAGE_KEY);
+    if (menuRef.current && savedScroll !== null) {
+      menuRef.current.scrollTop = parseInt(savedScroll, 10);
+    }
+  }, [location.pathname]);
+
   return (
-    <div className="admin-sidebar">
-      <div className="admin-sidebar-header">SMS 2025/26</div>
-      <ul className="admin-sidebar-menu">
-        <li onClick={() => handleItemClick('/admin-dashboard')} className="menu-item"><FaTachometerAlt /> Dashboard</li>
-        <li onClick={() => handleItemClick('/admin-faculties')} className="menu-item"><FaUniversity /> Fakulteti</li>
-        <li onClick={() => handleItemClick('/admin-departments')} className="menu-item"><FaBuilding /> Departamentet</li>
-        <li onClick={() => handleItemClick('/admin-programs')} className="menu-item"><FaProjectDiagram /> Programet</li>
-        <li onClick={() => handleItemClick('/admin-users')} className="menu-item"><FaUsers /> Përdoruesit</li>
-        <li onClick={() => handleItemClick('/admin-manage-users')} className="menu-item"><FaUserCog /> Menaxho Përdoruesit</li>
-        <li onClick={() => handleItemClick('/admin-professors')} className="menu-item"><FaChalkboardTeacher /> Profesorët</li>
-        <li onClick={() => handleItemClick('/admin-students')} className="menu-item"><FaUserGraduate /> Studentët</li>
-        <li onClick={() => handleItemClick('/admin-courses')} className="menu-item"><FaBookOpen /> Kurset</li>
-        <li onClick={() => handleItemClick('/admin-materials')} className="menu-item"><FaFileAlt /> Materialet</li>
-        <li onClick={() => handleItemClick('/admin-registrations')} className="menu-item"><FaClipboardList /> Regjistrimet</li>
-        <li onClick={() => handleItemClick('/admin-schedule')} className="menu-item"><FaCalendarAlt /> Orari</li>
-      </ul>
-
-      <div className='admin-sidebar-user'>
-        <div className='admin-sidebar-user-photo'>
-          <svg xmlns="http://www.w3.org/2000/svg" width="50" height="55" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
-            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-            <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-          </svg>
-        </div>
-        <div className='admin-sidebar-user-text'>
-          Admin user
-          <br />ADMIN
-        </div>
+    <div className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <div className="admin-sidebar-header">
+        <div className="icon">🎓</div>
+        <span>{isSidebarOpen ? "SMS 2025/26" : "SMS"}</span>
       </div>
+      <ul className="admin-sidebar-menu" ref={menuRef}>
+        <li onClick={() => handleItemClick("/admin-dashboard")} className="menu-item">
+          <FaTachometerAlt className="menu-icon" />
+          {isSidebarOpen && <span>Dashboard</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-faculties")} className="menu-item">
+          <FaUniversity className="menu-icon" />
+          {isSidebarOpen && <span>Fakulteti</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-departments")} className="menu-item">
+          <FaBuilding className="menu-icon" />
+          {isSidebarOpen && <span>Departamentet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-programs")} className="menu-item">
+          <FaProjectDiagram className="menu-icon" />
+          {isSidebarOpen && <span>Programet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-users")} className="menu-item">
+          <FaUsers className="menu-icon" />
+          {isSidebarOpen && <span>Përdoruesit</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-manage-users")} className="menu-item">
+          <FaUserCog className="menu-icon" />
+          {isSidebarOpen && <span>Menaxho Përdoruesit</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-professors")} className="menu-item">
+          <FaChalkboardTeacher className="menu-icon" />
+          {isSidebarOpen && <span>Profesorët</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-students")} className="menu-item">
+          <FaUserGraduate className="menu-icon" />
+          {isSidebarOpen && <span>Studentët</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-courses")} className="menu-item">
+          <FaBookOpen className="menu-icon" />
+          {isSidebarOpen && <span>Kurset</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-registrations")} className="menu-item">
+          <FaClipboardList className="menu-icon" />
+          {isSidebarOpen && <span>Regjistrimet</span>}
+        </li>
 
-      <style jsx>{`
-        .menu-item {
-          padding: 10px;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-        .menu-item:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
-        .menu-item:active {
-          background-color: rgba(255, 255, 255, 0.6);
-        }
-      `}</style>
+        <li onClick={() => handleItemClick("/admin-exams")} className="menu-item">
+          <FaClipboardCheck className="menu-icon" />
+          {isSidebarOpen && <span>Provimet</span>}
+        </li>
+
+
+        <li onClick={() => handleItemClick("/admin-scholarships")} className="menu-item">
+          <FaMoneyCheckAlt className="menu-icon" />
+          {isSidebarOpen && <span>Bursat</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-faq")} className="menu-item">
+          <FaQuestionCircle className="menu-icon" />
+          {isSidebarOpen && <span>FAQ</span>}
+        </li>
+        <li onClick={() => handleItemClick("/admin-settings")} className="menu-item">
+          <FaCog className="menu-icon" />
+          {isSidebarOpen && <span>Cilësimet</span>}
+        </li>
+        <li onClick={() => handleItemClick("/")} className="menu-item">
+          <FaSignOutAlt className="menu-icon" />
+          {isSidebarOpen && <span>Logout</span>}
+        </li>
+      </ul>
     </div>
   );
 };
